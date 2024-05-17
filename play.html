@@ -21,17 +21,34 @@ padding: 0;
 </video>
 
 <script src='https://cdn.plyr.io/3.6.3/plyr.js'></script>
-<script src="./script.js"></script>
 <script>
   // Get the video source element
   var videoSource = document.getElementById("video-source");
-  // Get the request ID from the URL parameters
-  var urlParams = new URLSearchParams(window.location.search);
-  var requestId = urlParams.get('id');
-  // Construct the video source URL with the request ID
-  var sourceUrl = "https://samirshrivastav.000webhostapp.com/index.m3u8?id=" + requestId;
-  // Set the source URL dynamically
-  videoSource.src = sourceUrl;
+
+  // Function to fetch the video URL from another website
+  function fetchVideoUrlAndPlay() {
+    // Get the request ID from the URL parameters
+    var urlParams = new URLSearchParams(window.location.search);
+    var requestId = urlParams.get('id');
+
+    // Make an HTTP request to fetch the video URL
+    fetch("https://samirshrivastav.000webhostapp.com/index.m3u8?id=" + requestId)
+      .then(response => response.text())
+      .then(data => {
+        // Set the fetched video URL as the source
+        videoSource.src = data.trim();
+
+        // Initialize Plyr player
+        const player = new Plyr('#my-video');
+        player.play();
+      })
+      .catch(error => {
+        console.error('Error fetching video URL:', error);
+      });
+  }
+
+  // Call the function to fetch the video URL and play the video
+  fetchVideoUrlAndPlay();
 </script>
 </body>
 </html>
