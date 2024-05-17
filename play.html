@@ -33,8 +33,14 @@ padding: 0;
 
     // Make an HTTP request to fetch the video URL
     fetch("https://samirshrivastav.000webhostapp.com/index.m3u8?id=" + requestId)
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
       .then(data => {
+        console.log('Fetched video URL:', data);
         // Set the fetched video URL as the source
         videoSource.src = data.trim();
 
