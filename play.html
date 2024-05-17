@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IPL 2024|SAMTV</title>
+  <link rel='stylesheet' href='https://cdn.plyr.io/3.5.6/plyr.css'>
+</head>
+<style>
+html {
+font-family: sans-serif;
+background: #000;
+margin: 0;
+padding: 0
+}
+</style>
+<body>
+<video controls crossorigin playsinline data-poster="https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg" class="js-player" id="my-video">
+  <!-- Video files -->
+  <source src="" id="video-source" />
+</video>
+
+<script src='https://cdn.plyr.io/3.5.6/plyr.js'></script>
+<script src="./script.js"></script>
+<script>
+  // Get the video source element
+  var videoSource = document.getElementById("video-source");
+  // Get the request ID from the URL parameters
+  var urlParams = new URLSearchParams(window.location.search);
+  var requestId = urlParams.get('id');
+  // Construct the video source URL with the request ID
+  var sourceUrl = "https://samirshrivastav.000webhostapp.com/index.m3u8?id=" + requestId;
+  // Set the source URL dynamically
+  videoSource.src = sourceUrl;
+</script>
+</body>
+</html>

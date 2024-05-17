@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cricket Live</title>
+      <link rel="stylesheet" href="style.css">
+      <link href="https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css" rel="stylesheet">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+      <link href="https://fonts.googleapis.com/css2?family=Gloock&amp;display=swap" rel="stylesheet">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+      <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&amp;display=swap" rel="stylesheet">
+      <link rel="shortcut icon" href="https://i.imgur.com/iV0RoSE.png">
+      <link rel="stylesheet" href="style.css">
+      <link rel="stylesheet" href="sp.css">
+      <script src="search.js"></script>
+   </head>
+   <body>
+      <div class="header1">
+         <div class="logo-container">
+            <img src="https://wallpaperaccess.in/public/uploads/preview/tata-ipl-2022-logo-png-images-z.png" alt="TATA IPL 2024 Logo" class="logo-image">
+            <h1 class="logo">TATA IPL 2024</h1>
+         </div>
+      </div>
+      <div class="plyr">
+         <div id="videoPlayer"></div>
+      </div>
+      <marquee behavior="scroll" direction="left">
+         <!-- Marquee content goes here -->
+      </marquee>
+      <script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.css" rel="stylesheet">
+      <link rel="stylesheet" href="style.css">
+      <script src="search.js"></script>
+      <main class="">
+         <title></title>
+         <div class="container">
+<div id="listContainer" class="container grid place-items-center grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-5 mx-auto"> 
+
+               <a href="https://t.me/techsam2242" data-sveltekit-preload-data="hover">
+                  <div class="card w-40 bg-gray-100 rounded-xl bg-base-100 shadow-lg h-48 mb-4 flex flex-col">
+                     <img src="https://i.postimg.cc/63rdB3CK/output-onlinegiftools.gif" loading="lazy" class="h-28 mt-5 m-auto opacity-100">
+                     <div class="mb-5 opacity-100">
+                        <h2 class="text-center text-sm font-bold">JOIN TELEGRAM</h2>
+                        <div class="flex justify-center space-x-1">
+                           <p class="text-xs text-center">Join Now</p>
+                        </div>
+                     </div>
+                  </div>
+               </a>
+            </div>
+            <!-- JavaScript will populate this with data -->
+         </div>
+      </main>
+      <script>
+          // Function to create a card HTML for a channel
+          function createChannelCard(channel) {
+              return `
+                  <div class="box1">
+                     <a href="play.php?id=${channel.id}" data-sveltekit-preload-data="hover">
+                        <div class="card w-40 bg-gray-100 rounded-xl bg-base-100 shadow-lg h-48 mb-4 flex flex-col">
+                           <img src="https://res.cloudinary.com/dwzmsvp7f/image/fetch/q_75,f_auto,w_1316/https%3A%2F%2Fmedia.insider.in%2Fimage%2Fupload%2Fc_crop%2Cg_custom%2Fv1645187616%2Fku5n4moqtldu4tuyqrg4.png" loading="lazy" class="h-28 mt-5 m-auto opacity-100">
+                           <div class="mb-5 opacity-100">
+                              <h2 class="text-center text-sm font-bold">${channel.name}</h2>
+                              <p class="text-xs text-center">@IPL</p>
+                           </div>
+                        </div>
+                     </a>
+                  </div>
+              `;
+          }
+
+          // Fetch JSON data
+          fetch('dhoom4u.txt')
+              .then(response => response.json())
+              .then(data => {
+                  const listContainer = document.getElementById('listContainer');
+                  // Filter and map data
+                  const channels = data.filter(channel => channel.group === "54");
+                  // Create HTML for each channel
+                  const channelHTML = channels.map(createChannelCard).join('');
+                  // Add generated HTML to the container
+                  listContainer.innerHTML += channelHTML;
+              })
+              .catch(error => console.error('Error fetching data:', error));
+      </script>
+   </body>
+</html>
