@@ -1,64 +1,48 @@
-document.write(unescape(' <html>  
 
-      <head>  
-        <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>    
-        <link rel="logo" href="logo.jpg" type="image/gif" sizes="16x16"> 
-    <meta charset="UTF-8">  
-    <title> Join Our Telegram Channel @CRICMATCHSTREAM</title>  
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prime Video</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0px;
+        }
 
-    <link rel="stylesheet" href="https://xyzts.pages.dev/style.css">  
-    <script src="//content.jwplatform.com/libraries/SAHhwvZq.js"></script>  
-    <style>   
-       body {   
-                 margin: 0px   
-            }   
+        .jwplayer {
+            position: absolute !important;
+        }
 
-            .jwplayer {   
-                 position: absolute !important   
-            }   
+        .jwplayer.jw-flag-aspect-mode {
+            min-height: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+    <script type='text/javascript' src='//eltontry.com/09/f1/e9/09f1e956c711aea6a898d5abbb78d092.js'></script>
+<body>
+    <div id="jwplayerDiv"></div>
+    <script src="//content.jwplatform.com/libraries/SAHhwvZq.js"></script>
+    <script type="text/javascript">
+        // Use the PHP configuration directly within the JavaScript
+        var config = {"file":"https://aba5sdmaaaaaaaamkycwliah6buj4.otte.live.cf.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/tgcrfjcgia/out/v1/7296f026409c4e9ba8844a238628f9ad/cenc.mpd","drm":{"clearkey":{"keyId":"d1badeadb11f16bbd0ad7d47914d939e","key":"bd52d185d3537c4c1759db6d66f90f31"}}};
 
-            .jwplayer.jw-flag-aspect-mode {   
-                 min-height: 100%;   
-                 max-height: 100%   
-            }   
-
-
-      </style>  
-
-    </head>    
-
-
-
-
-    <div id="jwplayerDiv"></div>    
-     <script type="text/javascript"> 
-       jwplayer("jwplayerDiv").setup( {  
-        "autostart": false, 
-        "preload": "none", 
-         "repeat": true, 
-         "Volume": "100", 
-         "mute": false, 
-         "width": "100%",  
-         "setPip": false, 
-               file: "https://aba5sdmaaaaaaaamibyasmmfoav3v.otte.live.cf.ww.aiv-cdn.net/pdx-nitro/live/clients/dash/enc/dmmqe7ssji/out/v1/3775f3d149f34a7a81d8cd7d58118e40/cenc.mpd",   
-             type: "dash",   
-             drm: { "clearkey": {   
-                     "keyId": "1105b85e6db6214e686e462206ed86ec",   
-                     "key": "59d851187354b65fa2d14829046893ef" ,  
-                     }   
-                    }  
-       }); 
-
-}
-
+        jwplayer("jwplayerDiv").setup({
+            file: config.file,
+            position: 'bottom',
+            autostart: true,
+            stretching: "",
+            width: "100%",
+            type: "dash",
+            drm: {
+                clearkey: {
+                    keyId: config.drm.clearkey.keyId,
+                    key: config.drm.clearkey.key
+                }
+            }
+        });
     </script>
-
-  <div id="ok">
-  <button  id="tele"onclick="welcome()">
-    <img src="telegram.svg" />
-    CLICK HERE TO JOIN TELEGRAM 
-    </button>
-
-  </script>'));
+</body>
+</html>
