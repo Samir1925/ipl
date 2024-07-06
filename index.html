@@ -62,8 +62,40 @@
 </style>
                             <br>
 <div class="ifframe">
-<iframe class="responsive-iframe" src="https://shrivastavsamir.000webhostapp.com/play.php" frameborder="0" scrolling="no" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+<!---<iframe class="responsive-iframe" src="https://shrivastavsamir.000webhostapp.com/play.php" frameborder="0" scrolling="no" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+-->
+	<!-- iPLSTREAM EMBED Start -->	
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.plyr.io/3.6.8/plyr.polyfilled.js"></script>
+                            <video controls preload="metadata" poster="https://i.imgur.com/8YlhP6o.jpg" id="player" class="plyr">
+                              </video>
+                             <script>document.addEventListener('DOMContentLoaded', () => {
+  const source = 'https://shrivastavsamir.000webhostapp.com/cric.php';
+  const video = document.querySelector('video');
 
+  // For more options see: https://github.com/sampotts/plyr/#options
+  // captions.update is required for captions to work with hls.js
+  const player = new Plyr(video, { captions: { active: true, update: true, language: 'en' } });
+
+  if (!Hls.isSupported()) {
+    video.src = source;
+  } else {
+    // For more Hls.js options, see https://github.com/dailymotion/hls.js
+    const hls = new Hls();
+    hls.loadSource(source);
+    hls.attachMedia(video);
+    window.hls = hls;
+
+    // Handle changing captions
+    player.on('languagechange', () => {
+      // Caption support is still flaky. See: https://github.com/sampotts/plyr/issues/994
+      setTimeout(() => hls.subtitleTrack = player.currentTrack, 50);
+    });
+  }
+
+  // Expose player so it can be used from the console
+  window.player = player;
+});</script>
                         </div>
 <!-- iPLSTREAM EMBED End -->																			
                         <div class="player_btm_bar">
