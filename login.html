@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Enter your email" required />
+      <input type="password" id="password" placeholder="Enter your password" required />
+      <button type="submit" id="loginBtn">Login</button>
+    </form>
+    <p id="errorMessage" class="error-message"></p>
+  </div>
+
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZ9HKf4Z8uXVIT5IbmcDgaGLihCZ7oiEI",
+      authDomain: "my-first-a1e7f.firebaseapp.com",
+      projectId: "my-first-a1e7f",
+      storageBucket: "my-first-a1e7f.firebasestorage.app",
+      messagingSenderId: "313070736006",
+      appId: "1:313070736006:web:38837764d5f5d612517707",
+      measurementId: "G-4SV759EVEB"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // Get Firebase Auth
+    const auth = getAuth();
+
+    // Get form elements
+    const loginForm = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const errorMessage = document.getElementById("errorMessage");
+
+    // Handle login form submission
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("Logged in as:", user.email);
+        window.location.href = "/home.html";  // Redirect to a homepage or dashboard
+      } catch (error) {
+        errorMessage.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
