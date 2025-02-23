@@ -10,23 +10,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 100%;
             background: #282c34;
             color: white;
             font-family: Arial, sans-serif;
-            margin: 0;
         }
         .video-container {
             width: 100%;
+            max-width: 100%;
             height: 100%;
-        }
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
         .plyr--full-ui {
             --plyr-color-main: red;
+        }
+        .plyr__video-wrapper {
+            height: 100vh !important;
         }
     </style>
 </head>
@@ -51,7 +49,7 @@
                     video.play();
                 });
             } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-                video.src = "https://fs.qwertyisaddictedtodxm.pw/skycricket/tracks-v1a1/mono.js.m3u8";
+                video.src = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
                 video.addEventListener("loadedmetadata", () => {
                     video.play();
                 });
@@ -60,3 +58,4 @@
     </script>
 </body>
 </html>
+                
