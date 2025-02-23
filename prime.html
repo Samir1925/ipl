@@ -1,39 +1,62 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TG</title>
-  <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Video Player</title>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #282c34;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        .video-container {
+            width: 100%;
+            height: 100%;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .plyr--full-ui {
+            --plyr-color-main: red;
+        }
+    </style>
 </head>
 <body>
-  <div id="video"></div>
-
-  <script type="text/javascript">
-    // Function to get video URL from the domain
-    function getVideoUrlFromDomain() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('videoUrl');
-    }
-
-    jwplayer("video").setup({
-      width: "100%",
-      height: "100%",
-      autostart: true,
-      mute: false,
-      file: getVideoUrlFromDomain()
-    });
-
-    if(confirm("Join Our Telegram Channel For More Links")) { window.location.href = "https://t.me/cricmatchstream" }
-  </script>
-
-  <div style="background-color: #0074d9; text-align: center; padding: 10px;">
-    <a href="https://t.me/cricmatchstream" target="_blank">
-      <button id="https://t.me/techsam2242" style="background-color: #fff; color: #0074d9; border: 2px solid #0074d9; padding: 5px 10px;">Join
-        Telegram</button>
-    </a>
-  </div>
+    <div class="video-container">
+        <video id="video" controls></video>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById("video");
+            const player = new Plyr(video, {
+                settings: ["quality", "speed", "loop"],
+            });
+            
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource("https://fs.qwertyisaddictedtodxm.pw/skycricket/tracks-v1a1/mono.js.m3u8");
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play();
+                });
+            } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+                video.src = "https://fs.qwertyisaddictedtodxm.pw/skycricket/tracks-v1a1/mono.js.m3u8";
+                video.addEventListener("loadedmetadata", () => {
+                    video.play();
+                });
+            }
+        });
+    </script>
 </body>
 </html>
