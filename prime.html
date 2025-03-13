@@ -3,26 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MKV Player</title>
+    <title>TV Full-Screen MKV Player</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video-js.min.css" rel="stylesheet">
     <style>
         body {
-            text-align: center;
             background-color: #000;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             color: white;
             font-family: Arial, sans-serif;
         }
         .video-container {
-            max-width: 800px;
-            margin: 20px auto;
+            width: 100vw;
+            height: 100vh;
+        }
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>
 <body>
 
-    <h2>MKV Video Player</h2>
     <div class="video-container">
-        <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls width="800" height="450">
+        <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls autoplay>
             <source src="https://pub-3687dc6b6b4d42f090fc7529ab335b0c.r2.dev/Pushpa%202%20-%20The%20Rule%202024%20NF%20WEBRip%20Hindi%20+%20Ml%20Ta%20Te%201080p%20x264%20AVC%20HE-AAC%202.0%20ESub.mkv" type="video/mp4">
             Your browser does not support the video tag.
         </video>
@@ -32,12 +40,27 @@
     <script>
         var player = videojs('videoPlayer', {
             controls: true,
-            autoplay: false,
-            preload: 'auto',
+            autoplay: true,
+            preload: 'auto'
         });
 
-        player.ready(function() {
-            console.log("Player is ready!");
+        // Auto-enter full-screen on TVs
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(() => {
+                if (player.requestFullscreen) {
+                    player.requestFullscreen();
+                } else if (player.webkitRequestFullscreen) {
+                    player.webkitRequestFullscreen();
+                } else if (player.mozRequestFullScreen) {
+                    player.mozRequestFullScreen();
+                } else if (player.msRequestFullscreen) {
+                    player.msRequestFullscreen();
+                }
+            }, 2000); // Delay for smoother loading
+        });
+
+        player.ready(function () {
+            console.log("Player is ready for TV Full Screen Mode!");
         });
     </script>
 
