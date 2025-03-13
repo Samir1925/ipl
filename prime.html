@@ -40,27 +40,23 @@
     <script>
         var player = videojs('videoPlayer', {
             controls: true,
-            autoplay: true,
+            autoplay: false,  // Turn off autoplay
             preload: 'auto'
         });
 
-        // Auto-enter full-screen on TVs
-        document.addEventListener("DOMContentLoaded", function () {
-            setTimeout(() => {
-                if (player.requestFullscreen) {
-                    player.requestFullscreen();
-                } else if (player.webkitRequestFullscreen) {
-                    player.webkitRequestFullscreen();
-                } else if (player.mozRequestFullScreen) {
-                    player.mozRequestFullScreen();
-                } else if (player.msRequestFullscreen) {
-                    player.msRequestFullscreen();
-                }
-            }, 2000); // Delay for smoother loading
+        // Ensure video starts playing when entering full-screen mode
+        player.on('fullscreenchange', function() {
+            if (player.isFullscreen()) {
+                // Play the video once full screen is activated
+                player.play();
+            } else {
+                // Pause the video when exiting full-screen mode
+                player.pause();
+            }
         });
 
         player.ready(function () {
-            console.log("Player is ready for TV Full Screen Mode!");
+            console.log("Player is ready for TV Full-Screen Mode!");
         });
     </script>
 
