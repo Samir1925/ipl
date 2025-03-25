@@ -1,94 +1,153 @@
-<script src="https://ssl.p.jwpcdn.com/player/v/8.22.0/jwplayer.js"></script>
-<style>
-html,body{padding:0;margin:0;height:100%}
-#player{width:100%;height:100%;overflow:hidden;background-color:#000}
-#password-screen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #000;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  color: #fff;
-}
-#password-input {
-  padding: 10px;
-  margin: 20px 0;
-  width: 200px;
-  border: 2px solid #fff;
-  background: transparent;
-  color: #fff;
-  font-size: 16px;
-  text-align: center;
-}
-#submit-btn {
-  padding: 10px 20px;
-  background: #ff6b00;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-}
-#submit-btn:hover {
-  background: #ff8c00;
-}
-.error {
-  color: #ff0000;
-  margin-top: 10px;
-  display: none;
-}
-</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HLS Player with Controls</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #000;
+        }
+        .player-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .player-container:hover .controls {
+            opacity: 1;
+        }
+        button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <video id="video" controls></video>
+        <div class="controls">
+            <button id="playBtn">▶</button>
+            <button id="pauseBtn">⏸</button>
+            <button id="fullscreenBtn">⛶</button>
+            <button id="muteBtn">🔊</button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+        </div>
+    </div>
 
-<div id="password-screen">
-  <h2>IPL 2025 X SAMIR SHRIVASTAV</h2>
-  <p>Please enter the password to access the content:</p>
-  <input type="password" id="password-input" placeholder="Enter password">
-  <button id="submit-btn">Submit</button>
-  <p id="error-msg" class="error">Incorrect password. Please try again.</p>
-</div>
+    <script>
+        const video = document.getElementById('video');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const streamUrl = 'https://112fc69c-ff3a-41fa-a1b0-c1971500fb1d-00-2esac8v99ni2x.picard.replit.dev/new.php?id=41775';
 
-<div id="player" style="display:none"></div>
+        // Initialize player
+        function initPlayer() {
+            // Hide native controls
+            video.controls = false;
+            
+            // Try native HLS first (Safari/iOS)
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = streamUrl;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play().catch(e => console.error('Playback failed:', e));
+                    enterFullscreen();
+                });
+            } 
+            // Fallback to HLS.js for other browsers
+            else if (Hls.isSupported()) {
+                const hls = new Hls({
+                    maxBufferLength: 30,
+                    maxMaxBufferLength: 60,
+                    maxBufferSize: 60*1000*1000,
+                    enableWorker: true
+                });
+                
+                hls.loadSource(streamUrl);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(e => console.error('Playback failed:', e));
+                    enterFullscreen();
+                });
+                
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                hls.recoverMediaError();
+                                break;
+                        }
+                    }
+                });
+            } else {
+                alert('HLS not supported in this browser');
+            }
+        }
 
-<script>
-  document.getElementById('submit-btn').addEventListener('click', checkPassword);
-  document.getElementById('password-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      checkPassword();
-    }
-  });
+        // Fullscreen handling
+        function enterFullscreen() {
+            const container = document.querySelector('.player-container');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+        }
 
-  function checkPassword() {
-    const password = "IPL2025"; // Change this to your desired password
-    const input = document.getElementById('password-input').value;
-    const errorMsg = document.getElementById('error-msg');
-    
-    if (input === password) {
-      document.getElementById('password-screen').style.display = 'none';
-      document.getElementById('player').style.display = 'block';
-      initializePlayer();
-    } else {
-      errorMsg.style.display = 'block';
-      document.getElementById('password-input').value = '';
-    }
-  }
+        // Control buttons
+        playBtn.addEventListener('click', () => video.play());
+        pauseBtn.addEventListener('click', () => video.pause());
+        fullscreenBtn.addEventListener('click', enterFullscreen);
+        muteBtn.addEventListener('click', () => {
+            video.muted = !video.muted;
+            muteBtn.textContent = video.muted ? "🔇" : "🔊";
+        });
+        volumeSlider.addEventListener('input', () => {
+            video.volume = volumeSlider.value;
+            video.muted = false;
+            muteBtn.textContent = "🔊";
+        });
 
-  function initializePlayer() {
-    var jwp = jwplayer('player');
-    jwp.setup({
-      width: "100%",
-      title: "IPL 2025 X SAMIR SHRIVASTAV",
-      height: "100%",
-      key: "cLGMn8T20tGvW+0eXPhq4NNmLB57TrscPjd1IyJF84o=",
-      sources: [
-        {file: "https://112fc69c-ff3a-41fa-a1b0-c1971500fb1d-00-2esac8v99ni2x.picard.replit.dev/new.php?id=41775",  type:"mp4",label:"480p", default: "true"}
-      ],
-      image: "https://documents.iplt20.com/bcci/articles/1741097713_IPL_Website.png",
-      primary: "html5"
-    });
-  }
-</script>
+        // Start when page loads
+        document.addEventListener('DOMContentLoaded', initPlayer);
+    </script>
+</body>
+</html>
