@@ -1,35 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Player</title>
-  <script src="https://content.jwplatform.com/libraries/KB5zFt7A.js"></script>
-</head>
-<body>
-  <div id="video"></div>
-
-  <script type="text/javascript">
-    // Function to get video URL from the domain
-    function getVideoUrlFromDomain() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('videoUrl');
-    }
-
-    jwplayer("video").setup({
-      width: "100%",
-      height: "100%",
-      autostart: true,
-      mute: false,
-      file: getVideoUrlFromDomain()
-    });
-  </script>
-    <footer style="text-align: center; padding: 10px; font-size: 14px;">
-    Developed by Samir Shrivastav
-  </footer>
-</body>
-</html>
-
-</body>
-</html>
+<script src="https://ssl.p.jwpcdn.com/player/v/8.22.0/jwplayer.js"></script>
+<style>
+html,body{padding:0;margin:0;height:100%}
+#player{width:100%;height:100%;overflow:hidden;background-color:#000}
+</style>
+<div id="player"></div>
+<script>
+  var jwp = jwplayer('player');
+  jwp.setup({
+    width: "100%",
+    title: "IPL 2025 X SAMIR SHRIVASTAV",
+    height: "100%",
+    key: "cLGMn8T20tGvW+0eXPhq4NNmLB57TrscPjd1IyJF84o=",
+    sources: [
+      {file: "https://112fc69c-ff3a-41fa-a1b0-c1971500fb1d-00-2esac8v99ni2x.picard.replit.dev/new.php?id=41775",  type:"mp4",label:"480p", default: "true"}
+    ],
+    image: "https://documents.iplt20.com/bcci/articles/1741097713_IPL_Website.png",
+    primary: "html5"
+  });
+</script>
