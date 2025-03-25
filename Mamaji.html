@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samsung Browser MKV Player</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video-js.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .video-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        .video-js {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-container">
+        <video id="videoPlayer" class="video-js vjs-default-skin vjs-big-play-centered" controls>
+            <source src="https://video-downloads.googleusercontent.com/ADGPM2kYuweFCV54o34UFWsmCGYMk5vBpEb9Yb-axy3d4cbVOBzl4-1SwadjsfLX4NuAupWXSFvLoUlVxzg5rLE6rLCpKk2_AnVNNPqo0V-jAcHk36besElCzCUdNRwV9tjbIsUUJpQdHMZrdY3ZF5-0H9UmYkpcBggMs3Qy2c3oD8xFdYX8s_m0WOpcnD5PVRcn4sfC6f9oLluvtBnowUUC6XRTQm2Y7yOuVEEeSX7H_I1Ib91oXlrMI1PR6WEDK4IbmpM-mxlq" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video.min.js"></script>
+    <script>
+        var player = videojs('videoPlayer', {
+            controls: true,
+            autoplay: false,
+            preload: 'auto'
+        });
+
+        // Ensure video plays when full-screen is entered
+        function enterFullscreen() {
+            if (player.requestFullscreen) {
+                player.requestFullscreen();
+            } else if (player.webkitRequestFullscreen) {
+                player.webkitRequestFullscreen();
+            } else if (player.mozRequestFullScreen) {
+                player.mozRequestFullScreen();
+            } else if (player.msRequestFullscreen) {
+                player.msRequestFullscreen();
+            }
+            player.play(); // Ensure playback starts
+        }
+
+        // Add full-screen play fix for Samsung Browser
+        player.on('fullscreenchange', function() {
+            if (player.isFullscreen()) {
+                player.play();
+            }
+        });
+
+        player.ready(function () {
+            console.log("Player is ready for Samsung Browser!");
+        });
+    </script>
+
+</body>
+</html>
