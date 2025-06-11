@@ -459,9 +459,13 @@
       if (initial) resultsDiv.innerHTML = '<div class="loading">Loading songs...</div>';
 
       try {
-        const res = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&limit=40&page=${page}`);
-        const data = await res.json();
-        const songs = data?.data?.results;
+    const res = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&limit=40&page=${page + 1}`);
+    const data = await res.json();
+    const songs = data?.data?.results;
+    // Do something with songs
+} catch (error) {
+    console.error("Failed to fetch songs:", error);
+    }
 
         if (!songs || songs.length === 0) {
           if (initial) resultsDiv.innerHTML = '<p class="no-results">No songs found. Try a different search.</p>';
