@@ -23,7 +23,7 @@ searchInput.addEventListener('keyup', (e) => {
 async function searchSongs(query) {
   resultsDiv.innerHTML = `<p>Loading...</p>`;
   try {
-    const res = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/api/search?query=${encodeURIComponent(query)}`);
+    const res = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search?query=${encodeURIComponent(query)}`);
     const data = await res.json();
 
     const songs = data.data?.songs || [];
