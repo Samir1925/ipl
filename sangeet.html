@@ -410,8 +410,6 @@
       <p id="playerArtist">Select a song to play</p>
     </div>
     <div class="player-controls">
-      <button id="slowBtn" onclick="toggleSlow()">Slowed (0.8x)</button>
-      <button id="reverbBtn" onclick="toggleReverb()">Reverb OFF</button>
       <i class="fas fa-step-backward" onclick="prevSong()"></i>
       <i class="fas fa-play play-pause" id="playPause" onclick="togglePlayPause()"></i>
       <i class="fas fa-step-forward" onclick="nextSong()"></i>
@@ -421,11 +419,6 @@
 
   <script>
     let page = 1;
-let audioContext;
-let sourceNode;
-let playbackRate = 1.0;
-let reverbEnabled = false;
-let convolverNode;
     let isPlaying = false;
     let currentSongIndex = -1;
     let songsList = [];
@@ -527,52 +520,23 @@ let convolverNode;
 
     // Play selected song
     function playSong(title, artist, image, audioUrl) {
-  if (!audioContext) initAudio();
-
-  document.getElementById('playerImg').src = image;
-  document.getElementById('playerTitle').textContent = title;
-  document.getElementById('playerArtist').textContent = artist;
-
-  const audio = document.getElementById('audioPlayer');
-  audio.src = audioUrl;
-
-  if (sourceNode) sourceNode.disconnect();
-
-  sourceNode = audioContext.createMediaElementSource(audio);
-
-  // Playback speed
-  audio.playbackRate = playbackRate;
-
-  // Reverb effect
-  if (reverbEnabled) {
-    if (!convolverNode) {
-      convolverNode = audioContext.createConvolver();
-      const buffer = audioContext.createBuffer(2, audioContext.sampleRate * 2, audioContext.sampleRate);
-      for (let i = 0; i < 2; i++) {
-        const data = buffer.getChannelData(i);
-        for (let j = 0; j < data.length; j++) {
-          data[j] = (Math.random() * 2 - 1) * (1 - j / data.length);
-        }
-      }
-      convolverNode.buffer = buffer;
+      document.getElementById('playerImg').src = image;
+      document.getElementById('playerTitle').textContent = title;
+      document.getElementById('playerArtist').textContent = artist;
+      
+      const audio = document.getElementById('audioPlayer');
+      audio.src = audioUrl;
+      audio.play()
+        .then(() => {
+          isPlaying = true;
+          document.getElementById('playPause').className = 'fas fa-pause play-pause';
+          document.getElementById('player').classList.add('active');
+        })
+        .catch(err => {
+          console.error('Error playing song:', err);
+          alert('Error playing song. Please try another one.');
+        });
     }
-    sourceNode.connect(convolverNode);
-    convolverNode.connect(audioContext.destination);
-  } else {
-    sourceNode.connect(audioContext.destination);
-  }
-
-  audio.play()
-    .then(() => {
-      isPlaying = true;
-      document.getElementById('playPause').className = 'fas fa-pause play-pause';
-      document.getElementById('player').classList.add('active');
-    })
-    .catch(err => {
-      console.error('Error playing song:', err);
-      alert('Error playing song. Please try another one.');
-    });
-}
 
     // Toggle play/pause
     function togglePlayPause() {
@@ -644,28 +608,6 @@ let convolverNode;
       const audio = document.getElementById('audioPlayer');
       audio.currentTime += seconds;
     }
-  
-    function toggleSlow() {
-      playbackRate = (playbackRate === 1.0) ? 0.8 : 1.0;
-      document.getElementById('slowBtn').textContent = (playbackRate === 1.0) ? "Slowed (0.8x)" : "Normal (1.0x)";
-      const audio = document.getElementById('audioPlayer');
-      audio.playbackRate = playbackRate;
-    }
-
-    function toggleReverb() {
-      reverbEnabled = !reverbEnabled;
-      document.getElementById('reverbBtn').textContent = reverbEnabled ? "Reverb ON" : "Reverb OFF";
-      if (isPlaying) {
-        const audio = document.getElementById('audioPlayer');
-        playSong(
-          document.getElementById('playerTitle').textContent,
-          document.getElementById('playerArtist').textContent,
-          document.getElementById('playerImg').src,
-          audio.src
-        );
-      }
-    }
-</script>
-
+  </script>
 </body>
 </html>
