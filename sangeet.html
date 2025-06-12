@@ -450,13 +450,14 @@
   </div>
 
   <script>
-          // Global variables
-let nextPage = '';
+// Global variables
+let currentPage = 1;
 let isPlaying = false;
 let currentSongIndex = -1;
 let songsList = [];
 let searchQuery = 'Hindi';
 let isLoading = false;
+const songsPerPage = 20; // Number of songs to load per page
 
 // Initialize the app
 window.onload = () => {
@@ -468,14 +469,17 @@ window.onload = () => {
 // Set up event listeners
 function setupEventListeners() {
   const searchInput = document.getElementById('searchInput');
-  
+
   // Search when Enter is pressed
   searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
       searchSongs(true);
     }
   });
-  
+
+  // Load More button
+  document.querySelector('.load-more button').addEventListener('click', loadMore);
+
   // Audio player event listeners
   const audioPlayer = document.getElementById('audioPlayer');
   audioPlayer.addEventListener('ended', nextSong);
@@ -506,13 +510,13 @@ function toggleDarkMode() {
 // Search songs function
 async function searchSongs(initial = false) {
   if (isLoading) return;
-  
+
   if (initial) {
-    page = 1;
-    nextPage = '';
+    currentPage = 1;
     searchQuery = document.getElementById('searchInput').value || 'Hindi';
+    songsList = [];
   }
-  
+
   const resultsDiv = document.getElementById('results');
   if (initial) {
     resultsDiv.innerHTML = '<div class="loading">Loading songs...</div>';
@@ -524,44 +528,33 @@ async function searchSongs(initial = false) {
   showLoading(true);
 
   try {
-    let url = `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&limit=40`;
-    if (!initial && nextPage) {
-      url += `&page=${nextPage}`;
-    }
-
+    const url = `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&page=${currentPage}&limit=${songsPerPage}`;
     const res = await fetch(url);
     const data = await res.json();
     const songs = data?.data?.results;
 
     if (!songs || songs.length === 0) {
-      if (initial) resultsDiv.innerHTML = '<p class="no-results">No songs found. Try a different search.</p>';
+      if (initial) {
+        resultsDiv.innerHTML = '<p class="no-results">No songs found. Try a different search.</p>';
+      }
+      document.querySelector('.load-more button').disabled = true;
+      document.querySelector('.load-more button').textContent = 'No more songs';
       return;
     }
 
-    // Update next page token if available
-    nextPage = data?.data?.nextPage || '';
+    const startIndex = songsList.length;
+    songsList = [...songsList, ...songs];
+    displaySongs(songs, startIndex);
 
-    if (initial) {
-      songsList = songs;
-      resultsDiv.innerHTML = '';
-    } else {
-      // Filter out duplicates before adding new songs
-      const newSongs = songs.filter(newSong => 
-        !songsList.some(existingSong => existingSong.id === newSong.id)
-      );
-      songsList = [...songsList, ...newSongs];
-    }
-
-    displaySongs(initial ? songs : songsList);
-    
-    // Disable load more button if no more pages
-    if (!nextPage) {
+    if (songs.length < songsPerPage) {
       document.querySelector('.load-more button').disabled = true;
       document.querySelector('.load-more button').textContent = 'No more songs';
     }
   } catch (err) {
     console.error('Error fetching songs:', err);
-    if (initial) resultsDiv.innerHTML = '<p class="error">Error loading songs. Please try again later.</p>';
+    if (initial) {
+      resultsDiv.innerHTML = '<p class="error">Error loading songs. Please try again later.</p>';
+    }
     showNotification('Failed to load songs. Please try again.');
   } finally {
     isLoading = false;
@@ -570,16 +563,22 @@ async function searchSongs(initial = false) {
 }
 
 // Display songs in the results grid
-function displaySongs(songs) {
+function displaySongs(songs, startIndex = 0) {
   const resultsDiv = document.getElementById('results');
-  
-  songs.forEach((song, index) => {
+
+  if (currentPage === 1) {
+    resultsDiv.innerHTML = '';
+  }
+
+  songs.forEach((song, i) => {
     const playable = song.downloadUrl?.pop()?.link;
     if (!playable) return;
 
+    const actualIndex = startIndex + i;
+
     const card = document.createElement('div');
     card.className = 'song-card';
-    if (currentSongIndex === index) {
+    if (currentSongIndex === actualIndex) {
       card.classList.add('active');
     }
     card.innerHTML = `
@@ -590,9 +589,8 @@ function displaySongs(songs) {
       </div>
     `;
     card.onclick = () => {
-      currentSongIndex = index;
+      currentSongIndex = actualIndex;
       playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-      // Update active state
       document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
       card.classList.add('active');
     };
@@ -602,12 +600,8 @@ function displaySongs(songs) {
 
 // Load more songs
 function loadMore() {
-  if (!nextPage) {
-    document.querySelector('.load-more button').disabled = true;
-    document.querySelector('.load-more button').textContent = 'No more songs';
-    return;
-  }
-  searchSongs();
+  currentPage++;
+  searchSongs(false);
 }
 
 // Play selected song
@@ -615,7 +609,7 @@ function playSong(title, artist, image, audioUrl) {
   document.getElementById('playerImg').src = image;
   document.getElementById('playerTitle').textContent = title;
   document.getElementById('playerArtist').textContent = artist;
-  
+
   const audio = document.getElementById('audioPlayer');
   audio.src = audioUrl;
   audio.play()
@@ -634,7 +628,7 @@ function playSong(title, artist, image, audioUrl) {
 function togglePlayPause() {
   const audio = document.getElementById('audioPlayer');
   const playPauseBtn = document.getElementById('playPause');
-  
+
   if (isPlaying) {
     audio.pause();
     playPauseBtn.className = 'fas fa-play play-pause';
@@ -651,23 +645,18 @@ function updateProgress() {
   const progressBar = document.getElementById('progressBar');
   const progress = (audio.currentTime / audio.duration) * 100;
   progressBar.style.width = `${progress}%`;
-  
-  // Update time display if you add it
-  // document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
-  // document.getElementById('duration').textContent = formatTime(audio.duration);
 }
 
 // Play next song
 function nextSong() {
   if (songsList.length === 0 || currentSongIndex === -1) return;
-  
+
   currentSongIndex = (currentSongIndex + 1) % songsList.length;
   const song = songsList[currentSongIndex];
   const playable = song.downloadUrl?.pop()?.link;
-  
+
   if (playable) {
     playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-    // Update active state
     document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.song-card')[currentSongIndex]?.classList.add('active');
   } else {
@@ -678,14 +667,13 @@ function nextSong() {
 // Play previous song
 function prevSong() {
   if (songsList.length === 0 || currentSongIndex === -1) return;
-  
+
   currentSongIndex = (currentSongIndex - 1 + songsList.length) % songsList.length;
   const song = songsList[currentSongIndex];
   const playable = song.downloadUrl?.pop()?.link;
-  
+
   if (playable) {
     playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-    // Update active state
     document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
     document.querySelectorAll('.song-card')[currentSongIndex]?.classList.add('active');
   } else {
@@ -699,7 +687,7 @@ function showNotification(message) {
   notification.className = 'notification';
   notification.textContent = message;
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.remove();
   }, 3000);
@@ -707,6 +695,8 @@ function showNotification(message) {
 
 function showLoading(show) {
   const loadMoreBtn = document.querySelector('.load-more button');
+  if (!loadMoreBtn) return;
+
   if (show) {
     loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
     loadMoreBtn.disabled = true;
@@ -714,13 +704,6 @@ function showLoading(show) {
     loadMoreBtn.textContent = 'Load More';
     loadMoreBtn.disabled = false;
   }
-}
-
-// Format time for audio player (MM:SS)
-function formatTime(seconds) {
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 }
   </script>
 </body>
