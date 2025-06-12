@@ -379,6 +379,38 @@
         height: 50px;
       }
     }
+    .notification {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 1001;
+  animation: fadeInOut 3s ease;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.song-card.active {
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.load-more button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.fa-spinner {
+  margin-right: 5px;
+}
   </style>
 </head>
 <body>
@@ -418,196 +450,278 @@
   </div>
 
   <script>
-    let page = 1;
-    let isPlaying = false;
-    let currentSongIndex = -1;
-    let songsList = [];
-    let searchQuery = 'Hindi';
+          // Global variables
+let nextPage = '';
+let isPlaying = false;
+let currentSongIndex = -1;
+let songsList = [];
+let searchQuery = 'Hindi';
+let isLoading = false;
 
-    // Initialize the app
-    window.onload = () => {
+// Initialize the app
+window.onload = () => {
+  searchSongs(true);
+  checkDarkModePreference();
+  setupEventListeners();
+};
+
+// Set up event listeners
+function setupEventListeners() {
+  const searchInput = document.getElementById('searchInput');
+  
+  // Search when Enter is pressed
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
       searchSongs(true);
-      checkDarkModePreference();
+    }
+  });
+  
+  // Audio player event listeners
+  const audioPlayer = document.getElementById('audioPlayer');
+  audioPlayer.addEventListener('ended', nextSong);
+  audioPlayer.addEventListener('error', () => {
+    showNotification('Error playing song. Please try another one.');
+  });
+}
+
+// Check user's dark mode preference
+function checkDarkModePreference() {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.toggle-mode i').classList.replace('fa-moon', 'fa-sun');
+  }
+}
+
+// Toggle dark mode
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const icon = document.querySelector('.toggle-mode i');
+  if (document.body.classList.contains('dark-mode')) {
+    icon.classList.replace('fa-moon', 'fa-sun');
+  } else {
+    icon.classList.replace('fa-sun', 'fa-moon');
+  }
+}
+
+// Search songs function
+async function searchSongs(initial = false) {
+  if (isLoading) return;
+  
+  if (initial) {
+    page = 1;
+    nextPage = '';
+    searchQuery = document.getElementById('searchInput').value || 'Hindi';
+  }
+  
+  const resultsDiv = document.getElementById('results');
+  if (initial) {
+    resultsDiv.innerHTML = '<div class="loading">Loading songs...</div>';
+    document.querySelector('.load-more button').disabled = false;
+    document.querySelector('.load-more button').textContent = 'Load More';
+  }
+
+  isLoading = true;
+  showLoading(true);
+
+  try {
+    let url = `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&limit=40`;
+    if (!initial && nextPage) {
+      url += `&page=${nextPage}`;
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+    const songs = data?.data?.results;
+
+    if (!songs || songs.length === 0) {
+      if (initial) resultsDiv.innerHTML = '<p class="no-results">No songs found. Try a different search.</p>';
+      return;
+    }
+
+    // Update next page token if available
+    nextPage = data?.data?.nextPage || '';
+
+    if (initial) {
+      songsList = songs;
+      resultsDiv.innerHTML = '';
+    } else {
+      // Filter out duplicates before adding new songs
+      const newSongs = songs.filter(newSong => 
+        !songsList.some(existingSong => existingSong.id === newSong.id)
+      );
+      songsList = [...songsList, ...newSongs];
+    }
+
+    displaySongs(initial ? songs : songsList);
+    
+    // Disable load more button if no more pages
+    if (!nextPage) {
+      document.querySelector('.load-more button').disabled = true;
+      document.querySelector('.load-more button').textContent = 'No more songs';
+    }
+  } catch (err) {
+    console.error('Error fetching songs:', err);
+    if (initial) resultsDiv.innerHTML = '<p class="error">Error loading songs. Please try again later.</p>';
+    showNotification('Failed to load songs. Please try again.');
+  } finally {
+    isLoading = false;
+    showLoading(false);
+  }
+}
+
+// Display songs in the results grid
+function displaySongs(songs) {
+  const resultsDiv = document.getElementById('results');
+  
+  songs.forEach((song, index) => {
+    const playable = song.downloadUrl?.pop()?.link;
+    if (!playable) return;
+
+    const card = document.createElement('div');
+    card.className = 'song-card';
+    if (currentSongIndex === index) {
+      card.classList.add('active');
+    }
+    card.innerHTML = `
+      <img src="${song.image[2].link}" alt="${song.name} cover art">
+      <div class="song-info">
+        <h3>${song.name}</h3>
+        <p>${song.primaryArtists}</p>
+      </div>
+    `;
+    card.onclick = () => {
+      currentSongIndex = index;
+      playSong(song.name, song.primaryArtists, song.image[2].link, playable);
+      // Update active state
+      document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
     };
+    resultsDiv.appendChild(card);
+  });
+}
 
-    // Check user's dark mode preference
-    function checkDarkModePreference() {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.body.classList.add('dark-mode');
-      }
-    }
+// Load more songs
+function loadMore() {
+  if (!nextPage) {
+    document.querySelector('.load-more button').disabled = true;
+    document.querySelector('.load-more button').textContent = 'No more songs';
+    return;
+  }
+  searchSongs();
+}
 
-    // Toggle dark mode
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      const icon = document.querySelector('.toggle-mode i');
-      if (document.body.classList.contains('dark-mode')) {
-        icon.classList.replace('fa-moon', 'fa-sun');
-      } else {
-        icon.classList.replace('fa-sun', 'fa-moon');
-      }
-    }
-
-    // Search songs function
-    async function searchSongs(initial = false) {
-      if (initial) {
-        page = 1;
-        searchQuery = document.getElementById('searchInput').value || 'Hindi';
-      }
-      
-      const resultsDiv = document.getElementById('results');
-      if (initial) resultsDiv.innerHTML = '<div class="loading">Loading songs...</div>';
-
-      try {
-        const res = await fetch(`https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(searchQuery)}&limit=40&page=${page}`);
-        const data = await res.json();
-        const songs = data?.data?.results;
-
-        if (!songs || songs.length === 0) {
-          if (initial) resultsDiv.innerHTML = '<p class="no-results">No songs found. Try a different search.</p>';
-          return;
-        }
-
-        if (initial) {
-          songsList = songs;
-          resultsDiv.innerHTML = '';
-        } else {
-          songsList = [...songsList, ...songs];
-        }
-
-        displaySongs(initial ? songs : songsList);
-      } catch (err) {
-        console.error('Error fetching songs:', err);
-        if (initial) resultsDiv.innerHTML = '<p class="error">Error loading songs. Please try again later.</p>';
-      }
-    }
-
-    // Display songs in the results grid
-    function displaySongs(songs) {
-      const resultsDiv = document.getElementById('results');
-      
-      // Clear only if it's the initial load
-      if (page === 1) {
-        resultsDiv.innerHTML = '';
-      }
-
-      songs.forEach((song, index) => {
-        const playable = song.downloadUrl?.pop()?.link;
-        if (!playable) return;
-
-        const card = document.createElement('div');
-        card.className = 'song-card';
-        card.innerHTML = `
-          <img src="${song.image[2].link}" alt="${song.name}">
-          <div class="song-info">
-            <h3>${song.name}</h3>
-            <p>${song.primaryArtists}</p>
-          </div>
-        `;
-        card.onclick = () => {
-          currentSongIndex = index;
-          playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-        };
-        resultsDiv.appendChild(card);
-      });
-    }
-
-    // Load more songs
-    function loadMore() {
-      page++;
-      searchSongs();
-    }
-
-    // Play selected song
-    function playSong(title, artist, image, audioUrl) {
-      document.getElementById('playerImg').src = image;
-      document.getElementById('playerTitle').textContent = title;
-      document.getElementById('playerArtist').textContent = artist;
-      
-      const audio = document.getElementById('audioPlayer');
-      audio.src = audioUrl;
-      audio.play()
-        .then(() => {
-          isPlaying = true;
-          document.getElementById('playPause').className = 'fas fa-pause play-pause';
-          document.getElementById('player').classList.add('active');
-        })
-        .catch(err => {
-          console.error('Error playing song:', err);
-          alert('Error playing song. Please try another one.');
-        });
-    }
-
-    // Toggle play/pause
-    function togglePlayPause() {
-      const audio = document.getElementById('audioPlayer');
-      const playPauseBtn = document.getElementById('playPause');
-      
-      if (isPlaying) {
-        audio.pause();
-        playPauseBtn.className = 'fas fa-play play-pause';
-      } else {
-        audio.play();
-        playPauseBtn.className = 'fas fa-pause play-pause';
-      }
-      isPlaying = !isPlaying;
-    }
-
-    // Update progress bar
-    function updateProgress() {
-      const audio = document.getElementById('audioPlayer');
-      const progressBar = document.getElementById('progressBar');
-      const progress = (audio.currentTime / audio.duration) * 100;
-      progressBar.style.width = `${progress}%`;
-    }
-
-    // Play next song
-    function nextSong() {
-      if (songsList.length === 0 || currentSongIndex === -1) return;
-      
-      currentSongIndex = (currentSongIndex + 1) % songsList.length;
-      const song = songsList[currentSongIndex];
-      const playable = song.downloadUrl?.pop()?.link;
-      
-      if (playable) {
-        playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-      } else {
-        nextSong(); // Skip to next if current isn't playable
-      }
-    }
-
-    // Play previous song
-    function prevSong() {
-      if (songsList.length === 0 || currentSongIndex === -1) return;
-      
-      currentSongIndex = (currentSongIndex - 1 + songsList.length) % songsList.length;
-      const song = songsList[currentSongIndex];
-      const playable = song.downloadUrl?.pop()?.link;
-      
-      if (playable) {
-        playSong(song.name, song.primaryArtists, song.image[2].link, playable);
-      } else {
-        prevSong(); // Skip to previous if current isn't playable
-      }
-    }
-
-    // Handle keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        togglePlayPause();
-      } else if (e.code === 'ArrowRight') {
-        skip(5);
-      } else if (e.code === 'ArrowLeft') {
-        skip(-5);
-      }
+// Play selected song
+function playSong(title, artist, image, audioUrl) {
+  document.getElementById('playerImg').src = image;
+  document.getElementById('playerTitle').textContent = title;
+  document.getElementById('playerArtist').textContent = artist;
+  
+  const audio = document.getElementById('audioPlayer');
+  audio.src = audioUrl;
+  audio.play()
+    .then(() => {
+      isPlaying = true;
+      document.getElementById('playPause').className = 'fas fa-pause play-pause';
+      document.getElementById('player').classList.add('active');
+    })
+    .catch(err => {
+      console.error('Error playing song:', err);
+      showNotification('Error playing song. Please try another one.');
     });
+}
 
-    // Skip time in current song
-    function skip(seconds) {
-      const audio = document.getElementById('audioPlayer');
-      audio.currentTime += seconds;
-    }
+// Toggle play/pause
+function togglePlayPause() {
+  const audio = document.getElementById('audioPlayer');
+  const playPauseBtn = document.getElementById('playPause');
+  
+  if (isPlaying) {
+    audio.pause();
+    playPauseBtn.className = 'fas fa-play play-pause';
+  } else {
+    audio.play();
+    playPauseBtn.className = 'fas fa-pause play-pause';
+  }
+  isPlaying = !isPlaying;
+}
+
+// Update progress bar
+function updateProgress() {
+  const audio = document.getElementById('audioPlayer');
+  const progressBar = document.getElementById('progressBar');
+  const progress = (audio.currentTime / audio.duration) * 100;
+  progressBar.style.width = `${progress}%`;
+  
+  // Update time display if you add it
+  // document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+  // document.getElementById('duration').textContent = formatTime(audio.duration);
+}
+
+// Play next song
+function nextSong() {
+  if (songsList.length === 0 || currentSongIndex === -1) return;
+  
+  currentSongIndex = (currentSongIndex + 1) % songsList.length;
+  const song = songsList[currentSongIndex];
+  const playable = song.downloadUrl?.pop()?.link;
+  
+  if (playable) {
+    playSong(song.name, song.primaryArtists, song.image[2].link, playable);
+    // Update active state
+    document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.song-card')[currentSongIndex]?.classList.add('active');
+  } else {
+    nextSong(); // Skip to next if current isn't playable
+  }
+}
+
+// Play previous song
+function prevSong() {
+  if (songsList.length === 0 || currentSongIndex === -1) return;
+  
+  currentSongIndex = (currentSongIndex - 1 + songsList.length) % songsList.length;
+  const song = songsList[currentSongIndex];
+  const playable = song.downloadUrl?.pop()?.link;
+  
+  if (playable) {
+    playSong(song.name, song.primaryArtists, song.image[2].link, playable);
+    // Update active state
+    document.querySelectorAll('.song-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.song-card')[currentSongIndex]?.classList.add('active');
+  } else {
+    prevSong(); // Skip to previous if current isn't playable
+  }
+}
+
+// Helper functions
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
+function showLoading(show) {
+  const loadMoreBtn = document.querySelector('.load-more button');
+  if (show) {
+    loadMoreBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    loadMoreBtn.disabled = true;
+  } else {
+    loadMoreBtn.textContent = 'Load More';
+    loadMoreBtn.disabled = false;
+  }
+}
+
+// Format time for audio player (MM:SS)
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
   </script>
 </body>
 </html>
