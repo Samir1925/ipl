@@ -1,0 +1,14 @@
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const fileUrl = urlParams.get('url');
+if(fileUrl) {
+    window.location.href = fileUrl;
+    // Or for better control:
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.download = fileUrl.split('/').pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+</script>
