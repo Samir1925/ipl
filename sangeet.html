@@ -471,6 +471,34 @@
             font-size: 20px;
             cursor: pointer;
         }
+        /* Add these styles to your existing CSS */
+
+/* Remove default outline and add custom focus styles */
+button:focus, 
+.song-card:focus,
+input:focus,
+.toggle-mode:focus {
+  outline: none;
+}
+
+/* Custom focus styles for better accessibility */
+button:focus-visible,
+.song-card:focus-visible,
+.toggle-mode:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+/* Remove tap highlight color on mobile */
+button, 
+.song-card,
+.toggle-mode {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove blue highlight on song card click */
+.song-card {
+  user-select: none;
+}
     </style>
 </head>
 <body>
