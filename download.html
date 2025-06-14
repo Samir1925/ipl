@@ -1,14 +1,16 @@
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const fileUrl = urlParams.get('url');
-if(fileUrl) {
-    window.location.href = fileUrl;
-    // Or for better control:
-    const a = document.createElement('a');
-    a.href = fileUrl;
-    a.download = fileUrl.split('/').pop();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
+    const urlParams = new URLSearchParams(window.location.search);
+    const fileUrl = urlParams.get('url');
+    
+    if (fileUrl) {
+        const a = document.createElement('a');
+        a.href = fileUrl;
+        a.download = fileUrl.split('/').pop() || 'download';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    } else {
+        alert('No download URL provided!');
+    }
 </script>
