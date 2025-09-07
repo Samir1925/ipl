@@ -224,6 +224,15 @@
             margin-bottom: 10px;
         }
         
+        .permission-note {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
         footer {
             text-align: center;
             padding: 15px;
@@ -267,11 +276,15 @@
                 <button id="joinBtn" class="btn">
                     <i class="fas fa-sign-in-alt"></i> Join Room
                 </button>
+                
+                <div class="permission-note">
+                    <p><strong>Note:</strong> This app will request camera and microphone access when you start or join a call.</p>
+                </div>
             </div>
             
             <div id="callInterface" class="hidden">
                 <div class="video-container">
-                    <div class="video-wrapper main-video" data-name="Mom">
+                    <div class="video-wrapper main-video" data-name="Family Member">
                         <video id="remoteVideo" autoplay></video>
                     </div>
                     <div class="video-wrapper" data-name="You">
@@ -345,76 +358,124 @@
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
         
-        // Simulate video call functionality
-        createBtn.addEventListener('click', () => {
+        // Variables to track media streams
+        let localStream = null;
+        let remoteStream = null;
+        
+        // Function to request camera and microphone access
+        async function getMedia() {
+            try {
+                // Request camera and microphone access
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                
+                // Set the local video source to the stream
+                localVideo.srcObject = stream;
+                localStream = stream;
+                
+                // Simulate remote video after a delay
+                setTimeout(() => {
+                    // In a real app, this would be the remote video stream
+                    // For demo purposes, we'll use a placeholder
+                    remoteVideo.style.backgroundColor = '#4e73df';
+                }, 1500);
+                
+                return true;
+            } catch (error) {
+                console.error('Error accessing media devices:', error);
+                alert('Could not access your camera and microphone. Please make sure they are available and permissions are granted.');
+                return false;
+            }
+        }
+        
+        // Create room button handler
+        createBtn.addEventListener('click', async () => {
             // Generate a random room ID
             const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
             
-            // Show room ID to user
-            alert(`Room created! Your Room ID: ${roomId}\nShare this with your family members.`);
+            // Request camera and microphone access
+            const hasAccess = await getMedia();
             
-            // Switch to call interface
-            setupPanel.classList.add('hidden');
-            callInterface.classList.remove('hidden');
-            
-            // Simulate starting a call
-            simulateCall();
-        });
-        
-        joinBtn.addEventListener('click', () => {
-            const roomId = prompt('Enter Room ID:');
-            if (roomId) {
+            if (hasAccess) {
+                // Show room ID to user
+                alert(`Room created! Your Room ID: ${roomId}\nShare this with your family members.`);
+                
                 // Switch to call interface
                 setupPanel.classList.add('hidden');
                 callInterface.classList.remove('hidden');
-                
-                // Simulate joining a call
-                simulateCall();
             }
         });
         
+        // Join room button handler
+        joinBtn.addEventListener('click', async () => {
+            const roomId = prompt('Enter Room ID:');
+            if (roomId) {
+                // Request camera and microphone access
+                const hasAccess = await getMedia();
+                
+                if (hasAccess) {
+                    // Switch to call interface
+                    setupPanel.classList.add('hidden');
+                    callInterface.classList.remove('hidden');
+                    
+                    alert(`Joining room: ${roomId}`);
+                }
+            }
+        });
+        
+        // End call button handler
         endCallBtn.addEventListener('click', () => {
+            // Stop all media tracks
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
             // Switch back to setup panel
             callInterface.classList.add('hidden');
             setupPanel.classList.remove('hidden');
             
             // Reset video elements
-            localVideo.style.backgroundColor = '#222';
-            remoteVideo.style.backgroundColor = '#222';
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
         });
         
         // Toggle microphone
         micBtn.addEventListener('click', () => {
-            micBtn.classList.toggle('muted');
-            if (micBtn.classList.contains('muted')) {
-                micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-            } else {
-                micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            if (localStream) {
+                const audioTracks = localStream.getAudioTracks();
+                if (audioTracks.length > 0) {
+                    const enabled = audioTracks[0].enabled;
+                    audioTracks[0].enabled = !enabled;
+                    
+                    micBtn.classList.toggle('muted');
+                    if (micBtn.classList.contains('muted')) {
+                        micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                    } else {
+                        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    }
+                }
             }
         });
         
         // Toggle video
         videoBtn.addEventListener('click', () => {
-            videoBtn.classList.toggle('off');
-            if (videoBtn.classList.contains('off')) {
-                videoBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
-                localVideo.style.backgroundColor = '#444';
-            } else {
-                videoBtn.innerHTML = '<i class="fas fa-video"></i>';
-                localVideo.style.backgroundColor = '#355cc9';
+            if (localStream) {
+                const videoTracks = localStream.getVideoTracks();
+                if (videoTracks.length > 0) {
+                    const enabled = videoTracks[0].enabled;
+                    videoTracks[0].enabled = !enabled;
+                    
+                    videoBtn.classList.toggle('off');
+                    if (videoBtn.classList.contains('off')) {
+                        videoBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
+                    } else {
+                        videoBtn.innerHTML = '<i class="fas fa-video"></i>';
+                    }
+                }
             }
         });
-        
-        // Simulate a call (since we can't access camera without permission)
-        function simulateCall() {
-            // Simulate local video
-            localVideo.style.backgroundColor = '#355cc9';
-            
-            // Simulate remote video after a delay
-            setTimeout(() => {
-                remoteVideo.style.backgroundColor = '#4e73df';
-            }, 1500);
-        }
         
         // Initialize page
         window.addEventListener('load', () => {
