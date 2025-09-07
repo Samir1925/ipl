@@ -1,44 +1,99 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Family Video Call</title>
-    <script src='https://meet.jit.si/external_api.js'></script>
-    <style>
-      body {
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
-      #header {
-        background: #2d89ef;
-        color: white;
-        padding: 10px;
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-      }
-      #meet {
-        flex: 1;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="header">👨‍👩‍👧 Family Video Call</div>
-    <div id="meet"></div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Family Video Call</title>
+  <script src="https://meet.jit.si/external_api.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #2d89ef;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    button {
+      background: #2d89ef;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #1b5dab;
+    }
+    #meet {
+      flex: 1;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>👨‍👩‍👧 Family Video Call</header>
 
-    <script>
+  <div id="welcome">
+    <h2>Welcome to Family Video Call</h2>
+    <p>Click the button below to join the meeting directly in this page.</p>
+    <button onclick="joinCall()">Join Family Call</button>
+  </div>
+
+  <div id="meet"></div>
+
+  <script>
+    function joinCall() {
+      // Hide welcome screen
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("meet").style.display = "block";
+
+      // Embed Jitsi Meet inside this div
       const domain = "meet.jit.si";
       const options = {
-        roomName: "FamilyRoomNepal2025", // fixed family room
+        roomName: "FamilyRoomNepal2025", // fixed room
         width: "100%",
         height: "100%",
         parentNode: document.querySelector("#meet"),
+        configOverwrite: {
+          startWithAudioMuted: false,
+          startWithVideoMuted: false
+        },
+        interfaceConfigOverwrite: {
+          SHOW_JITSI_WATERMARK: false,
+          SHOW_WATERMARK_FOR_GUESTS: false,
+          SHOW_BRAND_WATERMARK: false
+        },
         userInfo: {
           displayName: "Family Member"
         }
       };
+
+      // Initialize embedded Jitsi
       const api = new JitsiMeetExternalAPI(domain, options);
-    </script>
-  </body>
+
+      // Optional: handle leaving the call
+      api.addEventListener('readyToClose', () => {
+        document.getElementById("meet").style.display = "none";
+        document.getElementById("welcome").style.display = "flex";
+      });
+    }
+  </script>
+</body>
 </html>
