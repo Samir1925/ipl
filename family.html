@@ -24,7 +24,7 @@
         .container {
             width: 100%;
             max-width: 100%;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
@@ -177,27 +177,15 @@
             background: #e74a3b;
         }
         
-        .family-members {
-            display: flex;
-            overflow-x: auto;
-            gap: 10px;
-            padding: 10px 0;
-            margin-bottom: 15px;
-        }
-        
-        .family-member {
+        .room-id-display {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 15px;
-            min-width: 120px;
+            margin: 15px 0;
             text-align: center;
-            backdrop-filter: blur(5px);
-        }
-        
-        .family-member i {
-            font-size: 2rem;
-            margin-bottom: 8px;
-            display: block;
+            font-size: 1.2rem;
+            font-weight: bold;
+            word-break: break-all;
         }
         
         .instructions {
@@ -252,7 +240,7 @@
             .container {
                 max-width: 400px;
                 margin: 0 auto;
-                height: 100vh;
+                min-height: 100vh;
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
                 border-right: 1px solid rgba(255, 255, 255, 0.1);
             }
@@ -283,12 +271,16 @@
             </div>
             
             <div id="callInterface" class="hidden">
+                <div id="roomInfo" class="room-id-display hidden">
+                    Room ID: <span id="roomIdDisplay">Loading...</span>
+                </div>
+                
                 <div class="video-container">
-                    <div class="video-wrapper main-video" data-name="Family Member">
-                        <video id="remoteVideo" autoplay></video>
+                    <div class="video-wrapper main-video" data-name="Remote User">
+                        <video id="remoteVideo" autoplay playsinline></video>
                     </div>
                     <div class="video-wrapper" data-name="You">
-                        <video id="localVideo" class="local-video" autoplay muted></video>
+                        <video id="localVideo" class="local-video" autoplay muted playsinline></video>
                     </div>
                 </div>
                 
@@ -302,32 +294,12 @@
                     <button id="endCallBtn" class="control-btn end-call">
                         <i class="fas fa-phone-slash"></i>
                     </button>
-                    <button id="audioBtn" class="control-btn">
-                        <i class="fas fa-volume-up"></i>
-                    </button>
-                    <button id="switchCameraBtn" class="control-btn">
-                        <i class="fas fa-sync"></i>
+                    <button id="shareBtn" class="control-btn">
+                        <i class="fas fa-share-alt"></i>
                     </button>
                 </div>
                 
-                <div class="family-members">
-                    <div class="family-member">
-                        <i class="fas fa-user"></i>
-                        <span>Dad</span>
-                    </div>
-                    <div class="family-member">
-                        <i class="fas fa-user"></i>
-                        <span>Mom</span>
-                    </div>
-                    <div class="family-member">
-                        <i class="fas fa-user"></i>
-                        <span>Sarah</span>
-                    </div>
-                    <div class="family-member">
-                        <i class="fas fa-user"></i>
-                        <span>John</span>
-                    </div>
-                </div>
+                <div id="connectionStatus">Disconnected</div>
             </div>
             
             <div class="instructions">
@@ -338,6 +310,10 @@
                     <li>They can join using the "Join Room" button</li>
                     <li>Allow camera & microphone access when prompted</li>
                 </ol>
+                <p class="permission-note">
+                    <strong>Note:</strong> This is a demo that shows your own camera feed. 
+                    For actual video calls, you would need to implement WebRTC signaling.
+                </p>
             </div>
         </div>
         
@@ -350,37 +326,37 @@
         // DOM elements
         const setupPanel = document.getElementById('setupPanel');
         const callInterface = document.getElementById('callInterface');
+        const roomInfo = document.getElementById('roomInfo');
+        const roomIdDisplay = document.getElementById('roomIdDisplay');
         const createBtn = document.getElementById('createBtn');
         const joinBtn = document.getElementById('joinBtn');
         const endCallBtn = document.getElementById('endCallBtn');
         const micBtn = document.getElementById('micBtn');
         const videoBtn = document.getElementById('videoBtn');
+        const shareBtn = document.getElementById('shareBtn');
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
+        const connectionStatus = document.getElementById('connectionStatus');
         
         // Variables to track media streams
         let localStream = null;
-        let remoteStream = null;
+        let roomId = null;
         
         // Function to request camera and microphone access
         async function getMedia() {
             try {
                 // Request camera and microphone access
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
+                    video: {
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    },
                     audio: true
                 });
                 
                 // Set the local video source to the stream
                 localVideo.srcObject = stream;
                 localStream = stream;
-                
-                // Simulate remote video after a delay
-                setTimeout(() => {
-                    // In a real app, this would be the remote video stream
-                    // For demo purposes, we'll use a placeholder
-                    remoteVideo.style.backgroundColor = '#4e73df';
-                }, 1500);
                 
                 return true;
             } catch (error) {
@@ -390,38 +366,71 @@
             }
         }
         
-        // Create room button handler
-        createBtn.addEventListener('click', async () => {
-            // Generate a random room ID
-            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            
+        // Function to generate a room ID
+        function generateRoomId() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+        
+        // Function to start a call
+        async function startCall(isCreator) {
             // Request camera and microphone access
             const hasAccess = await getMedia();
             
             if (hasAccess) {
-                // Show room ID to user
-                alert(`Room created! Your Room ID: ${roomId}\nShare this with your family members.`);
+                if (isCreator) {
+                    // Generate room ID for the creator
+                    roomId = generateRoomId();
+                    roomIdDisplay.textContent = roomId;
+                    roomInfo.classList.remove('hidden');
+                    
+                    // Show room ID to user
+                    alert(`Room created! Your Room ID: ${roomId}\nShare this with your family members.`);
+                }
                 
                 // Switch to call interface
                 setupPanel.classList.add('hidden');
                 callInterface.classList.remove('hidden');
+                
+                // Simulate connection process
+                simulateConnection();
             }
+        }
+        
+        // Function to simulate connection process
+        function simulateConnection() {
+            connectionStatus.textContent = "Connecting...";
+            
+            setTimeout(() => {
+                connectionStatus.textContent = "Connected (Simulated)";
+                
+                // In a real app, this is where you'd set up WebRTC peer connection
+                // For this demo, we'll just show a message about the simulation
+                
+                // Show a message about the simulation
+                const simulationNote = document.createElement('div');
+                simulationNote.className = 'permission-note';
+                simulationNote.innerHTML = `
+                    <strong>Demo Note:</strong> This is a simulation showing your own camera feed. 
+                    In a real app, you would see other participants here. 
+                    To build a complete video conference app, you would need to implement WebRTC signaling.
+                `;
+                document.querySelector('.video-container').after(simulationNote);
+            }, 2000);
+        }
+        
+        // Create room button handler
+        createBtn.addEventListener('click', () => {
+            startCall(true);
         });
         
         // Join room button handler
-        joinBtn.addEventListener('click', async () => {
-            const roomId = prompt('Enter Room ID:');
-            if (roomId) {
-                // Request camera and microphone access
-                const hasAccess = await getMedia();
-                
-                if (hasAccess) {
-                    // Switch to call interface
-                    setupPanel.classList.add('hidden');
-                    callInterface.classList.remove('hidden');
-                    
-                    alert(`Joining room: ${roomId}`);
-                }
+        joinBtn.addEventListener('click', () => {
+            const enteredRoomId = prompt('Enter Room ID:');
+            if (enteredRoomId) {
+                roomId = enteredRoomId;
+                roomIdDisplay.textContent = roomId;
+                roomInfo.classList.remove('hidden');
+                startCall(false);
             }
         });
         
@@ -438,7 +447,12 @@
             
             // Reset video elements
             localVideo.srcObject = null;
-            remoteVideo.srcObject = null;
+            
+            // Remove simulation note if it exists
+            const simulationNote = document.querySelector('.permission-note');
+            if (simulationNote && simulationNote.textContent.includes('Demo Note')) {
+                simulationNote.remove();
+            }
         });
         
         // Toggle microphone
@@ -473,6 +487,21 @@
                     } else {
                         videoBtn.innerHTML = '<i class="fas fa-video"></i>';
                     }
+                }
+            }
+        });
+        
+        // Share room ID
+        shareBtn.addEventListener('click', () => {
+            if (roomId) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Join my family video call',
+                        text: `Join my family video call using Room ID: ${roomId}`,
+                        url: window.location.href
+                    }).catch(console.error);
+                } else {
+                    alert(`Share this Room ID with your family: ${roomId}`);
                 }
             }
         });
