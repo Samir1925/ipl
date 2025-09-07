@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Video Conference</title>
+    <title>WebRTC Video Conference</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -17,66 +17,68 @@
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             color: #fff;
             min-height: 100vh;
-            padding: 0;
-            overflow-x: hidden;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         
         .container {
             width: 100%;
-            max-width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            max-width: 1000px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 20px;
         }
         
         header {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 15px;
             text-align: center;
-            backdrop-filter: blur(5px);
-            position: relative;
-            z-index: 10;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            margin-bottom: 20px;
         }
         
         h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
         
         .subtitle {
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             opacity: 0.9;
         }
         
-        .main-content {
-            flex: 1;
+        .content {
             display: flex;
-            flex-direction: column;
-            padding: 15px;
-            overflow-y: auto;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .demo-section, .explanation {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
         }
         
         .video-container {
-            flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .video-wrapper {
+            flex: 1;
+            min-width: 250px;
             background: #000;
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             height: 200px;
-        }
-        
-        .video-wrapper.main-video {
-            height: 250px;
         }
         
         .video-wrapper::before {
@@ -100,23 +102,19 @@
         }
         
         .local-video {
-            transform: scaleX(-1); /* Mirror front camera */
+            transform: scaleX(-1);
         }
         
         .controls {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            padding: 15px;
             display: flex;
-            justify-content: space-around;
-            align-items: center;
-            backdrop-filter: blur(5px);
-            margin-bottom: 15px;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
         }
         
         .control-btn {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -124,34 +122,34 @@
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .control-btn:active {
-            transform: scale(0.95);
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .control-btn.end-call {
             background: #e74a3b;
         }
         
-        .control-btn.mic.muted {
-            background: #e74a3b;
+        .signaling {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
         }
         
-        .control-btn.video.off {
-            background: #e74a3b;
-        }
-        
-        .setup-panel {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            text-align: center;
-            backdrop-filter: blur(5px);
+        .code-block {
+            background: #2d2d2d;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
         }
         
         .btn {
@@ -165,84 +163,38 @@
             transition: all 0.3s;
             margin: 8px 0;
             width: 100%;
-            display: block;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        .btn:active {
-            transform: scale(0.98);
+        .btn:hover {
+            background: #2e59d9;
         }
         
-        .btn-end {
-            background: #e74a3b;
+        .step {
+            margin-bottom: 20px;
         }
         
-        .room-id-display {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #4e73df;
+            border-radius: 50%;
             text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            word-break: break-all;
-        }
-        
-        .instructions {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 10px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .instructions h2 {
-            color: #4e73df;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-        }
-        
-        .permission-note {
-            background: rgba(255, 193, 7, 0.2);
-            border-left: 4px solid #ffc107;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            line-height: 30px;
+            margin-right: 10px;
         }
         
         footer {
             text-align: center;
             padding: 15px;
             color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8rem;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            font-size: 0.9rem;
+            margin-top: 20px;
         }
         
-        /* Toggle states */
-        .hidden {
-            display: none;
-        }
-        
-        /* Responsive adjustments */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 400px;
-                margin: 0 auto;
-                min-height: 100vh;
-                border-left: 1px solid rgba(255, 255, 255, 0.1);
-                border-right: 1px solid rgba(255, 255, 255, 0.1);
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
             }
         }
     </style>
@@ -250,268 +202,281 @@
 <body>
     <div class="container">
         <header>
-            <h1>Family Video Chat</h1>
-            <p class="subtitle">Secure calls for your family</p>
+            <h1>WebRTC Video Conference</h1>
+            <p class="subtitle">A practical implementation guide</p>
         </header>
         
-        <div class="main-content">
-            <div id="setupPanel" class="setup-panel">
-                <h2>Start a Family Call</h2>
-                <p>Create a room or join an existing one</p>
-                <button id="createBtn" class="btn">
-                    <i class="fas fa-plus-circle"></i> Create Room
-                </button>
-                <button id="joinBtn" class="btn">
-                    <i class="fas fa-sign-in-alt"></i> Join Room
-                </button>
-                
-                <div class="permission-note">
-                    <p><strong>Note:</strong> This app will request camera and microphone access when you start or join a call.</p>
-                </div>
-            </div>
-            
-            <div id="callInterface" class="hidden">
-                <div id="roomInfo" class="room-id-display hidden">
-                    Room ID: <span id="roomIdDisplay">Loading...</span>
-                </div>
-                
+        <div class="content">
+            <div class="demo-section">
+                <h2><i class="fas fa-video"></i> Demo</h2>
                 <div class="video-container">
-                    <div class="video-wrapper main-video" data-name="Remote User">
-                        <video id="remoteVideo" autoplay playsinline></video>
-                    </div>
                     <div class="video-wrapper" data-name="You">
-                        <video id="localVideo" class="local-video" autoplay muted playsinline></video>
+                        <video id="localVideo" class="local-video" autoplay muted></video>
+                    </div>
+                    <div class="video-wrapper" data-name="Remote">
+                        <video id="remoteVideo" autoplay></video>
                     </div>
                 </div>
                 
                 <div class="controls">
-                    <button id="micBtn" class="control-btn mic">
-                        <i class="fas fa-microphone"></i>
+                    <button class="control-btn" id="startBtn" title="Start Camera">
+                        <i class="fas fa-play"></i>
                     </button>
-                    <button id="videoBtn" class="control-btn video">
-                        <i class="fas fa-video"></i>
+                    <button class="control-btn" id="callBtn" title="Create Offer" disabled>
+                        <i class="fas fa-phone"></i>
                     </button>
-                    <button id="endCallBtn" class="control-btn end-call">
+                    <button class="control-btn" id="hangupBtn" title="Hang Up" disabled>
                         <i class="fas fa-phone-slash"></i>
-                    </button>
-                    <button id="shareBtn" class="control-btn">
-                        <i class="fas fa-share-alt"></i>
                     </button>
                 </div>
                 
-                <div id="connectionStatus">Disconnected</div>
+                <div class="signaling">
+                    <h3><i class="fas fa-signal"></i> Signaling</h3>
+                    <textarea id="offerInput" placeholder="Paste offer here..." rows="4"></textarea>
+                    <button class="btn" id="receiveOfferBtn">Receive Offer</button>
+                    
+                    <textarea id="answerInput" placeholder="Paste answer here..." rows="4" readonly></textarea>
+                    <button class="btn" id="copyAnswerBtn">Copy Answer</button>
+                </div>
             </div>
             
-            <div class="instructions">
-                <h2>How to Use</h2>
-                <ol>
-                    <li>Click "Create Room" to start a call</li>
-                    <li>Share the room ID with family members</li>
-                    <li>They can join using the "Join Room" button</li>
-                    <li>Allow camera & microphone access when prompted</li>
-                </ol>
-                <p class="permission-note">
-                    <strong>Note:</strong> This is a demo that shows your own camera feed. 
-                    For actual video calls, you would need to implement WebRTC signaling.
-                </p>
+            <div class="explanation">
+                <h2><i class="fas fa-info-circle"></i> How WebRTC Works</h2>
+                
+                <div class="step">
+                    <h3><span class="step-number">1</span>Get User Media</h3>
+                    <p>Access the user's camera and microphone using <code>getUserMedia()</code>:</p>
+                    <div class="code-block">
+                        navigator.mediaDevices.getUserMedia({ 
+                            video: true, 
+                            audio: true 
+                        }).then(stream => {
+                            localVideo.srcObject = stream;
+                        });
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">2</span>Create Peer Connection</h3>
+                    <p>Establish a connection using STUN servers for NAT traversal:</p>
+                    <div class="code-block">
+                        const configuration = {
+                            iceServers: [
+                                { urls: 'stun:stun.l.google.com:19302' },
+                                { urls: 'stun:stun1.l.google.com:19302' }
+                            ]
+                        };
+                        
+                        const peerConnection = new RTCPeerConnection(configuration);
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">3</span>Exchange Session Descriptions</h3>
+                    <p>Use signaling to exchange offers and answers between peers:</p>
+                    <div class="code-block">
+                        // Create offer
+                        const offer = await peerConnection.createOffer();
+                        await peerConnection.setLocalDescription(offer);
+                        
+                        // Send offer to other peer (via signaling server)
+                        signalingServer.send(JSON.stringify(offer));
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">4</span>Connect Media Streams</h3>
+                    <p>Add local stream to connection and handle incoming remote stream:</p>
+                    <div class="code-block">
+                        // Add local stream to connection
+                        localStream.getTracks().forEach(track => {
+                            peerConnection.addTrack(track, localStream);
+                        });
+                        
+                        // Handle incoming remote stream
+                        peerConnection.ontrack = event => {
+                            remoteVideo.srcObject = event.streams[0];
+                        };
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">5</span>Handle ICE Candidates</h3>
+                    <p>Exchange network information using ICE candidates:</p>
+                    <div class="code-block">
+                        // Send ICE candidates to other peer
+                        peerConnection.onicecandidate = event => {
+                            if (event.candidate) {
+                                signalingServer.send(JSON.stringify({
+                                    type: 'candidate',
+                                    candidate: event.candidate
+                                }));
+                            }
+                        };
+                    </div>
+                </div>
             </div>
         </div>
         
         <footer>
-            <p>Made for families ❤️ | Using WebRTC technology</p>
+            <p>WebRTC Implementation Example | Not a real signaling server (for demonstration only)</p>
         </footer>
     </div>
 
     <script>
         // DOM elements
-        const setupPanel = document.getElementById('setupPanel');
-        const callInterface = document.getElementById('callInterface');
-        const roomInfo = document.getElementById('roomInfo');
-        const roomIdDisplay = document.getElementById('roomIdDisplay');
-        const createBtn = document.getElementById('createBtn');
-        const joinBtn = document.getElementById('joinBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
-        const micBtn = document.getElementById('micBtn');
-        const videoBtn = document.getElementById('videoBtn');
-        const shareBtn = document.getElementById('shareBtn');
+        const startBtn = document.getElementById('startBtn');
+        const callBtn = document.getElementById('callBtn');
+        const hangupBtn = document.getElementById('hangupBtn');
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
-        const connectionStatus = document.getElementById('connectionStatus');
+        const offerInput = document.getElementById('offerInput');
+        const answerInput = document.getElementById('answerInput');
+        const receiveOfferBtn = document.getElementById('receiveOfferBtn');
+        const copyAnswerBtn = document.getElementById('copyAnswerBtn');
         
-        // Variables to track media streams
+        // Variables
         let localStream = null;
-        let roomId = null;
+        let peerConnection = null;
+        const configuration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
         
-        // Function to request camera and microphone access
-        async function getMedia() {
+        // Start button click handler
+        startBtn.addEventListener('click', async () => {
             try {
-                // Request camera and microphone access
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: { ideal: 640 },
-                        height: { ideal: 480 }
-                    },
-                    audio: true
+                // Get user media
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
                 });
                 
-                // Set the local video source to the stream
-                localVideo.srcObject = stream;
-                localStream = stream;
+                // Set local video source
+                localVideo.srcObject = localStream;
                 
-                return true;
+                // Enable call button
+                callBtn.disabled = false;
+                startBtn.disabled = true;
+                
+                // Initialize peer connection
+                createPeerConnection();
+                
             } catch (error) {
                 console.error('Error accessing media devices:', error);
                 alert('Could not access your camera and microphone. Please make sure they are available and permissions are granted.');
-                return false;
-            }
-        }
-        
-        // Function to generate a room ID
-        function generateRoomId() {
-            return Math.random().toString(36).substring(2, 8).toUpperCase();
-        }
-        
-        // Function to start a call
-        async function startCall(isCreator) {
-            // Request camera and microphone access
-            const hasAccess = await getMedia();
-            
-            if (hasAccess) {
-                if (isCreator) {
-                    // Generate room ID for the creator
-                    roomId = generateRoomId();
-                    roomIdDisplay.textContent = roomId;
-                    roomInfo.classList.remove('hidden');
-                    
-                    // Show room ID to user
-                    alert(`Room created! Your Room ID: ${roomId}\nShare this with your family members.`);
-                }
-                
-                // Switch to call interface
-                setupPanel.classList.add('hidden');
-                callInterface.classList.remove('hidden');
-                
-                // Simulate connection process
-                simulateConnection();
-            }
-        }
-        
-        // Function to simulate connection process
-        function simulateConnection() {
-            connectionStatus.textContent = "Connecting...";
-            
-            setTimeout(() => {
-                connectionStatus.textContent = "Connected (Simulated)";
-                
-                // In a real app, this is where you'd set up WebRTC peer connection
-                // For this demo, we'll just show a message about the simulation
-                
-                // Show a message about the simulation
-                const simulationNote = document.createElement('div');
-                simulationNote.className = 'permission-note';
-                simulationNote.innerHTML = `
-                    <strong>Demo Note:</strong> This is a simulation showing your own camera feed. 
-                    In a real app, you would see other participants here. 
-                    To build a complete video conference app, you would need to implement WebRTC signaling.
-                `;
-                document.querySelector('.video-container').after(simulationNote);
-            }, 2000);
-        }
-        
-        // Create room button handler
-        createBtn.addEventListener('click', () => {
-            startCall(true);
-        });
-        
-        // Join room button handler
-        joinBtn.addEventListener('click', () => {
-            const enteredRoomId = prompt('Enter Room ID:');
-            if (enteredRoomId) {
-                roomId = enteredRoomId;
-                roomIdDisplay.textContent = roomId;
-                roomInfo.classList.remove('hidden');
-                startCall(false);
             }
         });
         
-        // End call button handler
-        endCallBtn.addEventListener('click', () => {
-            // Stop all media tracks
+        // Call button click handler
+        callBtn.addEventListener('click', async () => {
+            // Create offer
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            
+            // Display offer in textarea (simulating signaling)
+            offerInput.value = JSON.stringify(offer);
+            
+            // Enable hangup button
+            hangupBtn.disabled = false;
+            callBtn.disabled = true;
+        });
+        
+        // Hangup button click handler
+        hangupBtn.addEventListener('click', () => {
+            // Close peer connection
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            // Stop all tracks
             if (localStream) {
                 localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
             }
-            
-            // Switch back to setup panel
-            callInterface.classList.add('hidden');
-            setupPanel.classList.remove('hidden');
             
             // Reset video elements
             localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
             
-            // Remove simulation note if it exists
-            const simulationNote = document.querySelector('.permission-note');
-            if (simulationNote && simulationNote.textContent.includes('Demo Note')) {
-                simulationNote.remove();
+            // Reset UI
+            startBtn.disabled = false;
+            callBtn.disabled = true;
+            hangupBtn.disabled = true;
+            offerInput.value = '';
+            answerInput.value = '';
+        });
+        
+        // Receive offer button click handler
+        receiveOfferBtn.addEventListener('click', async () => {
+            try {
+                const offer = JSON.parse(offerInput.value);
+                
+                if (!peerConnection) {
+                    createPeerConnection();
+                }
+                
+                // Set remote description
+                await peerConnection.setRemoteDescription(offer);
+                
+                // Create answer
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                
+                // Display answer in textarea
+                answerInput.value = JSON.stringify(answer);
+                
+            } catch (error) {
+                console.error('Error processing offer:', error);
+                alert('Invalid offer format. Please check the offer and try again.');
             }
         });
         
-        // Toggle microphone
-        micBtn.addEventListener('click', () => {
+        // Copy answer button click handler
+        copyAnswerBtn.addEventListener('click', () => {
+            answerInput.select();
+            document.execCommand('copy');
+            alert('Answer copied to clipboard!');
+        });
+        
+        // Create peer connection
+        function createPeerConnection() {
+            // Close existing connection if any
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            
+            // Create new peer connection
+            peerConnection = new RTCPeerConnection(configuration);
+            
+            // Add local stream tracks to peer connection
             if (localStream) {
-                const audioTracks = localStream.getAudioTracks();
-                if (audioTracks.length > 0) {
-                    const enabled = audioTracks[0].enabled;
-                    audioTracks[0].enabled = !enabled;
-                    
-                    micBtn.classList.toggle('muted');
-                    if (micBtn.classList.contains('muted')) {
-                        micBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
-                    } else {
-                        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-                    }
-                }
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
             }
-        });
-        
-        // Toggle video
-        videoBtn.addEventListener('click', () => {
-            if (localStream) {
-                const videoTracks = localStream.getVideoTracks();
-                if (videoTracks.length > 0) {
-                    const enabled = videoTracks[0].enabled;
-                    videoTracks[0].enabled = !enabled;
-                    
-                    videoBtn.classList.toggle('off');
-                    if (videoBtn.classList.contains('off')) {
-                        videoBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
-                    } else {
-                        videoBtn.innerHTML = '<i class="fas fa-video"></i>';
-                    }
+            
+            // Handle remote stream
+            peerConnection.ontrack = event => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+            
+            // Handle ICE candidates
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    // In a real app, you would send this to the other peer
+                    console.log('New ICE candidate:', event.candidate);
                 }
-            }
-        });
-        
-        // Share room ID
-        shareBtn.addEventListener('click', () => {
-            if (roomId) {
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Join my family video call',
-                        text: `Join my family video call using Room ID: ${roomId}`,
-                        url: window.location.href
-                    }).catch(console.error);
-                } else {
-                    alert(`Share this Room ID with your family: ${roomId}`);
-                }
-            }
-        });
-        
-        // Initialize page
-        window.addEventListener('load', () => {
-            // Set initial video background
-            localVideo.style.backgroundColor = '#222';
-            remoteVideo.style.backgroundColor = '#222';
-        });
+            };
+            
+            // Handle connection state changes
+            peerConnection.onconnectionstatechange = () => {
+                console.log('Connection state:', peerConnection.connectionState);
+            };
+        }
     </script>
 </body>
 </html>
