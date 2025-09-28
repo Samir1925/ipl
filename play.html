@@ -1,153 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Live Stream Player</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-  <meta name="referrer" content="no-referrer"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>allinone Player</title>
+
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+  <!-- Hls.js -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <!-- Plyr JS -->
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
   <style>
-    body {
-      background-color: #000000;
+    html, body {
       margin: 0;
       padding: 0;
-      overflow: hidden;
-    }
-    html, body {
       height: 100%;
+      width: 100%;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    #playerWrapper {
+      height: 90vh;
+      width: 100%;
+      max-height: 90vh;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    #playerContainer {
+      width: 100%;
+      height: 100%;
+      position: relative;
     }
     video {
       width: 100%;
       height: 100%;
-      max-width: 100%;
+      object-fit: contain;
+      background: #000;
     }
     .plyr {
+      width: 100%;
       height: 100%;
     }
-
-    /* Loader Styles */
-    #loader {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+    /* Custom controls styling */
+    .plyr__controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      transition: opacity 0.3s ease;
     }
-    #loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 6px solid rgba(255,255,255,0.2);
-      border-top: 6px solid #ff004c;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
-    .loading-text {
+    /* Text Below Player */
+    #infoText {
+      height: 10vh;
+      text-align: center;
       color: #fff;
-      font-family: Arial, sans-serif;
-      font-size: 16px;
-      letter-spacing: 1px;
-      animation: pulse 1.5s infinite;
+      font-size: 23px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: glowBlink 2s infinite;
+      z-index: 1;
     }
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+    /* Glow Blinking */
+    @keyframes glowBlink {
+      0%, 100% {
+        text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+        opacity: 1;
+      }
+      50% {
+        text-shadow: none;
+        opacity: 0.6;
+      }
     }
   </style>
 </head>
-
+<script type='text/javascript' src='//staunchtownsegg.com/f7/bc/6b/f7bc6b128423106720db2ba226b22541.js'></script>
 <body>
-  <!-- Loader -->
-  <div id="loader">
-    <div class="spinner"></div>
-    <div class="loading-text">Loading Stream...</div>
+  <!-- Video Player -->
+  <div id="playerWrapper">
+    <div id="playerContainer">
+      <video id="player" playsinline controls autoplay></video>
+    </div>
   </div>
 
-  <!-- Player -->
-  <video id="player" autoplay muted playsinline controls crossorigin></video>
+  <!-- Info Text -->
+  <div id="infoText">⚡ First 10 second may be buffer please wait⚡</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.4/dist/hls.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.min.js"></script>
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('player');
-    const loader = document.getElementById('loader');
-    const streamUrl = new URLSearchParams(window.location.search).get("url");
-
-    if (!streamUrl) {
-      document.body.innerHTML = "<p>No stream URL provided (?stream=)</p>";
-      return;
-    }
-
-    function hideLoader() {
-      loader.classList.add('hidden');
-    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get("url");
+    const video = document.getElementById("player");
+    let controlsTimeout;
+    const controlsHideDelay = 3000;
+    let hls;
 
     if (Hls.isSupported()) {
-      const hls = new Hls({ maxMaxBufferLength: 100 });
-      hls.loadSource(streamUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        const availableQualities = hls.levels.map(level => level.height).filter(Boolean).sort((a, b) => b - a);
-        const defaultQuality = availableQualities.includes(1080) ? 1080 : (availableQualities[0] || 360);
-
-        const player = new Plyr(video, {
-          autoplay: true,
-          muted: true,
-          controls: ['play-large', 'play', 'mute', 'volume', 'settings', 'fullscreen'],
-          quality: {
-            default: defaultQuality,
-            options: availableQualities,
-            forced: true,
-            onChange: (quality) => {
-              hls.levels.forEach((level, levelIndex) => {
-                if (level.height === quality) {
-                  hls.currentLevel = levelIndex;
-                }
-              });
-            }
-          }
-        });
-
-        // Try auto play
-        video.play().catch(err => console.warn("Autoplay blocked:", err));
-
-        // Hide loader when video starts playing
-        video.addEventListener('playing', hideLoader);
-
-        // Orientation lock
-        document.addEventListener('fullscreenchange', () => {
-          if (document.fullscreenElement) {
-            if (screen.orientation && screen.orientation.lock) {
-              screen.orientation.lock('landscape').catch(err => {
-                console.error('Error locking orientation:', err);
-              });
-            }
-          }
-        });
+      hls = new Hls({
+        maxBufferLength: 60,
+        maxMaxBufferLength: 120,
+        liveSyncDuration: 5,
+        liveMaxLatencyDuration: 30,
+        backBufferLength: 30,
+        lowLatencyMode: true,
       });
+
+      hls.loadSource(videoUrl);
+      hls.attachMedia(video);
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = streamUrl;
-      const player = new Plyr(video, { autoplay: true, muted: true });
-      video.play().catch(err => console.warn("Autoplay blocked:", err));
-      video.addEventListener('playing', hideLoader);
-    } else {
-      document.body.innerHTML = '<p>Your browser does not support HLS playback.</p>';
+      video.src = videoUrl;
     }
-  });
+
+    const player = new Plyr(video, {
+      autoplay: true,
+      controls: [
+        'play-large', 'play','progress','current-time','mute',
+        'volume','settings','pip','airplay','fullscreen'
+      ],
+      settings: ['quality', 'speed'],
+      hideControls: true
+    });
+
+    if (Hls.isSupported()) {
+      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+        const availableQualities = hls.levels.map((l, i) => ({
+          id: i,
+          name: l.height ? `${l.height}p` : `${Math.floor(l.bitrate / 1000)}kbps`
+        }));
+
+        // Add AUTO option
+        availableQualities.unshift({id: -1, name: "Auto"});
+
+        player.options.quality = {
+          default: -1,
+          options: availableQualities.map(q => q.id),
+          forced: true,
+          onChange: (quality) => {
+            if (quality === -1) {
+              hls.currentLevel = -1; // Auto
+            } else {
+              hls.currentLevel = quality;
+            }
+          }
+        };
+
+        // Add labels for Plyr menu
+        const qualityOptions = {};
+        availableQualities.forEach(q => {
+          qualityOptions[q.id] = q.name;
+        });
+        player.options.i18n = player.options.i18n || {};
+        player.options.i18n.qualityLabel = qualityOptions;
+
+        // Refresh Plyr menu
+        player.elements.quality = null;
+        player.build.call(player, 'quality');
+      });
+    }
+
+    // --- Control hide/show ---
+    function showControls() {
+      const controls = document.querySelector('.plyr__controls');
+      if (controls) {
+        controls.style.opacity = '1';
+        controls.style.pointerEvents = 'auto';
+      }
+      resetControlsTimer();
+    }
+    function hideControls() {
+      const controls = document.querySelector('.plyr__controls');
+      if (controls && !player.paused) {
+        controls.style.opacity = '0';
+        controls.style.pointerEvents = 'none';
+      }
+    }
+    function resetControlsTimer() {
+      clearTimeout(controlsTimeout);
+      controlsTimeout = setTimeout(hideControls, controlsHideDelay);
+    }
+    player.elements.container.addEventListener('mousemove', showControls);
+    player.elements.container.addEventListener('touchstart', showControls);
+    player.elements.container.addEventListener('mouseleave', hideControls);
+
+    player.on('ready', () => {
+      showControls();
+      resetControlsTimer();
+    });
+    player.on('play', showControls);
+    player.on('pause', showControls);
   </script>
+
 </body>
 </html>
