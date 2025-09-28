@@ -289,7 +289,7 @@
                 matchCard.className = 'match-card';
                 matchCard.onclick = () => {
                     // Redirect to play page with video URL
-                    window.location.href = `play?stream=${encodeURIComponent(match.dai_url)}`;
+                    window.location.href = `play?stream=${encodeURIComponent(match.video_url)}`;
                 };
                 
                 matchCard.innerHTML = `
