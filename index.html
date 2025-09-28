@@ -3,38 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SonyLiv — TV Channel Browser</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Fancode — Premium Sports Streaming</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <style>
         :root {
-            --primary: #0078d7;
-            --primary-dark: #005a9e;
-            --primary-light: #4ca6ff;
-            --secondary: #6b3fa0;
-            --accent: #ff6b6b;
             --bg-primary: #0f172a;
             --bg-secondary: #1e293b;
             --bg-card: rgba(30, 41, 59, 0.8);
             --bg-glass: rgba(255, 255, 255, 0.05);
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --live: #ff4757;
-            --upcoming: #ffa502;
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #06b6d4;
+            --accent-hover: #22d3ee;
+            --live: #ef4444;
+            --upcoming: #f59e0b;
+            --success: #10b981;
             --border: rgba(255, 255, 255, 0.08);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
             --transition: all 0.3s ease;
             --radius: 12px;
             --radius-sm: 8px;
             --backdrop: blur(10px);
             color-scheme: dark;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
         }
         
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
         
         body {
@@ -70,7 +69,7 @@
             width: 2.75rem;
             height: 2.75rem;
             border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -80,19 +79,17 @@
         }
         
         .brand-text h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.25rem;
+            font-weight: 600;
             margin: 0;
             line-height: 1.2;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
         
         .brand-text p {
             margin: 0;
             color: var(--text-secondary);
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
+            display: none;
         }
         
         /* Controls */
@@ -119,8 +116,8 @@
         
         .search:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
         }
         
         .search-icon {
@@ -132,7 +129,7 @@
             pointer-events: none;
         }
         
-        .select {
+        .select, .toggle {
             padding: 0.75rem 1rem;
             border-radius: var(--radius);
             background: var(--bg-card);
@@ -149,10 +146,10 @@
             padding-right: 2.5rem;
         }
         
-        .select:focus {
+        .select:focus, .toggle:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
         }
         
         /* Main Content */
@@ -177,19 +174,13 @@
             border: 1px solid var(--border);
             backdrop-filter: var(--backdrop);
             min-width: 160px;
-            transition: var(--transition);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
         }
         
         .stat-value {
             font-size: 1.5rem;
             font-weight: 600;
             margin-bottom: 0.25rem;
-            color: var(--primary);
+            color: var(--accent);
         }
         
         .stat-label {
@@ -223,13 +214,13 @@
         .card:not(.upcoming):hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow);
-            border-color: var(--primary-light);
+            border-color: rgba(255, 255, 255, 0.12);
         }
         
         .thumb {
             position: relative;
             padding-top: 56.25%;
-            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             overflow: hidden;
         }
         
@@ -254,7 +245,7 @@
             border-radius: 999px;
             font-size: 0.75rem;
             font-weight: 500;
-            background: var(--bg-glass);
+            background: var(--bg-overlay);
             backdrop-filter: var(--backdrop);
             color: var(--text-primary);
             z-index: 2;
@@ -282,9 +273,9 @@
         }
         
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(255, 71, 87, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
         
         .card-body {
@@ -335,6 +326,87 @@
             border-top: 1px solid var(--border);
         }
         
+        /* Player */
+        .player {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .player-header-content {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 0.625rem 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: var(--bg-glass);
+            border-color: var(--accent);
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+        
+        .player-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        
+        .player-iframe {
+            width: 100%;
+            max-width: 1000px;
+            height: 70vh;
+            border: 0;
+            border-radius: var(--radius);
+            background: #000;
+            box-shadow: var(--shadow);
+        }
+        
+        .player-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            padding: 1.5rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+        
         /* Loading and empty states */
         .loading, .empty {
             grid-column: 1 / -1;
@@ -349,38 +421,13 @@
             height: 2rem;
             border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            border-top-color: var(--primary);
+            border-top-color: var(--accent);
             animation: spin 1s ease-in-out infinite;
             margin-bottom: 1rem;
         }
         
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-        
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--radius);
-            background: var(--primary);
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            box-shadow: var(--shadow);
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
         }
         
         /* Responsive Design */
@@ -401,11 +448,15 @@
                 margin-bottom: 0.75rem;
             }
             
+            .brand-text p {
+                display: block;
+            }
+            
             .controls {
                 flex-direction: column;
             }
             
-            .search, .select {
+            .search, .select, .toggle {
                 width: 100%;
             }
             
@@ -427,6 +478,14 @@
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
+            
+            .player-content {
+                padding: 1rem;
+            }
+            
+            .player-iframe {
+                height: 50vh;
+            }
         }
     </style>
 </head>
@@ -434,17 +493,24 @@
     <header>
         <div class="brand">
             <div class="logo">
-                <i class="fas fa-tv"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                    <path d="M2 17l10 5 10-5"></path>
+                    <path d="M2 12l10 5 10-5"></path>
+                </svg>
             </div>
             <div class="brand-text">
-                <h1>SonyLiv TV</h1>
-                <p>Live & upcoming channels</p>
+                <h1>Fancode TV</h1>
+                <p>Premium sports streaming experience</p>
             </div>
         </div>
         <div class="controls">
             <div class="search-wrapper">
                 <span class="search-icon">
-                    <i class="fas fa-search"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
                 </span>
                 <input id="q" class="search" placeholder="Search events, teams, or tournaments...">
             </div>
@@ -479,11 +545,11 @@
     </main>
     
     <footer>
-        <p>Data provided from SonyLiv JSON feed. © 2023 SonyLiv — Premium Entertainment Streaming</p>
+        <p>Data provided from a public JSON feed. © 2023 Fancode TV — Premium Sports Streaming</p>
     </footer>
 
     <script>
-        const DATA_URL = 'https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json';
+        const DATA_URL = 'https://raw.githubusercontent.com/drmlive/fancode-live-events/main/fancode.json';
 
         const $ = (s, root = document) => root.querySelector(s);
         const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
@@ -499,7 +565,7 @@
                 $('#grid').innerHTML = `
                     <div class="loading">
                         <div class="loading-spinner"></div>
-                        <p>Loading SonyLiv events...</p>
+                        <p>Loading live events...</p>
                     </div>
                 `;
                 
@@ -510,7 +576,7 @@
                 console.error(e);
                 $('#grid').innerHTML = `
                     <div class="empty">
-                        <p>Failed to load SonyLiv events. Please try again later.</p>
+                        <p>Failed to load events. Please try again later.</p>
                     </div>
                 `;
                 return null;
@@ -529,7 +595,7 @@
             a.innerHTML = `
                 <div class="thumb">
                     <img loading="lazy" src="${match.src || ''}" alt="${escapeHtml(match.title || match.match_name || '')}" onerror="this.style.opacity='0.2'">
-                    <div class="badge">${escapeHtml(match.event_category || 'Entertainment')}</div>
+                    <div class="badge">${escapeHtml(match.event_category || 'Sports')}</div>
                     <div class="status ${match.status.toLowerCase() === 'live' ? 'live' : 'upcoming'}">${escapeHtml(match.status || '')}</div>
                 </div>
                 <div class="card-body">
@@ -554,7 +620,7 @@
                         showNotification('No stream URL available for this event.', 'error');
                         return; 
                     }
-                    // Redirect to play?url= format
+                    // Fixed redirect to use play?url= format
                     const target = new URL(location.href);
                     target.pathname = 'play';
                     target.search = `?url=${encodeURIComponent(url)}`;
@@ -614,7 +680,19 @@
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
             notification.textContent = message;
-            notification.style.background = type === 'error' ? 'var(--live)' : 'var(--primary)';
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 1.5rem;
+                right: 1.5rem;
+                padding: 0.75rem 1.25rem;
+                border-radius: var(--radius);
+                background: ${type === 'error' ? 'var(--live)' : 'var(--accent)'};
+                color: white;
+                font-weight: 500;
+                z-index: 1000;
+                box-shadow: var(--shadow);
+                animation: slideIn 0.3s ease;
+            `;
             
             document.body.appendChild(notification);
             
@@ -641,7 +719,7 @@
                 if (filtered.length === 0) {
                     grid.innerHTML = `
                         <div class="empty">
-                            <p>No SonyLiv events match your filters. Try adjusting your search.</p>
+                            <p>No events match your filters. Try adjusting your search.</p>
                         </div>
                     `;
                     return;
@@ -663,8 +741,95 @@
             refresh();
         }
 
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', render);
+        function showPlayerFromParam() {
+            const url = getUrlParam('url');
+            if (!url) return false;
+            
+            document.body.innerHTML = '';
+            document.body.className = 'player';
+            
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.minHeight = '100vh';
+            
+            // Header
+            const header = document.createElement('div');
+            header.className = 'player-header';
+            header.innerHTML = `
+                <div class="player-header-content">
+                    <button id="backBtn" class="btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back to listings
+                    </button>
+                    <div style="font-weight: 600">Live Stream</div>
+                </div>
+                <div style="color: var(--text-muted); font-size: 0.875rem">
+                    ${escapeHtml(url.length > 40 ? url.substring(0, 40) + '...' : url)}
+                </div>
+            `;
+            
+            // Player content
+            const content = document.createElement('div');
+            content.className = 'player-content';
+            
+            const iframe = document.createElement('iframe');
+            iframe.className = 'player-iframe';
+            iframe.src = url;
+            iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+            iframe.loading = 'eager';
+            content.appendChild(iframe);
+            
+            // Actions
+            const actions = document.createElement('div');
+            actions.className = 'player-actions';
+            actions.innerHTML = `
+                <button id="openNative" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Open in new tab
+                </button>
+                <button id="reloadPlayer" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6M1 20v-6h6"></path>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    Reload player
+                </button>
+            `;
+            
+            wrapper.appendChild(header);
+            wrapper.appendChild(content);
+            wrapper.appendChild(actions);
+            document.body.appendChild(wrapper);
+            
+            // Event listeners
+            $('#backBtn').addEventListener('click', () => {
+                // Go back to the main page
+                location.href = location.origin + location.pathname;
+            });
+            
+            $('#openNative').addEventListener('click', () => {
+                window.open(url, '_blank');
+            });
+            
+            $('#reloadPlayer').addEventListener('click', () => {
+                iframe.src = iframe.src;
+            });
+            
+            return true;
+        }
+
+        (function() {
+            const isPlayer = showPlayerFromParam();
+            if (isPlayer) return;
+            render();
+        })();
     </script>
 </body>
 </html>
