@@ -3,710 +3,668 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SonyLiv Live Matches</title>
-    <!-- HLS.js library for playing HLS streams -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>SonyLiv — TV Channel Browser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #0078d7;
+            --primary-dark: #005a9e;
+            --primary-light: #4ca6ff;
+            --secondary: #6b3fa0;
+            --accent: #ff6b6b;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --live: #ff4757;
+            --upcoming: #ffa502;
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --backdrop: blur(10px);
+            color-scheme: dark;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0a0f1d 100%);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
+        /* Header Styles */
         header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #ff6b6b, #feca57);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .last-update {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 15px;
-        }
-        
-        .telegram-link {
-            display: inline-block;
-            background: #0088cc;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .telegram-link:hover {
-            background: #0077b5;
-            transform: translateY(-2px);
-        }
-        
-        .filters {
+            padding: 1.25rem 1.5rem;
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .filter-btn.active, .filter-btn:hover {
-            background: #ff6b6b;
-        }
-        
-        .matches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .match-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-        }
-        
-        .match-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.08);
-        }
-        
-        .match-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
-        }
-        
-        .match-content {
-            padding: 20px;
-        }
-        
-        .match-category {
-            display: inline-block;
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-        
-        .match-name {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        
-        .match-event {
-            color: #aaa;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-        
-        .match-details {
-            display: flex;
+            gap: 1rem;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-        }
-        
-        .live-badge {
-            background: #ff3838;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .live-badge::before {
-            content: "";
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .language {
-            background: rgba(254, 202, 87, 0.2);
-            color: #feca57;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-        
-        /* Player Modal Styles */
-        .player-modal {
-            display: none;
-            position: fixed;
+            background: var(--bg-glass);
+            backdrop-filter: var(--backdrop);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            z-index: 100;
         }
         
-        .player-container {
-            width: 95%;
-            max-width: 1000px;
-            background: #1e1e2e;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .player-header {
+        .brand {
             display: flex;
-            justify-content: space-between;
+            gap: 0.75rem;
             align-items: center;
-            padding: 15px 20px;
-            background: #252540;
-            border-bottom: 1px solid #333;
         }
         
-        .player-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
+        .logo {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             color: white;
+            box-shadow: var(--shadow);
+        }
+        
+        .brand-text h1 {
             font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .brand-text p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* Controls */
+        .controls {
             display: flex;
+            gap: 0.75rem;
             align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
         }
         
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .video-container {
+        .search-wrapper {
             position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
         }
         
-        .video-player {
+        .search {
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            min-width: 240px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+        
+        .search:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+        }
+        
+        .search-icon {
             position: absolute;
-            top: 0;
-            left: 0;
+            left: 0.875rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .select {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+        
+        .select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+        }
+        
+        /* Main Content */
+        main {
+            padding: 1.5rem;
+            max-width: 1440px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            backdrop-filter: var(--backdrop);
+            min-width: 160px;
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            backdrop-filter: var(--backdrop);
+            position: relative;
+        }
+        
+        .card.upcoming {
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+        
+        .card:not(.upcoming):hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+        }
+        
+        .thumb {
+            position: relative;
+            padding-top: 56.25%;
+            background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
+            overflow: hidden;
+        }
+        
+        .thumb img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
         
-        .player-controls {
-            padding: 15px 20px;
-            background: #252540;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
+        .card:hover .thumb img {
+            transform: scale(1.05);
         }
         
-        .control-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+        .badge {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            padding: 0.375rem 0.625rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--bg-glass);
+            backdrop-filter: var(--backdrop);
+            color: var(--text-primary);
+            z-index: 2;
+        }
+        
+        .status {
+            position: absolute;
+            right: 0.75rem;
+            top: 0.75rem;
+            padding: 0.375rem 0.625rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            z-index: 2;
         }
         
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .status.live {
+            background: var(--live);
+            animation: pulse 2s infinite;
         }
         
-        .play-btn {
-            background: #ff6b6b;
-        }
-        
-        .play-btn:hover {
-            background: #ff5252;
-        }
-        
-        .player-status {
-            color: #aaa;
-            font-size: 0.9rem;
-            padding: 0 10px;
-        }
-        
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            color: #aaa;
-            font-size: 1.2rem;
-        }
-        
-        .error-message {
-            text-align: center;
-            padding: 40px;
-            color: #ff6b6b;
-            font-size: 1.1rem;
+        .status.upcoming {
+            background: var(--upcoming);
         }
         
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
         }
         
-        .no-matches {
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .title {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            margin: 0 0 0.5rem 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .meta {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+        
+        .teams {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .vs {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 1.25rem 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.8125rem;
             text-align: center;
-            padding: 40px;
-            font-size: 1.2rem;
-            color: #aaa;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Loading and empty states */
+        .loading, .empty {
             grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
         }
         
         @media (max-width: 768px) {
-            .matches-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .player-container {
-                width: 98%;
-            }
-            
-            .player-controls {
+            header {
                 flex-direction: column;
                 align-items: stretch;
+                padding: 1rem;
             }
             
-            .control-buttons {
-                display: flex;
-                justify-content: space-between;
+            .brand {
+                margin-bottom: 0.75rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .search, .select {
+                width: 100%;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+            
+            .stat-card {
                 width: 100%;
             }
         }
         
-        @media (max-width: 480px) {
-            .matches-grid {
+        @media (max-width: 640px) {
+            main {
+                padding: 1rem;
+            }
+            
+            .grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .filters {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .filter-btn {
-                width: 80%;
+                gap: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>SonyLiv Live Matches</h1>
-            <div class="last-update" id="lastUpdate">Last Updated: Loading...</div>
-            <a href="https://t.me/+rQTz5VL8CRpjNTZl" class="telegram-link" target="_blank">Join Telegram Channel</a>
-        </header>
-        
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">All Matches</button>
-            <button class="filter-btn" data-filter="Cricket">Cricket</button>
-            <button class="filter-btn" data-filter="Football">Football</button>
+    <header>
+        <div class="brand">
+            <div class="logo">
+                <i class="fas fa-tv"></i>
+            </div>
+            <div class="brand-text">
+                <h1>SonyLiv TV</h1>
+                <p>Live & upcoming channels</p>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="search-wrapper">
+                <span class="search-icon">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input id="q" class="search" placeholder="Search events, teams, or tournaments...">
+            </div>
+            <select id="category" class="select">
+                <option value="all">All Categories</option>
+            </select>
+            <select id="status" class="select">
+                <option value="all">All Statuses</option>
+                <option value="LIVE">Live Now</option>
+                <option value="UPCOMING">Upcoming</option>
+            </select>
+        </div>
+    </header>
+    
+    <main id="app">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="total-count">0</div>
+                <div class="stat-label">Total Events</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="live-count">0</div>
+                <div class="stat-label">Live Now</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="upcoming-count">0</div>
+                <div class="stat-label">Upcoming</div>
+            </div>
         </div>
         
-        <div class="matches-grid" id="matchesGrid">
-            <div class="loading">Loading matches...</div>
-        </div>
-    </div>
-
-    <!-- Player Modal -->
-    <div class="player-modal" id="playerModal">
-        <div class="player-container">
-            <div class="player-header">
-                <div class="player-title" id="playerTitle">Match Stream</div>
-                <button class="close-btn" id="closePlayer">&times;</button>
-            </div>
-            <div class="video-container">
-                <video class="video-player" id="videoPlayer" controls crossorigin="anonymous"></video>
-            </div>
-            <div class="player-controls">
-                <div class="control-buttons">
-                    <button class="control-btn play-btn" id="playPauseBtn">
-                        <span>Play</span>
-                    </button>
-                    <button class="control-btn" id="muteBtn">
-                        <span>Mute</span>
-                    </button>
-                    <button class="control-btn" id="fullscreenBtn">
-                        <span>Fullscreen</span>
-                    </button>
-                </div>
-                <div class="player-status" id="playerStatus">Ready to play</div>
-            </div>
-        </div>
-    </div>
+        <div id="grid" class="grid" aria-live="polite"></div>
+    </main>
+    
+    <footer>
+        <p>Data provided from SonyLiv JSON feed. © 2023 SonyLiv — Premium Entertainment Streaming</p>
+    </footer>
 
     <script>
-        // JSON data URL
-        const jsonUrl = 'https://raw.githubusercontent.com/drmlive/fancode-live-events/main/fancode.json';
-        
-        // DOM elements
-        const matchesGrid = document.getElementById('matchesGrid');
-        const lastUpdate = document.getElementById('lastUpdate');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const playerModal = document.getElementById('playerModal');
-        const videoPlayer = document.getElementById('videoPlayer');
-        const playerTitle = document.getElementById('playerTitle');
-        const closePlayer = document.getElementById('closePlayer');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const playerStatus = document.getElementById('playerStatus');
-        
-        // HLS player instance
-        let hls = null;
-        
-        // Current filter
-        let currentFilter = 'all';
-        let matchesData = [];
-        
-        // Load matches data from JSON URL
-        async function loadMatches() {
-            try {
-                matchesGrid.innerHTML = '<div class="loading">Loading matches...</div>';
-                
-                const response = await fetch(jsonUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                matchesData = data.matches || [];
-                
-                // Update last update time
-                lastUpdate.textContent = `Last Updated: ${data['last update time'] || 'Unknown'}`;
-                
-                // Display matches
-                displayMatches(matchesData);
-                
-                // Set up filter buttons
-                setupFilters();
-            } catch (error) {
-                console.error('Error loading matches:', error);
-                matchesGrid.innerHTML = '<div class="error-message">Error loading matches. Please try again later.</div>';
-            }
+        const DATA_URL = 'https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json';
+
+        const $ = (s, root = document) => root.querySelector(s);
+        const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
+
+        function getUrlParam(name) {
+            const u = new URL(location.href);
+            return u.searchParams.get(name);
         }
-        
-        // Display matches in grid
-        function displayMatches(matches) {
-            matchesGrid.innerHTML = '';
-            
-            const filteredMatches = matches.filter(match => {
-                if (currentFilter === 'all') return true;
-                return match.event_category === currentFilter;
-            });
-            
-            if (filteredMatches.length === 0) {
-                matchesGrid.innerHTML = '<div class="no-matches">No matches found for the selected filter.</div>';
-                return;
-            }
-            
-            filteredMatches.forEach(match => {
-                const matchCard = document.createElement('div');
-                matchCard.className = 'match-card';
-                matchCard.onclick = () => {
-                    openPlayer(match);
-                };
-                
-                matchCard.innerHTML = `
-                    <img src="${match.src}" alt="${match.match_name}" class="match-image" onerror="this.src='https://images.unsplash.com/photo-1556056504-5c7696c4c28d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'">
-                    <div class="match-content">
-                        <div class="match-category">${match.event_category}</div>
-                        <h3 class="match-name">${match.match_name}</h3>
-                        <p class="match-event">${match.event_name}</p>
-                        <div class="match-details">
-                            ${match.isLive ? '<div class="live-badge">LIVE</div>' : ''}
-                            <div class="language">${match.audioLanguageName}</div>
-                        </div>
+
+        async function fetchData() {
+            try {
+                // Show loading state
+                $('#grid').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading SonyLiv events...</p>
                     </div>
                 `;
                 
-                matchesGrid.appendChild(matchCard);
-            });
-        }
-        
-        // Set up filter buttons
-        function setupFilters() {
-            filterButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    // Remove active class from all buttons
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    button.classList.add('active');
-                    
-                    // Update current filter
-                    currentFilter = button.getAttribute('data-filter');
-                    
-                    // Reload matches with new filter
-                    displayMatches(matchesData);
-                });
-            });
-        }
-        
-        // Open player with selected match
-        function openPlayer(match) {
-            playerTitle.textContent = match.match_name;
-            playerStatus.textContent = 'Loading stream...';
-            
-            // Destroy previous HLS instance if exists
-            if (hls) {
-                hls.destroy();
-                hls = null;
-            }
-            
-            // Get the video URL from the match data
-            let videoUrl = match.video_url || match.dai_url || match.pub_url;
-            
-            if (!videoUrl) {
-                playerStatus.textContent = 'No video URL available for this match';
-                return;
-            }
-            
-            playerModal.style.display = 'flex';
-            
-            // Reset controls
-            playPauseBtn.innerHTML = '<span>Play</span>';
-            muteBtn.innerHTML = '<span>Mute</span>';
-            
-            // Check if HLS.js is supported
-            if (Hls.isSupported()) {
-                hls = new Hls({
-                    enableWorker: false,
-                    lowLatencyMode: true,
-                    backBufferLength: 90
-                });
-                
-                hls.loadSource(videoUrl);
-                hls.attachMedia(videoPlayer);
-                
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    playerStatus.textContent = 'Stream loaded. Click play to start.';
-                    videoPlayer.play().then(() => {
-                        playPauseBtn.innerHTML = '<span>Pause</span>';
-                        playerStatus.textContent = 'Playing';
-                    }).catch(error => {
-                        console.log('Auto-play prevented:', error);
-                        playerStatus.textContent = 'Click play to start the stream';
-                    });
-                });
-                
-                hls.on(Hls.Events.ERROR, function(event, data) {
-                    console.error('HLS error:', data);
-                    if (data.fatal) {
-                        switch(data.type) {
-                            case Hls.ErrorTypes.NETWORK_ERROR:
-                                playerStatus.textContent = 'Network error. Trying to recover...';
-                                hls.startLoad();
-                                break;
-                            case Hls.ErrorTypes.MEDIA_ERROR:
-                                playerStatus.textContent = 'Media error. Trying to recover...';
-                                hls.recoverMediaError();
-                                break;
-                            default:
-                                playerStatus.textContent = 'Fatal error. Cannot recover.';
-                                hls.destroy();
-                                break;
-                        }
-                    }
-                });
-            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                // Native HLS support (Safari)
-                videoPlayer.src = videoUrl;
-                playerStatus.textContent = 'Stream loaded. Click play to start.';
-                videoPlayer.addEventListener('loadedmetadata', function() {
-                    videoPlayer.play().then(() => {
-                        playPauseBtn.innerHTML = '<span>Pause</span>';
-                        playerStatus.textContent = 'Playing';
-                    }).catch(error => {
-                        console.log('Auto-play prevented:', error);
-                        playerStatus.textContent = 'Click play to start the stream';
-                    });
-                });
-            } else {
-                playerStatus.textContent = 'HLS is not supported in this browser';
+                const res = await fetch(DATA_URL);
+                if (!res.ok) throw new Error('Failed to fetch');
+                return await res.json();
+            } catch (e) {
+                console.error(e);
+                $('#grid').innerHTML = `
+                    <div class="empty">
+                        <p>Failed to load SonyLiv events. Please try again later.</p>
+                    </div>
+                `;
+                return null;
             }
         }
-        
-        // Set up player controls
-        function setupPlayerControls() {
-            // Close player
-            closePlayer.addEventListener('click', () => {
-                playerModal.style.display = 'none';
-                if (hls) {
-                    hls.destroy();
-                    hls = null;
-                }
-                videoPlayer.pause();
-                videoPlayer.src = '';
-            });
+
+        function createCard(match) {
+            const a = document.createElement('article');
+            a.className = 'card';
+            if (match.status === 'UPCOMING') {
+                a.classList.add('upcoming');
+            }
+            a.tabIndex = 0;
+            a.setAttribute('aria-label', `${match.title || match.match_name}. ${match.team_1} vs ${match.team_2}. ${match.status}`);
+
+            a.innerHTML = `
+                <div class="thumb">
+                    <img loading="lazy" src="${match.src || ''}" alt="${escapeHtml(match.title || match.match_name || '')}" onerror="this.style.opacity='0.2'">
+                    <div class="badge">${escapeHtml(match.event_category || 'Entertainment')}</div>
+                    <div class="status ${match.status.toLowerCase() === 'live' ? 'live' : 'upcoming'}">${escapeHtml(match.status || '')}</div>
+                </div>
+                <div class="card-body">
+                    <h3 class="title">${escapeHtml(match.title || match.match_name || '')}</h3>
+                    <div class="meta">
+                        <span>${escapeHtml(match.event_name || '')}</span>
+                        <span>•</span>
+                        <span>${escapeHtml(match.startTime || '')}</span>
+                    </div>
+                    <div class="teams">
+                        <span>${escapeHtml(match.team_1 || 'TBA')}</span>
+                        <span class="vs">vs</span>
+                        <span>${escapeHtml(match.team_2 || 'TBA')}</span>
+                    </div>
+                </div>
+            `;
+
+            if (match.status !== 'UPCOMING') {
+                a.addEventListener('click', () => {
+                    const url = match.adfree_url || match.dai_url || match.src || '';
+                    if (!url) { 
+                        showNotification('No stream URL available for this event.', 'error');
+                        return; 
+                    }
+                    // Redirect to play?url= format
+                    const target = new URL(location.href);
+                    target.pathname = 'play';
+                    target.search = `?url=${encodeURIComponent(url)}`;
+                    location.href = target.toString();
+                });
+                a.addEventListener('keydown', (e) => { if (e.key === 'Enter') a.click(); });
+            }
+            return a;
+        }
+
+        function escapeHtml(s) { 
+            if (!s) return ''; 
+            return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); 
+        }
+
+        function populateCategories(matches) {
+            const cat = new Set();
+            matches.forEach(m => cat.add(m.event_category || 'Other'));
+            const sel = $('#category');
+            sel.innerHTML = '<option value="all">All Categories</option>' + 
+                [...cat].sort().map(c => `<option value="${encodeURIComponent(c)}">${c}</option>`).join('');
+        }
+
+        function updateStats(matches) {
+            const total = matches.length;
+            const live = matches.filter(m => m.status === 'LIVE').length;
+            const upcoming = matches.filter(m => m.status === 'UPCOMING').length;
             
-            // Play/Pause button
-            playPauseBtn.addEventListener('click', () => {
-                if (videoPlayer.paused) {
-                    videoPlayer.play().then(() => {
-                        playPauseBtn.innerHTML = '<span>Pause</span>';
-                        playerStatus.textContent = 'Playing';
-                    }).catch(error => {
-                        console.log('Play failed:', error);
-                        playerStatus.textContent = 'Play failed. Please try again.';
-                    });
-                } else {
-                    videoPlayer.pause();
-                    playPauseBtn.innerHTML = '<span>Play</span>';
-                    playerStatus.textContent = 'Paused';
-                }
-            });
+            $('#total-count').textContent = total;
+            $('#live-count').textContent = live;
+            $('#upcoming-count').textContent = upcoming;
+        }
+
+        function applyFilters(matches) {
+            const q = $('#q').value.trim().toLowerCase();
+            const selectedCat = decodeURIComponent($('#category').value || 'all');
+            const status = $('#status').value;
             
-            // Mute button
-            muteBtn.addEventListener('click', () => {
-                videoPlayer.muted = !videoPlayer.muted;
-                muteBtn.innerHTML = videoPlayer.muted ? '<span>Unmute</span>' : '<span>Mute</span>';
-            });
-            
-            // Fullscreen button
-            fullscreenBtn.addEventListener('click', () => {
-                const playerContainer = document.querySelector('.player-container');
+            return matches.filter(m => {
+                if (selectedCat !== 'all' && (m.event_category || '') !== selectedCat) return false;
+                if (status !== 'all' && (m.status || '') !== status) return false;
+                if (!q) return true;
                 
-                if (!document.fullscreenElement) {
-                    if (playerContainer.requestFullscreen) {
-                        playerContainer.requestFullscreen();
-                    } else if (playerContainer.mozRequestFullScreen) {
-                        playerContainer.mozRequestFullScreen();
-                    } else if (playerContainer.webkitRequestFullscreen) {
-                        playerContainer.webkitRequestFullscreen();
-                    } else if (playerContainer.msRequestFullscreen) {
-                        playerContainer.msRequestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
-                }
-            });
-            
-            // Update play/pause button based on video state
-            videoPlayer.addEventListener('play', () => {
-                playPauseBtn.innerHTML = '<span>Pause</span>';
-                playerStatus.textContent = 'Playing';
-            });
-            
-            videoPlayer.addEventListener('pause', () => {
-                playPauseBtn.innerHTML = '<span>Play</span>';
-                playerStatus.textContent = 'Paused';
-            });
-            
-            videoPlayer.addEventListener('waiting', () => {
-                playerStatus.textContent = 'Buffering...';
-            });
-            
-            videoPlayer.addEventListener('playing', () => {
-                playerStatus.textContent = 'Playing';
-            });
-            
-            // Close modal when clicking outside
-            playerModal.addEventListener('click', (e) => {
-                if (e.target === playerModal) {
-                    playerModal.style.display = 'none';
-                    if (hls) {
-                        hls.destroy();
-                        hls = null;
-                    }
-                    videoPlayer.pause();
-                    videoPlayer.src = '';
-                }
+                const hay = [m.title, m.match_name, m.event_name, m.team_1, m.team_2]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+                return hay.includes(q);
             });
         }
-        
-        // Initialize the page
-        function init() {
-            loadMatches();
-            setupPlayerControls();
+
+        function showNotification(message, type = 'info') {
+            // Remove existing notification if any
+            const existing = $('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? 'var(--live)' : 'var(--primary)';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
-        
-        // Initialize the page when loaded
-        document.addEventListener('DOMContentLoaded', init);
+
+        async function render() {
+            const grid = $('#grid');
+            const data = await fetchData();
+            if (!data) return;
+            
+            const matches = data.matches || [];
+            populateCategories(matches);
+            updateStats(matches);
+
+            function refresh() {
+                const filtered = applyFilters(matches);
+                updateStats(filtered);
+                
+                grid.innerHTML = '';
+                if (filtered.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty">
+                            <p>No SonyLiv events match your filters. Try adjusting your search.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                filtered.forEach(m => grid.appendChild(createCard(m)));
+            }
+
+            // Debounce search input
+            let searchTimeout;
+            $('#q').addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(refresh, 300);
+            });
+            
+            $('#category').addEventListener('change', refresh);
+            $('#status').addEventListener('change', refresh);
+
+            refresh();
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', render);
     </script>
 </body>
 </html>
