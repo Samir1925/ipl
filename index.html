@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SonyLiv Live Matches</title>
+    <!-- HLS.js library for playing HLS streams -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             margin: 0;
@@ -179,6 +181,135 @@
             font-size: 0.8rem;
         }
         
+        /* Player Modal Styles */
+        .player-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .player-container {
+            width: 95%;
+            max-width: 1000px;
+            background: #1e1e2e;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #252540;
+            border-bottom: 1px solid #333;
+        }
+        
+        .player-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        
+        .video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .player-controls {
+            padding: 15px 20px;
+            background: #252540;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .play-btn {
+            background: #ff6b6b;
+        }
+        
+        .play-btn:hover {
+            background: #ff5252;
+        }
+        
+        .player-status {
+            color: #aaa;
+            font-size: 0.9rem;
+            padding: 0 10px;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #ff6b6b;
+            font-size: 1.1rem;
+        }
+        
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -200,6 +331,21 @@
             
             h1 {
                 font-size: 2rem;
+            }
+            
+            .player-container {
+                width: 98%;
+            }
+            
+            .player-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-buttons {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
             }
         }
         
@@ -234,39 +380,85 @@
         </div>
         
         <div class="matches-grid" id="matchesGrid">
-            <!-- Match cards will be dynamically inserted here -->
+            <div class="loading">Loading matches...</div>
+        </div>
+    </div>
+
+    <!-- Player Modal -->
+    <div class="player-modal" id="playerModal">
+        <div class="player-container">
+            <div class="player-header">
+                <div class="player-title" id="playerTitle">Match Stream</div>
+                <button class="close-btn" id="closePlayer">&times;</button>
+            </div>
+            <div class="video-container">
+                <video class="video-player" id="videoPlayer" controls crossorigin="anonymous"></video>
+            </div>
+            <div class="player-controls">
+                <div class="control-buttons">
+                    <button class="control-btn play-btn" id="playPauseBtn">
+                        <span>Play</span>
+                    </button>
+                    <button class="control-btn" id="muteBtn">
+                        <span>Mute</span>
+                    </button>
+                    <button class="control-btn" id="fullscreenBtn">
+                        <span>Fullscreen</span>
+                    </button>
+                </div>
+                <div class="player-status" id="playerStatus">Ready to play</div>
+            </div>
         </div>
     </div>
 
     <script>
-        // URL to the JSON data
+        // JSON data URL
         const jsonUrl = 'https://raw.githubusercontent.com/drmlive/sliv-live-events/main/sonyliv.json';
         
         // DOM elements
         const matchesGrid = document.getElementById('matchesGrid');
         const lastUpdate = document.getElementById('lastUpdate');
         const filterButtons = document.querySelectorAll('.filter-btn');
+        const playerModal = document.getElementById('playerModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playerTitle = document.getElementById('playerTitle');
+        const closePlayer = document.getElementById('closePlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const playerStatus = document.getElementById('playerStatus');
+        
+        // HLS player instance
+        let hls = null;
         
         // Current filter
         let currentFilter = 'all';
+        let matchesData = [];
         
-        // Load matches data
+        // Load matches data from JSON URL
         async function loadMatches() {
             try {
+                matchesGrid.innerHTML = '<div class="loading">Loading matches...</div>';
+                
                 const response = await fetch(jsonUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                matchesData = data.matches || [];
                 
                 // Update last update time
-                lastUpdate.textContent = `Last Updated: ${data['last update time']}`;
+                lastUpdate.textContent = `Last Updated: ${data['last update time'] || 'Unknown'}`;
                 
                 // Display matches
-                displayMatches(data.matches);
+                displayMatches(matchesData);
                 
                 // Set up filter buttons
                 setupFilters();
             } catch (error) {
                 console.error('Error loading matches:', error);
-                matchesGrid.innerHTML = '<div class="no-matches">Error loading matches. Please try again later.</div>';
+                matchesGrid.innerHTML = '<div class="error-message">Error loading matches. Please try again later.</div>';
             }
         }
         
@@ -288,12 +480,11 @@
                 const matchCard = document.createElement('div');
                 matchCard.className = 'match-card';
                 matchCard.onclick = () => {
-                    // Redirect to play page with video URL
-                    window.location.href = `play?stream=${encodeURIComponent(match.video_url)}`;
+                    openPlayer(match);
                 };
                 
                 matchCard.innerHTML = `
-                    <img src="${match.src}" alt="${match.match_name}" class="match-image">
+                    <img src="${match.src}" alt="${match.match_name}" class="match-image" onerror="this.src='https://images.unsplash.com/photo-1556056504-5c7696c4c28d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60'">
                     <div class="match-content">
                         <div class="match-category">${match.event_category}</div>
                         <h3 class="match-name">${match.match_name}</h3>
@@ -323,13 +514,199 @@
                     currentFilter = button.getAttribute('data-filter');
                     
                     // Reload matches with new filter
-                    loadMatches();
+                    displayMatches(matchesData);
                 });
             });
         }
         
+        // Open player with selected match
+        function openPlayer(match) {
+            playerTitle.textContent = match.match_name;
+            playerStatus.textContent = 'Loading stream...';
+            
+            // Destroy previous HLS instance if exists
+            if (hls) {
+                hls.destroy();
+                hls = null;
+            }
+            
+            // Get the video URL from the match data
+            let videoUrl = match.video_url || match.dai_url || match.pub_url;
+            
+            if (!videoUrl) {
+                playerStatus.textContent = 'No video URL available for this match';
+                return;
+            }
+            
+            playerModal.style.display = 'flex';
+            
+            // Reset controls
+            playPauseBtn.innerHTML = '<span>Play</span>';
+            muteBtn.innerHTML = '<span>Mute</span>';
+            
+            // Check if HLS.js is supported
+            if (Hls.isSupported()) {
+                hls = new Hls({
+                    enableWorker: false,
+                    lowLatencyMode: true,
+                    backBufferLength: 90
+                });
+                
+                hls.loadSource(videoUrl);
+                hls.attachMedia(videoPlayer);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    playerStatus.textContent = 'Stream loaded. Click play to start.';
+                    videoPlayer.play().then(() => {
+                        playPauseBtn.innerHTML = '<span>Pause</span>';
+                        playerStatus.textContent = 'Playing';
+                    }).catch(error => {
+                        console.log('Auto-play prevented:', error);
+                        playerStatus.textContent = 'Click play to start the stream';
+                    });
+                });
+                
+                hls.on(Hls.Events.ERROR, function(event, data) {
+                    console.error('HLS error:', data);
+                    if (data.fatal) {
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                playerStatus.textContent = 'Network error. Trying to recover...';
+                                hls.startLoad();
+                                break;
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                playerStatus.textContent = 'Media error. Trying to recover...';
+                                hls.recoverMediaError();
+                                break;
+                            default:
+                                playerStatus.textContent = 'Fatal error. Cannot recover.';
+                                hls.destroy();
+                                break;
+                        }
+                    }
+                });
+            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari)
+                videoPlayer.src = videoUrl;
+                playerStatus.textContent = 'Stream loaded. Click play to start.';
+                videoPlayer.addEventListener('loadedmetadata', function() {
+                    videoPlayer.play().then(() => {
+                        playPauseBtn.innerHTML = '<span>Pause</span>';
+                        playerStatus.textContent = 'Playing';
+                    }).catch(error => {
+                        console.log('Auto-play prevented:', error);
+                        playerStatus.textContent = 'Click play to start the stream';
+                    });
+                });
+            } else {
+                playerStatus.textContent = 'HLS is not supported in this browser';
+            }
+        }
+        
+        // Set up player controls
+        function setupPlayerControls() {
+            // Close player
+            closePlayer.addEventListener('click', () => {
+                playerModal.style.display = 'none';
+                if (hls) {
+                    hls.destroy();
+                    hls = null;
+                }
+                videoPlayer.pause();
+                videoPlayer.src = '';
+            });
+            
+            // Play/Pause button
+            playPauseBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play().then(() => {
+                        playPauseBtn.innerHTML = '<span>Pause</span>';
+                        playerStatus.textContent = 'Playing';
+                    }).catch(error => {
+                        console.log('Play failed:', error);
+                        playerStatus.textContent = 'Play failed. Please try again.';
+                    });
+                } else {
+                    videoPlayer.pause();
+                    playPauseBtn.innerHTML = '<span>Play</span>';
+                    playerStatus.textContent = 'Paused';
+                }
+            });
+            
+            // Mute button
+            muteBtn.addEventListener('click', () => {
+                videoPlayer.muted = !videoPlayer.muted;
+                muteBtn.innerHTML = videoPlayer.muted ? '<span>Unmute</span>' : '<span>Mute</span>';
+            });
+            
+            // Fullscreen button
+            fullscreenBtn.addEventListener('click', () => {
+                const playerContainer = document.querySelector('.player-container');
+                
+                if (!document.fullscreenElement) {
+                    if (playerContainer.requestFullscreen) {
+                        playerContainer.requestFullscreen();
+                    } else if (playerContainer.mozRequestFullScreen) {
+                        playerContainer.mozRequestFullScreen();
+                    } else if (playerContainer.webkitRequestFullscreen) {
+                        playerContainer.webkitRequestFullscreen();
+                    } else if (playerContainer.msRequestFullscreen) {
+                        playerContainer.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.mozCancelFullScreen) {
+                        document.mozCancelFullScreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+            
+            // Update play/pause button based on video state
+            videoPlayer.addEventListener('play', () => {
+                playPauseBtn.innerHTML = '<span>Pause</span>';
+                playerStatus.textContent = 'Playing';
+            });
+            
+            videoPlayer.addEventListener('pause', () => {
+                playPauseBtn.innerHTML = '<span>Play</span>';
+                playerStatus.textContent = 'Paused';
+            });
+            
+            videoPlayer.addEventListener('waiting', () => {
+                playerStatus.textContent = 'Buffering...';
+            });
+            
+            videoPlayer.addEventListener('playing', () => {
+                playerStatus.textContent = 'Playing';
+            });
+            
+            // Close modal when clicking outside
+            playerModal.addEventListener('click', (e) => {
+                if (e.target === playerModal) {
+                    playerModal.style.display = 'none';
+                    if (hls) {
+                        hls.destroy();
+                        hls = null;
+                    }
+                    videoPlayer.pause();
+                    videoPlayer.src = '';
+                }
+            });
+        }
+        
         // Initialize the page
-        loadMatches();
+        function init() {
+            loadMatches();
+            setupPlayerControls();
+        }
+        
+        // Initialize the page when loaded
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
