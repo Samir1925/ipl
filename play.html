@@ -1,205 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>allinone Player</title>
-
-  <!-- Plyr CSS -->
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-
-  <!-- Hls.js -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-  <!-- Plyr JS -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background: #000;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-    #playerWrapper {
-      height: 90vh;
-      width: 100%;
-      max-height: 90vh;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      position: relative;
-    }
-    #playerContainer {
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #000;
-    }
-    .plyr {
-      width: 100%;
-      height: 100%;
-    }
-    /* Custom controls styling */
-    .plyr__controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 3;
-      transition: opacity 0.3s ease;
-    }
-    /* Text Below Player */
-    #infoText {
-      height: 10vh;
-      text-align: center;
-      color: #fff;
-      font-size: 23px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: glowBlink 2s infinite;
-      z-index: 1;
-    }
-    /* Glow Blinking */
-    @keyframes glowBlink {
-      0%, 100% {
-        text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff;
-        opacity: 1;
-      }
-      50% {
-        text-shadow: none;
-        opacity: 0.6;
-      }
-    }
-  </style>
-</head>
-<script type='text/javascript' src='//staunchtownsegg.com/f7/bc/6b/f7bc6b128423106720db2ba226b22541.js'></script>
-<body>
-  <!-- Video Player -->
-  <div id="playerWrapper">
-    <div id="playerContainer">
-      <video id="player" playsinline controls autoplay></video>
-    </div>
-  </div>
-
-  <!-- Info Text -->
-  <div id="infoText">⚡ First 10 second may be buffer please wait⚡</div>
-
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoUrl = urlParams.get("url");
-    const video = document.getElementById("player");
-    let controlsTimeout;
-    const controlsHideDelay = 3000;
-    let hls;
-
-    if (Hls.isSupported()) {
-      hls = new Hls({
-        maxBufferLength: 60,
-        maxMaxBufferLength: 120,
-        liveSyncDuration: 5,
-        liveMaxLatencyDuration: 30,
-        backBufferLength: 30,
-        lowLatencyMode: true,
-      });
-
-      hls.loadSource(videoUrl);
-      hls.attachMedia(video);
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoUrl;
-    }
-
-    const player = new Plyr(video, {
-      autoplay: true,
-      controls: [
-        'play-large', 'play','progress','current-time','mute',
-        'volume','settings','pip','airplay','fullscreen'
-      ],
-      settings: ['quality', 'speed'],
-      hideControls: true
-    });
-
-    if (Hls.isSupported()) {
-      hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-        const availableQualities = hls.levels.map((l, i) => ({
-          id: i,
-          name: l.height ? `${l.height}p` : `${Math.floor(l.bitrate / 1000)}kbps`
-        }));
-
-        // Add AUTO option
-        availableQualities.unshift({id: -1, name: "Auto"});
-
-        player.options.quality = {
-          default: -1,
-          options: availableQualities.map(q => q.id),
-          forced: true,
-          onChange: (quality) => {
-            if (quality === -1) {
-              hls.currentLevel = -1; // Auto
-            } else {
-              hls.currentLevel = quality;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonyLiv Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .player-container {
+            width: 100%;
+            max-width: 900px;
+            background: #1e1e2e;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #252540;
+            border-bottom: 1px solid #333;
+        }
+        
+        .player-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        
+        .video-player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .player-controls {
+            padding: 15px 20px;
+            background: #252540;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .play-btn {
+            background: #ff6b6b;
+        }
+        
+        .play-btn:hover {
+            background: #ff5252;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .volume-slider {
+            width: 100px;
+        }
+        
+        .time-display {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #ff6b6b;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #aaa;
+            font-size: 1.2rem;
+        }
+        
+        .error-message {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .player-container {
+                width: 95%;
             }
-          }
-        };
+            
+            .player-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-buttons {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .volume-control {
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <div class="player-header">
+            <div class="player-title" id="playerTitle">SonyLiv Stream Player</div>
+            <a href="index.html" class="back-btn">
+                <span>Back to Matches</span>
+            </a>
+        </div>
+        <div class="video-container">
+            <video class="video-player" id="videoPlayer" controls>
+                Your browser does not support the video tag.
+            </video>
+            <div class="loading" id="loadingMessage">Loading stream...</div>
+            <div class="error-message" id="errorMessage">
+                Unable to load the stream. Please check the URL or try again later.
+            </div>
+        </div>
+        <div class="player-controls">
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="control-buttons">
+                <button class="control-btn play-btn" id="playPauseBtn">
+                    <span>Play</span>
+                </button>
+                <button class="control-btn" id="muteBtn">
+                    <span>Mute</span>
+                </button>
+                <button class="control-btn" id="fullscreenBtn">
+                    <span>Fullscreen</span>
+                </button>
+            </div>
+            <div class="volume-control">
+                <span>Volume:</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+            </div>
+            <div class="time-display" id="timeDisplay">00:00 / 00:00</div>
+        </div>
+    </div>
 
-        // Add labels for Plyr menu
-        const qualityOptions = {};
-        availableQualities.forEach(q => {
-          qualityOptions[q.id] = q.name;
-        });
-        player.options.i18n = player.options.i18n || {};
-        player.options.i18n.qualityLabel = qualityOptions;
-
-        // Refresh Plyr menu
-        player.elements.quality = null;
-        player.build.call(player, 'quality');
-      });
-    }
-
-    // --- Control hide/show ---
-    function showControls() {
-      const controls = document.querySelector('.plyr__controls');
-      if (controls) {
-        controls.style.opacity = '1';
-        controls.style.pointerEvents = 'auto';
-      }
-      resetControlsTimer();
-    }
-    function hideControls() {
-      const controls = document.querySelector('.plyr__controls');
-      if (controls && !player.paused) {
-        controls.style.opacity = '0';
-        controls.style.pointerEvents = 'none';
-      }
-    }
-    function resetControlsTimer() {
-      clearTimeout(controlsTimeout);
-      controlsTimeout = setTimeout(hideControls, controlsHideDelay);
-    }
-    player.elements.container.addEventListener('mousemove', showControls);
-    player.elements.container.addEventListener('touchstart', showControls);
-    player.elements.container.addEventListener('mouseleave', hideControls);
-
-    player.on('ready', () => {
-      showControls();
-      resetControlsTimer();
-    });
-    player.on('play', showControls);
-    player.on('pause', showControls);
-  </script>
-
+    <script>
+        // DOM elements
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playerTitle = document.getElementById('playerTitle');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Get stream URL from URL parameters
+        function getStreamUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('stream');
+        }
+        
+        // Format time in MM:SS format
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Initialize the player
+        function initPlayer() {
+            const streamUrl = getStreamUrl();
+            
+            if (!streamUrl) {
+                showError("No stream URL provided");
+                return;
+            }
+            
+            // Set the video source
+            videoPlayer.src = streamUrl;
+            
+            // Set up event listeners
+            setupPlayerEvents();
+            
+            // Update the title with the stream info if available
+            updatePlayerTitle(streamUrl);
+        }
+        
+        // Update player title based on stream URL
+        function updatePlayerTitle(streamUrl) {
+            // Extract match info from URL if possible
+            if (streamUrl.includes('IND_vs_PAK')) {
+                playerTitle.textContent = "India vs Pakistan - Asia Cup 2025";
+            } else if (streamUrl.includes('Bundesliga')) {
+                playerTitle.textContent = "Bundesliga Match";
+            } else {
+                playerTitle.textContent = "Live Sports Stream";
+            }
+        }
+        
+        // Set up player event listeners
+        function setupPlayerEvents() {
+            // Play/Pause button
+            playPauseBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
+            });
+            
+            // Mute button
+            muteBtn.addEventListener('click', () => {
+                videoPlayer.muted = !videoPlayer.muted;
+                muteBtn.innerHTML = videoPlayer.muted ? '<span>Unmute</span>' : '<span>Mute</span>';
+            });
+            
+            // Volume slider
+            volumeSlider.addEventListener('input', () => {
+                videoPlayer.volume = volumeSlider.value;
+            });
+            
+            // Fullscreen button
+            fullscreenBtn.addEventListener('click', () => {
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.mozRequestFullScreen) {
+                    videoPlayer.mozRequestFullScreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
+                }
+            });
+            
+            // Progress bar
+            progressContainer.addEventListener('click', (e) => {
+                const rect = progressContainer.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                videoPlayer.currentTime = percent * videoPlayer.duration;
+            });
+            
+            // Video events
+            videoPlayer.addEventListener('loadstart', () => {
+                loadingMessage.style.display = 'flex';
+                errorMessage.style.display = 'none';
+            });
+            
+            videoPlayer.addEventListener('canplay', () => {
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+            });
+            
+            videoPlayer.addEventListener('error', () => {
+                loadingMessage.style.display = 'none';
+                showError("Error loading stream. The stream may be unavailable.");
+            });
+            
+            videoPlayer.addEventListener('play', () => {
+                playPauseBtn.innerHTML = '<span>Pause</span>';
+            });
+            
+            videoPlayer.addEventListener('pause', () => {
+                playPauseBtn.innerHTML = '<span>Play</span>';
+            });
+            
+            videoPlayer.addEventListener('timeupdate', () => {
+                // Update progress bar
+                const percent = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progressBar.style.width = `${percent}%`;
+                
+                // Update time display
+                timeDisplay.textContent = `${formatTime(videoPlayer.currentTime)} / ${formatTime(videoPlayer.duration)}`;
+            });
+            
+            videoPlayer.addEventListener('volumechange', () => {
+                volumeSlider.value = videoPlayer.volume;
+                muteBtn.innerHTML = videoPlayer.muted ? '<span>Unmute</span>' : '<span>Mute</span>';
+            });
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'flex';
+            loadingMessage.style.display = 'none';
+        }
+        
+        // Initialize the player when page loads
+        window.addEventListener('DOMContentLoaded', initPlayer);
+    </script>
 </body>
 </html>
