@@ -1,835 +1,204 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fancode — Premium Sports Streaming</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: rgba(30, 41, 59, 0.8);
-            --bg-glass: rgba(255, 255, 255, 0.05);
-            --bg-overlay: rgba(0, 0, 0, 0.7);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --accent: #06b6d4;
-            --accent-hover: #22d3ee;
-            --live: #ef4444;
-            --upcoming: #f59e0b;
-            --success: #10b981;
-            --border: rgba(255, 255, 255, 0.08);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.25);
-            --transition: all 0.3s ease;
-            --radius: 12px;
-            --radius-sm: 8px;
-            --backdrop: blur(10px);
-            color-scheme: dark;
-            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #0a0f1d 100%);
-            color: var(--text-primary);
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
-        }
-        
-        /* Header Styles */
-        header {
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-glass);
-            backdrop-filter: var(--backdrop);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .brand {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        
-        .logo {
-            width: 2.75rem;
-            height: 2.75rem;
-            border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: white;
-            box-shadow: var(--shadow);
-        }
-        
-        .brand-text h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 0.8125rem;
-            display: none;
-        }
-        
-        /* Controls */
-        .controls {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        
-        .search-wrapper {
-            position: relative;
-        }
-        
-        .search {
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border-radius: var(--radius);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            min-width: 240px;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-        
-        .search:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 0.875rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-        
-        .select, .toggle {
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1rem;
-            padding-right: 2.5rem;
-        }
-        
-        .select:focus, .toggle:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-        }
-        
-        /* Main Content */
-        main {
-            padding: 1.5rem;
-            max-width: 1440px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .stat-card {
-            background: var(--bg-card);
-            padding: 1rem 1.25rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            backdrop-filter: var(--backdrop);
-            min-width: 160px;
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-            color: var(--accent);
-        }
-        
-        .stat-label {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        /* Cards */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            transition: var(--transition);
-            cursor: pointer;
-            backdrop-filter: var(--backdrop);
-            position: relative;
-        }
-        
-        .card.upcoming {
-            cursor: not-allowed;
-            opacity: 0.85;
-        }
-        
-        .card:not(.upcoming):hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow);
-            border-color: rgba(255, 255, 255, 0.12);
-        }
-        
-        .thumb {
-            position: relative;
-            padding-top: 56.25%;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            overflow: hidden;
-        }
-        
-        .thumb img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .card:hover .thumb img {
-            transform: scale(1.05);
-        }
-        
-        .badge {
-            position: absolute;
-            left: 0.75rem;
-            top: 0.75rem;
-            padding: 0.375rem 0.625rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background: var(--bg-overlay);
-            backdrop-filter: var(--backdrop);
-            color: var(--text-primary);
-            z-index: 2;
-        }
-        
-        .status {
-            position: absolute;
-            right: 0.75rem;
-            top: 0.75rem;
-            padding: 0.375rem 0.625rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: white;
-            z-index: 2;
-        }
-        
-        .status.live {
-            background: var(--live);
-            animation: pulse 2s infinite;
-        }
-        
-        .status.upcoming {
-            background: var(--upcoming);
-        }
-        
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .title {
-            font-weight: 600;
-            font-size: 0.9375rem;
-            margin: 0 0 0.5rem 0;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .meta {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 0.75rem;
-        }
-        
-        .teams {
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .vs {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-        
-        /* Footer */
-        footer {
-            padding: 1.25rem 1.5rem;
-            color: var(--text-muted);
-            font-size: 0.8125rem;
-            text-align: center;
-            margin-top: 2rem;
-            border-top: 1px solid var(--border);
-        }
-        
-        /* Player */
-        .player {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-primary);
-        }
-        
-        .player-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .player-header-content {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .btn {
-            padding: 0.625rem 1rem;
-            border-radius: var(--radius-sm);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn:hover {
-            background: var(--bg-glass);
-            border-color: var(--accent);
-        }
-        
-        .btn-primary {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-            font-weight: 500;
-        }
-        
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            border-color: var(--accent-hover);
-        }
-        
-        .player-content {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-        }
-        
-        .player-iframe {
-            width: 100%;
-            max-width: 1000px;
-            height: 70vh;
-            border: 0;
-            border-radius: var(--radius);
-            background: #000;
-            box-shadow: var(--shadow);
-        }
-        
-        .player-actions {
-            display: flex;
-            gap: 0.75rem;
-            justify-content: center;
-            padding: 1.5rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-        }
-        
-        /* Loading and empty states */
-        .loading, .empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-secondary);
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--accent);
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 1rem;
-            }
-            
-            .brand {
-                margin-bottom: 0.75rem;
-            }
-            
-            .brand-text p {
-                display: block;
-            }
-            
-            .controls {
-                flex-direction: column;
-            }
-            
-            .search, .select, .toggle {
-                width: 100%;
-            }
-            
-            .stats {
-                flex-direction: column;
-            }
-            
-            .stat-card {
-                width: 100%;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            main {
-                padding: 1rem;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .player-content {
-                padding: 1rem;
-            }
-            
-            .player-iframe {
-                height: 50vh;
-            }
-        }
-    </style>
+    <script>(function(s){s.dataset.zone='10408286',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> live</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .shaka-video-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
+    .shaka-spinner-container,
+    .shaka-spinner,
+    .shaka-spinner-svg {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+
+    /* Chrome Only Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn .5s ease;
+    }
+    .modal.hidden { display: none !important; }
+    .modal-content {
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      border-radius: 20px;
+      padding: 30px 25px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      color: #f3f4f6;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      backdrop-filter: blur(12px);
+      transform: scale(.95);
+      animation: scaleIn .4s ease forwards;
+    }
+    .modal-content h2 { font-size: 24px; font-weight: 700; color: #f87171; margin-bottom: 16px; }
+    .modal-content p { font-size: 16px; color: #d1d5db; margin-bottom: 24px; line-height: 1.5; }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+    @keyframes scaleIn { to { transform: scale(1); opacity: 1 } }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="brand">
-            <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                    <path d="M2 17l10 5 10-5"></path>
-                    <path d="M2 12l10 5 10-5"></path>
-                </svg>
-            </div>
-            <div class="brand-text">
-                <h1>Fancode TV</h1>
-                <p>Premium sports streaming experience</p>
-            </div>
-        </div>
-        <div class="controls">
-            <div class="search-wrapper">
-                <span class="search-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </span>
-                <input id="q" class="search" placeholder="Search events, teams, or tournaments...">
-            </div>
-            <select id="category" class="select">
-                <option value="all">All Categories</option>
-            </select>
-            <select id="status" class="select">
-                <option value="all">All Statuses</option>
-                <option value="LIVE">Live Now</option>
-                <option value="UPCOMING">Upcoming</option>
-            </select>
-        </div>
-    </header>
-    
-    <main id="app">
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value" id="total-count">0</div>
-                <div class="stat-label">Total Events</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="live-count">0</div>
-                <div class="stat-label">Live Now</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="upcoming-count">0</div>
-                <div class="stat-label">Upcoming</div>
-            </div>
-        </div>
-        
-        <div id="grid" class="grid" aria-live="polite"></div>
-    </main>
-    
-    <footer>
-        <p>Data provided from a public JSON feed. © 2023 Fancode TV — Premium Sports Streaming</p>
-    </footer>
 
-    <script>
-        const DATA_URL = 'https://raw.githubusercontent.com/drmlive/fancode-live-events/main/fancode.json';
+  <!-- Chrome Only Modal -->
+  <div id="chromeModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h2>Please Open in Chrome</h2>
+      <p>This site is optimized for <strong>Google Chrome</strong>. Please open the link in Chrome browser for the best experience.</p>
+    </div>
+  </div>
 
-        const $ = (s, root = document) => root.querySelector(s);
-        const $$ = (s, root = document) => Array.from(root.querySelectorAll(s));
+  <div class="shaka-video-container" data-shaka-player>
+    <video autoplay playsinline preload="metadata" poster=""></video>
+  </div>
 
-        function getUrlParam(name) {
-            const u = new URL(location.href);
-            return u.searchParams.get(name);
-        }
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      /********** Chrome check **********/
+      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      if (!isChrome) {
+        const chromeModal = document.getElementById('chromeModal');
+        chromeModal.classList.remove('hidden');
+        chromeModal.setAttribute('aria-hidden', 'false');
+        return; // block video setup in non-Chrome
+      }
 
-        async function fetchData() {
-            try {
-                // Show loading state
-                $('#grid').innerHTML = `
-                    <div class="loading">
-                        <div class="loading-spinner"></div>
-                        <p>Loading live events...</p>
-                    </div>
-                `;
-                
-                const res = await fetch(DATA_URL);
-                if (!res.ok) throw new Error('Failed to fetch');
-                return await res.json();
-            } catch (e) {
-                console.error(e);
-                $('#grid').innerHTML = `
-                    <div class="empty">
-                        <p>Failed to load events. Please try again later.</p>
-                    </div>
-                `;
-                return null;
-            }
-        }
+      /********** Shaka player setup **********/
+      shaka.polyfill.installAll();
 
-        function createCard(match) {
-            const a = document.createElement('article');
-            a.className = 'card';
-            if (match.status === 'UPCOMING') {
-                a.classList.add('upcoming');
-            }
-            a.tabIndex = 0;
-            a.setAttribute('aria-label', `${match.title || match.match_name}. ${match.team_1} vs ${match.team_2}. ${match.status}`);
+      if (!shaka.Player.isBrowserSupported()) {
+        console.error('Browser not supported');
+      } else {
+        const video = document.querySelector('video');
+        const player = new shaka.Player();
+        await player.attach(video);
 
-            a.innerHTML = `
-                <div class="thumb">
-                    <img loading="lazy" src="${match.src || ''}" alt="${escapeHtml(match.title || match.match_name || '')}" onerror="this.style.opacity='0.2'">
-                    <div class="badge">${escapeHtml(match.event_category || 'Sports')}</div>
-                    <div class="status ${match.status.toLowerCase() === 'live' ? 'live' : 'upcoming'}">${escapeHtml(match.status || '')}</div>
-                </div>
-                <div class="card-body">
-                    <h3 class="title">${escapeHtml(match.title || match.match_name || '')}</h3>
-                    <div class="meta">
-                        <span>${escapeHtml(match.event_name || '')}</span>
-                        <span>•</span>
-                        <span>${escapeHtml(match.startTime || '')}</span>
-                    </div>
-                    <div class="teams">
-                        <span>${escapeHtml(match.team_1 || 'TBA')}</span>
-                        <span class="vs">vs</span>
-                        <span>${escapeHtml(match.team_2 || 'TBA')}</span>
-                    </div>
-                </div>
-            `;
+        const container = document.querySelector('.shaka-video-container');
+        const ui = new shaka.ui.Overlay(player, container, video);
 
-            if (match.status !== 'UPCOMING') {
-                a.addEventListener('click', () => {
-                    const url = match.adfree_url || match.dai_url || match.src || '';
-                    if (!url) { 
-                        showNotification('No stream URL available for this event.', 'error');
-                        return; 
-                    }
-                    // Fixed redirect to use play?url= format
-                    const target = new URL(location.href);
-                    target.pathname = 'play';
-                    target.search = `?url=${encodeURIComponent(url)}`;
-                    location.href = target.toString();
-                });
-                a.addEventListener('keydown', (e) => { if (e.key === 'Enter') a.click(); });
-            }
-            return a;
-        }
+        ui.configure({
+          controlPanelElements: [
+            'play_pause', 'time_and_duration', 'mute', 'volume',
+            'spacer', 'language', 'captions', 'picture_in_picture',
+            'quality', 'fullscreen'
+          ],
+          volumeBarColors: {
+            base: 'rgba(63, 187, 1, 1)',
+            level: 'rgb(255, 69, 0)'
+          },
+          seekBarColors: {
+            base: 'rgb(41, 41, 163)',
+            buffered: 'rgb(35, 99, 3)',
+            played: 'rgba(63, 187, 1, 1)'
+          }
+        });
 
-        function escapeHtml(s) { 
-            if (!s) return ''; 
-            return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); 
-        }
+        let drmConfig = {
+          clearKeys: {
+            "cd2266bd1085a92143007be26296daeb": "1a21a3cbb8e8062c3a82135a47389c2b"
+          }
+        };
+        let cookieHeader = "";
+        let streamUrl = "https://a201aivottlinear-a.akamaihd.net/OTTB/lhr-nitro/live/dash/enc/ryfoddshmd/out/v1/2298afadf64943adb0b44dc540ace1ce/cenc.mpd";
 
-        function populateCategories(matches) {
-            const cat = new Set();
-            matches.forEach(m => cat.add(m.event_category || 'Other'));
-            const sel = $('#category');
-            sel.innerHTML = '<option value="all">All Categories</option>' + 
-                [...cat].sort().map(c => `<option value="${encodeURIComponent(c)}">${c}</option>`).join('');
-        }
+        try {
+          const response = await fetch('');
+          const m3uText = await response.text();
+          const lines = m3uText.split('\n');
 
-        function updateStats(matches) {
-            const total = matches.length;
-            const live = matches.filter(m => m.status === 'LIVE').length;
-            const upcoming = matches.filter(m => m.status === 'UPCOMING').length;
-            
-            $('#total-count').textContent = total;
-            $('#live-count').textContent = live;
-            $('#upcoming-count').textContent = upcoming;
-        }
-
-        function applyFilters(matches) {
-            const q = $('#q').value.trim().toLowerCase();
-            const selectedCat = decodeURIComponent($('#category').value || 'all');
-            const status = $('#status').value;
-            
-            return matches.filter(m => {
-                if (selectedCat !== 'all' && (m.event_category || '') !== selectedCat) return false;
-                if (status !== 'all' && (m.status || '') !== status) return false;
-                if (!q) return true;
-                
-                const hay = [m.title, m.match_name, m.event_name, m.team_1, m.team_2]
-                    .filter(Boolean)
-                    .join(' ')
-                    .toLowerCase();
-                return hay.includes(q);
-            });
-        }
-
-        function showNotification(message, type = 'info') {
-            // Remove existing notification if any
-            const existing = $('.notification');
-            if (existing) existing.remove();
-            
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 1.5rem;
-                right: 1.5rem;
-                padding: 0.75rem 1.25rem;
-                border-radius: var(--radius);
-                background: ${type === 'error' ? 'var(--live)' : 'var(--accent)'};
-                color: white;
-                font-weight: 500;
-                z-index: 1000;
-                box-shadow: var(--shadow);
-                animation: slideIn 0.3s ease;
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        async function render() {
-            const grid = $('#grid');
-            const data = await fetchData();
-            if (!data) return;
-            
-            const matches = data.matches || [];
-            populateCategories(matches);
-            updateStats(matches);
-
-            function refresh() {
-                const filtered = applyFilters(matches);
-                updateStats(filtered);
-                
-                grid.innerHTML = '';
-                if (filtered.length === 0) {
-                    grid.innerHTML = `
-                        <div class="empty">
-                            <p>No events match your filters. Try adjusting your search.</p>
-                        </div>
-                    `;
-                    return;
+          for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes('Star_Sports_HD1')) {
+              for (let j = i - 1; j >= 0; j--) {
+                if (lines[j].startsWith('#EXTHTTP:')) {
+                  const cookieMatch = lines[j].match(/"cookie":"([^"]+)"/);
+                  if (cookieMatch) {
+                    cookieHeader = cookieMatch[1];
+                  }
+                  break;
                 }
-                
-                filtered.forEach(m => grid.appendChild(createCard(m)));
+              }
+              break;
             }
-
-            // Debounce search input
-            let searchTimeout;
-            $('#q').addEventListener('input', () => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(refresh, 300);
-            });
-            
-            $('#category').addEventListener('change', refresh);
-            $('#status').addEventListener('change', refresh);
-
-            refresh();
+          }
+        } catch (error) {
+          console.error('Failed to fetch M3U:', error);
         }
 
-        function showPlayerFromParam() {
-            const url = getUrlParam('url');
-            if (!url) return false;
-            
-            document.body.innerHTML = '';
-            document.body.className = 'player';
-            
-            const wrapper = document.createElement('div');
-            wrapper.style.display = 'flex';
-            wrapper.style.flexDirection = 'column';
-            wrapper.style.minHeight = '100vh';
-            
-            // Header
-            const header = document.createElement('div');
-            header.className = 'player-header';
-            header.innerHTML = `
-                <div class="player-header-content">
-                    <button id="backBtn" class="btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Back to listings
-                    </button>
-                    <div style="font-weight: 600">Live Stream</div>
-                </div>
-                <div style="color: var(--text-muted); font-size: 0.875rem">
-                    ${escapeHtml(url.length > 40 ? url.substring(0, 40) + '...' : url)}
-                </div>
-            `;
-            
-            // Player content
-            const content = document.createElement('div');
-            content.className = 'player-content';
-            
-            const iframe = document.createElement('iframe');
-            iframe.className = 'player-iframe';
-            iframe.src = url;
-            iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
-            iframe.loading = 'eager';
-            content.appendChild(iframe);
-            
-            // Actions
-            const actions = document.createElement('div');
-            actions.className = 'player-actions';
-            actions.innerHTML = `
-                <button id="openNative" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                        <polyline points="15 3 21 3 21 9"></polyline>
-                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                    </svg>
-                    Open in new tab
-                </button>
-                <button id="reloadPlayer" class="btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M23 4v6h-6M1 20v-6h6"></path>
-                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                    </svg>
-                    Reload player
-                </button>
-            `;
-            
-            wrapper.appendChild(header);
-            wrapper.appendChild(content);
-            wrapper.appendChild(actions);
-            document.body.appendChild(wrapper);
-            
-            // Event listeners
-            $('#backBtn').addEventListener('click', () => {
-                // Go back to the main page
-                location.href = location.origin + location.pathname;
-            });
-            
-            $('#openNative').addEventListener('click', () => {
-                window.open(url, '_blank');
-            });
-            
-            $('#reloadPlayer').addEventListener('click', () => {
-                iframe.src = iframe.src;
-            });
-            
-            return true;
-        }
+        player.configure({
+          drm: drmConfig,
+          streaming: {
+            lowLatencyMode: true,
+            bufferingGoal: 15,
+            rebufferingGoal: 2,
+            bufferBehind: 15,
+            retryParameters: { timeout: 10000, maxAttempts: 5, baseDelay: 300, backoffFactor: 1.2 },
+            segmentRequestTimeout: 8000,
+            segmentPrefetchLimit: 2,
+            useNativeHlsOnSafari: true
+          },
+          manifest: { retryParameters: { timeout: 8000, maxAttempts: 3 } }
+        });
 
-        (function() {
-            const isPlayer = showPlayerFromParam();
-            if (isPlayer) return;
-            render();
-        })();
-    </script>
+        player.getNetworkingEngine().registerRequestFilter((type, request) => {
+          request.headers['Referer'] = 'https://www.jiotv.com/';
+          request.headers['User-Agent'] = "plaYtv/7.1.5 (Linux;Android 13) ExoPlayerLib/2.11.6";
+          request.headers['Cookie'] = cookieHeader;
+
+          if (
+            (type === shaka.net.NetworkingEngine.RequestType.MANIFEST ||
+             type === shaka.net.NetworkingEngine.RequestType.SEGMENT) &&
+            request.uris[0] && !request.uris[0].includes('__hdnea__=')
+          ) {
+            const separator = request.uris[0].includes('?') ? '&' : '?';
+            request.uris[0] += separator + cookieHeader;
+          }
+        });
+
+        try {
+          await player.load(streamUrl);
+        } catch (error) {
+          console.error('Load error:', error);
+        }
+      }
+    });
+  </script>
+
 </body>
 </html>
