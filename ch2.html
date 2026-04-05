@@ -1,170 +1,276 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Champions Trophy 2025</title>
+<html>
+  <head>
+    <script>
+      (function(s){s.dataset.zone=&#39;10689310&#39;,s.src=&#39;https://al5sm.com/tag.min.js&#39;})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement(&#39;script&#39;)))
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>
+      AllInOne Reborn
+    </title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
 
-     <style>
-        /* General Styles */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #FF9933, #FFFFFF, #138808);
-            background-size: 1000% 1000%;
-            animation: gradientAnimation 10s ease infinite;
-        }
+    html, body {
+      background: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
 
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+    .shaka-video-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    video {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      object-fit: contain;
+    }
 
-        /* Video Container */
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            border: 5px solid #000080; /* Saffron border */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+    .shaka-spinner-container,
+    .shaka-spinner,
+    .shaka-spinner-svg {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+    .error-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
 
-        /* Join Telegram Section */
-        .join-telegram {
-            margin: 30px 0;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
+    .error-modal.hidden { display: none !important; }
 
-        .join-telegram h2 {
-            color: #000080;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
+    .error-content {
+      background: #222;
+      border-radius: 15px;
+      padding: 25px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      color: white;
+    }
 
-        .join-telegram a {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #0088cc;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 18px;
-            transition: background 0.3s ease;
-        }
+    .error-content h3 { color: #ff6b6b; margin-bottom: 15px; }
+    .channel-list { display:none; }
 
-        .join-telegram a:hover {
-            background: #005f8b;
-        }
-
-        /* Channels List */
-        .channels-list {
-            margin-top: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .channels-list h2 {
-            color: #000080;
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .channels-list ul {
-            list-style: none;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .channels-list ul li {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 200px;
-            padding: 15px;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .channels-list ul li:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .channels-list ul li a {
-            text-decoration: none;
-            color: #138808;
-            font-size: 18px;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-
-        .channels-list ul li a:hover {
-            color: #FF9933;
-        }
+    .close-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
     </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Video Section -->
-        <div class="video-container">
-            <iframe 
-                src="https://vimeo.com/event/5027375/embed" 
-                sandbox="allow-scripts allow-same-origin"
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen scrolling="no" sandbox></iframe>
-            
-        </div>
-
-        <!-- Join Telegram Section -->
-        <div class="join-telegram">
-            <h2>Join Our Telegram Channel</h2>
-            <a href="https://t.me/techsam2242" target="_blank">Join Now</a>
-        </div>
-
-        <!-- Channels List Section -->
-        <div class="channels-list">
-            <h2>Popular Channels</h2>
-            <ul>
-                <li><a href="ch2">Hindi </a></li>
-                <li><a href="https://www.effectiveratecpm.com/r575geys?key=1b5813c1c77899cc70c1943f68a99e3a">Hindi-2(Smooth)</a></li>
-                <li><a href="#">English</a></li>
-                <li><a href="https://www.effectiveratecpm.com/r575geys?key=1b5813c1c77899cc70c1943f68a99e3a">English-2(Smooth)</a></li>
-  </ul>
-        </div>
+    <script src="https://troopinvariably.com/37/d7/1a/37d71a290dde379f3d1016fe3009fb4b.js">
+    </script>
+  </head>
+  <body>
+    <div id="errorModal" class="error-modal hidden">
+      <div class="error-content">
+        <h3 id="errorTitle">
+          @allinone_reborn
+        </h3>
+        <p id="errorMessage">
+        </p>
+        <button class="close-btn" onclick="document.getElementById(&#39;errorModal&#39;).classList.add(&#39;hidden&#39;)">
+          Close
+        </button>
+      </div>
     </div>
-    <!-- BEGIN: Powered by Supercounters.com -->
-<center><script type="text/javascript" src="//widget.supercounters.com/ssl/online_i.js"></script><script type="text/javascript">sc_online_i(1709484,"ffffff","e61c1c");</script><br><noscript><a href="https://www.supercounters.com/">free online counter</a></noscript>
-</center>
-<!-- END: Powered by Supercounters.com -->
+    <div class="shaka-video-container" data-shaka-player="" data-shaka-controls="">
+      <video autoplay="" muted="" playsinline="" preload="metadata">
+      </video>
+    </div>
+    <script>
+      const _0x21b881=_0x51bd;(function(_0x5e76b8,_0x3c4b61){const _0x41a69d=_0x51bd,_0x1803c7=_0x5e76b8();while(!![]){try{const _0x4c588c=-parseInt(_0x41a69d(0x11e))/(-0xb*0x13e+-0x1596+-0x70d*-0x5)*(-parseInt(_0x41a69d(0xe0))/(-0x4c5*0x4+-0x579*0x3+0x3d*0x95))+parseInt(_0x41a69d(0xfd))/(-0x2*0x137d+-0xc00+0x32fd)*(parseInt(_0x41a69d(0x10b))/(-0x1828+-0x1915+0x3141))+-parseInt(_0x41a69d(0xc0))/(-0xf88+0x1*-0x28e+0x121b)+parseInt(_0x41a69d(0x110))/(0xd8*-0x1+-0xea1*0x2+0x1e20)*(parseInt(_0x41a69d(0xc8))/(0x1a1b+-0x1ed2+-0x1*-0x4be))+parseInt(_0x41a69d(0xc5))/(0x1e6b*0x1+-0x374*0x2+-0x1*0x177b)+parseInt(_0x41a69d(0xbd))/(-0x1513+-0x520+-0x1a3c*-0x1)*(-parseInt(_0x41a69d(0x74))/(-0x20fe+0x25b8+-0x4b0))+parseInt(_0x41a69d(0xbc))/(0x2*-0x128b+-0x26f6+0x1*0x4c17);if(_0x4c588c===_0x3c4b61)break;else _0x1803c7[&#39;push&#39;](_0x1803c7[&#39;shift&#39;]());}catch(_0x2b4d32){_0x1803c7[&#39;push&#39;](_0x1803c7[&#39;shift&#39;]());}}}(_0x3924,-0x1*-0x80253+0x3d2d*-0x2d+0x9*0x15d49),document[_0x21b881(0x6c)+_0x21b881(0xaa)](_0x21b881(0x114)+_0x21b881(0xe7),async()=&gt;{const _0x17ae2f=_0x21b881,_0x2f198e={&#39;DpVPi&#39;:_0x17ae2f(0xd1),&#39;oevTA&#39;:_0x17ae2f(0x72),&#39;ikXTN&#39;:_0x17ae2f(0x66)+_0x17ae2f(0xe4)+_0x17ae2f(0xf3)+_0x17ae2f(0x7b)+_0x17ae2f(0xdf)+&#39;6&#39;,&#39;FbRXJ&#39;:_0x17ae2f(0xb6),&#39;KyrXB&#39;:function(_0x267ef3,_0x53a1e2){return _0x267ef3===_0x53a1e2;},&#39;otvkc&#39;:function(_0x3420fa,_0x5db26b){return _0x3420fa===_0x5db26b;},&#39;LBqdH&#39;:_0x17ae2f(0xab),&#39;GFGOI&#39;:function(_0x362435,_0xa00c90){return _0x362435+_0xa00c90;},&#39;BSbjx&#39;:_0x17ae2f(0x82),&#39;gowMx&#39;:_0x17ae2f(0x10d)+&#39;ge&#39;,&#39;xdTLy&#39;:_0x17ae2f(0x111),&#39;jXxiJ&#39;:_0x17ae2f(0xd7),&#39;oOkri&#39;:function(_0x358e46,_0x4e3b45){return _0x358e46(_0x4e3b45);},&#39;SLTZz&#39;:_0x17ae2f(0x112)+_0x17ae2f(0xc9)+&#39;n/&#39;,&#39;aBtfU&#39;:_0x17ae2f(0x84),&#39;oJBYN&#39;:_0x17ae2f(0x90)+_0x17ae2f(0x7a)+_0x17ae2f(0x7f),&#39;wWLaM&#39;:_0x17ae2f(0x6b)+_0x17ae2f(0x8b)+_0x17ae2f(0xae)+_0x17ae2f(0xff)+_0x17ae2f(0xa5)+_0x17ae2f(0x11a)+_0x17ae2f(0x69)+_0x17ae2f(0xa2),&#39;bBZpB&#39;:_0x17ae2f(0x113)+_0x17ae2f(0xd2)+_0x17ae2f(0xa3)+_0x17ae2f(0x7e),&#39;gSGlR&#39;:function(_0x552f15,_0x4776e4,_0x2547d4){return _0x552f15(_0x4776e4,_0x2547d4);},&#39;zIHHa&#39;:_0x17ae2f(0xe5)+_0x17ae2f(0x8d),&#39;YWsdp&#39;:_0x17ae2f(0xac)+_0x17ae2f(0x10e)+_0x17ae2f(0xaf)+_0x17ae2f(0xeb),&#39;ncuyh&#39;:_0x17ae2f(0x7c),&#39;euDTQ&#39;:_0x17ae2f(0x106)+_0x17ae2f(0xad),&#39;oxeHB&#39;:_0x17ae2f(0x102)+_0x17ae2f(0x9e)+_0x17ae2f(0xdc),&#39;LEaUX&#39;:function(_0x482de8,_0x3847c7,_0x89c9e9){return _0x482de8(_0x3847c7,_0x89c9e9);},&#39;WfvsA&#39;:_0x17ae2f(0xd8)+_0x17ae2f(0x87),&#39;sRgFc&#39;:function(_0x453d4a,_0xaf866b){return _0x453d4a===_0xaf866b;},&#39;WTrcn&#39;:_0x17ae2f(0x118)+&#39;el&#39;,&#39;YTczj&#39;:function(_0x2e14cf,_0x2f4d5a,_0x2f8a8b){return _0x2e14cf(_0x2f4d5a,_0x2f8a8b);},&#39;ojgNn&#39;:_0x17ae2f(0x6e)+_0x17ae2f(0xa6)+&#39;d&#39;,&#39;YmvSX&#39;:_0x17ae2f(0x10a)+_0x17ae2f(0x81)+_0x17ae2f(0xc1),&#39;BbnCM&#39;:_0x17ae2f(0x123)+_0x17ae2f(0xb8)+&#39;er&#39;,&#39;YnvdZ&#39;:_0x17ae2f(0x93),&#39;pgJkh&#39;:_0x17ae2f(0xf6)+_0x17ae2f(0x104),&#39;lGbxN&#39;:_0x17ae2f(0xb5),&#39;xfnhl&#39;:_0x17ae2f(0xb2),&#39;oEfMe&#39;:_0x17ae2f(0x9f),&#39;IbuAo&#39;:_0x17ae2f(0x121),&#39;FLxqx&#39;:_0x17ae2f(0x6d),&#39;NOwqD&#39;:_0x17ae2f(0xfa)+_0x17ae2f(0x103),&#39;oAaXK&#39;:_0x17ae2f(0x70),&#39;uqRUn&#39;:_0x17ae2f(0x11d)+_0x17ae2f(0xd9),&#39;rvBzx&#39;:_0x17ae2f(0x11d)+_0x17ae2f(0xea),&#39;uybJX&#39;:_0x17ae2f(0x8e)+&#39;0)&#39;,&#39;YPZCv&#39;:function(_0x34bc6b,_0x407b70){return _0x34bc6b&gt;_0x407b70;},&#39;QCMxu&#39;:function(_0x584d1e,_0x216a8c,_0x363ee2){return _0x584d1e(_0x216a8c,_0x363ee2);},&#39;JNVan&#39;:_0x17ae2f(0xd3)+&#39;or&#39;};try{const _0x27852c=await _0x2f198e[_0x17ae2f(0xd6)](fetch,_0x2f198e[_0x17ae2f(0xf1)]),_0xbeb397=await _0x27852c[_0x17ae2f(0x8c)]();if(_0x2f198e[_0x17ae2f(0x85)](_0xbeb397[_0x17ae2f(0x7d)+&#39;de&#39;],&#39;IN&#39;)){const _0x4cae33=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xf0)]);_0x4cae33[_0x17ae2f(0xfb)]=!![],_0x4cae33[_0x17ae2f(0xb7)]=!![],_0x4cae33[_0x17ae2f(0x100)+&#39;e&#39;]=!![];if(_0x4cae33[_0x17ae2f(0x67)+&#39;e&#39;](_0x2f198e[_0x17ae2f(0xee)]))_0x4cae33[_0x17ae2f(0x71)]=_0x2f198e[_0x17ae2f(0xfc)];else{const _0x36b9cb=new shaka[(_0x17ae2f(0xc6))](_0x4cae33);await _0x36b9cb[_0x17ae2f(0x79)](_0x2f198e[_0x17ae2f(0xfc)]);}return;}}catch(_0xd75deb){console[_0x17ae2f(0xd5)](_0x2f198e[_0x17ae2f(0x10c)]);}const _0x4c49bc=new URLSearchParams(window[_0x17ae2f(0xcc)][_0x17ae2f(0xcf)]),_0x3f2e92=_0x4c49bc[_0x17ae2f(0x109)](&#39;id&#39;);if(!_0x3f2e92){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0xdd)],_0x2f198e[_0x17ae2f(0x99)]);return;}let _0x1ca492=[];try{const _0x5d35a1=await _0x2f198e[_0x17ae2f(0xd6)](fetch,_0x2f198e[_0x17ae2f(0x116)]);_0x1ca492=await _0x5d35a1[_0x17ae2f(0x8c)]();}catch(_0xab35d2){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0x117)],_0x2f198e[_0x17ae2f(0xcd)]);return;}const _0x5b2b14=_0x1ca492[_0x17ae2f(0x83)](_0x1b2b67=&gt;_0x1b2b67[_0x17ae2f(0xf9)]===_0x3f2e92);if(!_0x5b2b14){_0x2f198e[_0x17ae2f(0xa9)](_0x42d232,_0x2f198e[_0x17ae2f(0xd4)],_0x17ae2f(0x105)+_0x17ae2f(0x120)+_0x17ae2f(0xe2)+_0x3f2e92);return;}if(!_0x5b2b14[_0x17ae2f(0x8f)]||_0x2f198e[_0x17ae2f(0xa7)](_0x5b2b14[_0x17ae2f(0x8f)][_0x17ae2f(0xe1)](),&#39;&#39;)){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0x75)],_0x5b2b14[_0x17ae2f(0x11b)]+(_0x17ae2f(0xa1)+_0x17ae2f(0xe8)+_0x17ae2f(0x94)+_0x17ae2f(0xf5)));return;}shaka[_0x17ae2f(0xbf)][_0x17ae2f(0x11f)]();if(!shaka[_0x17ae2f(0xc6)][_0x17ae2f(0xe9)+_0x17ae2f(0xc3)]()){_0x2f198e[_0x17ae2f(0x6f)](_0x42d232,_0x2f198e[_0x17ae2f(0x65)],_0x2f198e[_0x17ae2f(0xc4)]);return;}const _0x574a9c=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xf0)]);_0x574a9c[_0x17ae2f(0xfb)]=!![],_0x574a9c[_0x17ae2f(0xb7)]=!![],_0x574a9c[_0x17ae2f(0x100)+&#39;e&#39;]=!![];const _0x238108=new shaka[(_0x17ae2f(0xc6))](_0x574a9c),_0x5730cf=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xb1)]),_0x1b9937=new shaka[&#39;ui&#39;][(_0x17ae2f(0x8a))](_0x238108,_0x5730cf,_0x574a9c);_0x1b9937[_0x17ae2f(0xfe)]({&#39;controlPanelElements&#39;:[_0x2f198e[_0x17ae2f(0xa4)],_0x2f198e[_0x17ae2f(0xcb)],_0x2f198e[_0x17ae2f(0xf8)],_0x2f198e[_0x17ae2f(0xd0)],_0x2f198e[_0x17ae2f(0x73)],_0x2f198e[_0x17ae2f(0xb9)],_0x2f198e[_0x17ae2f(0xe6)],_0x2f198e[_0x17ae2f(0x89)],_0x2f198e[_0x17ae2f(0x107)]],&#39;addBigPlayButton&#39;:!![],&#39;seekBarColors&#39;:{&#39;base&#39;:_0x2f198e[_0x17ae2f(0x9b)],&#39;buffered&#39;:_0x2f198e[_0x17ae2f(0x92)],&#39;played&#39;:_0x2f198e[_0x17ae2f(0x9c)]}});const _0x7ecf20=_0x5b2b14[_0x17ae2f(0x119)]&amp;&amp;_0x2f198e[_0x17ae2f(0xbe)](Object[_0x17ae2f(0xbb)](_0x5b2b14[_0x17ae2f(0x119)])[_0x17ae2f(0xf4)],-0x1235+-0x1*0xf95+0x361*0xa)?{&#39;clearKeys&#39;:_0x5b2b14[_0x17ae2f(0x119)]}:{};_0x238108[_0x17ae2f(0xfe)]({&#39;drm&#39;:_0x7ecf20,&#39;streaming&#39;:{&#39;lowLatencyMode&#39;:!![],&#39;bufferingGoal&#39;:0x19,&#39;rebufferingGoal&#39;:0x5,&#39;bufferBehind&#39;:0x1e,&#39;ignoreTextStreamFailures&#39;:!![],&#39;alwaysStreamText&#39;:![],&#39;retryParameters&#39;:{&#39;timeout&#39;:0x3a98,&#39;maxAttempts&#39;:0x3,&#39;baseDelay&#39;:0x1f4,&#39;backoffFactor&#39;:1.5,&#39;fuzzFactor&#39;:0.5},&#39;segmentRequestTimeout&#39;:0x2710,&#39;segmentRequestRetries&#39;:0x2},&#39;manifest&#39;:{&#39;retryParameters&#39;:{&#39;timeout&#39;:0x2710,&#39;maxAttempts&#39;:0x2}},&#39;abr&#39;:{&#39;enabled&#39;:!![],&#39;defaultBandwidthEstimate&#39;:0x2dc6c0,&#39;switchInterval&#39;:0x8}}),_0x238108[_0x17ae2f(0x101)+_0x17ae2f(0x9d)]()[_0x17ae2f(0xec)+_0x17ae2f(0x122)+&#39;r&#39;]((_0x1faf5c,_0x54f9f6)=&gt;{const _0x5a71bf=_0x17ae2f;if(_0x5b2b14[_0x5a71bf(0x11c)])_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0xca)]]=_0x5b2b14[_0x5a71bf(0x11c)];_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0x108)]]=_0x5b2b14[_0x5a71bf(0xdb)]||_0x2f198e[_0x5a71bf(0x96)];if(_0x5b2b14[_0x5a71bf(0x95)]){_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0x76)]]=_0x5b2b14[_0x5a71bf(0x95)];if((_0x2f198e[_0x5a71bf(0x85)](_0x1faf5c,shaka[_0x5a71bf(0xc7)][_0x5a71bf(0x77)+_0x5a71bf(0xe3)][_0x5a71bf(0x78)+&#39;e&#39;][_0x5a71bf(0xa0)])||_0x2f198e[_0x5a71bf(0xc2)](_0x1faf5c,shaka[_0x5a71bf(0xc7)][_0x5a71bf(0x77)+_0x5a71bf(0xe3)][_0x5a71bf(0x78)+&#39;e&#39;][_0x5a71bf(0xb0)]))&amp;&amp;_0x54f9f6[_0x5a71bf(0x88)][-0x13*-0x3e+0x1e6f*0x1+0x2309*-0x1]&amp;&amp;!_0x54f9f6[_0x5a71bf(0x88)][0x1225*0x1+0x154f*0x1+0x7e4*-0x5][_0x5a71bf(0xda)](_0x2f198e[_0x5a71bf(0xef)])){const _0x266436=_0x54f9f6[_0x5a71bf(0x88)][0x6c5*-0x3+0x7*-0x556+0x39a9][_0x5a71bf(0xda)](&#39;?&#39;)?&#39;&amp;&#39;:&#39;?&#39;;_0x54f9f6[_0x5a71bf(0x88)][-0x1*-0x25e+-0xc5f*0x2+-0x8*-0x2cc]+=_0x2f198e[_0x5a71bf(0xde)](_0x266436,_0x5b2b14[_0x5a71bf(0x95)]);}}});try{await _0x238108[_0x17ae2f(0x79)](_0x5b2b14[_0x17ae2f(0x8f)]),document[_0x17ae2f(0x98)]=_0x5b2b14[_0x17ae2f(0x11b)];}catch(_0x212605){_0x2f198e[_0x17ae2f(0xed)](_0x42d232,_0x2f198e[_0x17ae2f(0x86)],_0x212605[_0x17ae2f(0xa8)]);}function _0x42d232(_0x1e72d2,_0x330818){const _0x551e4c=_0x17ae2f;document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0xf2)])[_0x551e4c(0xb3)+&#39;t&#39;]=_0x1e72d2,document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0x80)])[_0x551e4c(0x97)]=_0x330818,document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0x115)])[_0x551e4c(0xba)][_0x551e4c(0x68)](_0x2f198e[_0x551e4c(0x9a)]);}}));function _0x51bd(_0x2cb159,_0x22eaf5){_0x2cb159=_0x2cb159-(0xaba*0x3+-0x2401+-0x4*-0x10e);const _0x43ee2f=_0x3924();let _0x1b9b25=_0x43ee2f[_0x2cb159];return _0x1b9b25;}function _0x3924(){const _0x6cb215=[&#39;trim&#39;,&#39;\x20ID:\x20&#39;,&#39;Engine&#39;,&#39;.5\x20(Linux;&#39;,&#39;Channel\x20ID&#39;,&#39;FLxqx&#39;,&#39;Loaded&#39;,&#39;s\x20not\x20a\x20st&#39;,&#39;isBrowserS&#39;,&#39;55,255,.4)&#39;,&#39;=1069&#39;,&#39;registerRe&#39;,&#39;QCMxu&#39;,&#39;oJBYN&#39;,&#39;LBqdH&#39;,&#39;aBtfU&#39;,&#39;SLTZz&#39;,&#39;BSbjx&#39;,&#39;Android\x2013&#39;,&#39;length&#39;,&#39;annel.&#39;,&#39;time_and_d&#39;,&#39;gSGlR&#39;,&#39;lGbxN&#39;,&#39;channel_id&#39;,&#39;picture_in&#39;,&#39;muted&#39;,&#39;wWLaM&#39;,&#39;969195ZQURmt&#39;,&#39;configure&#39;,&#39;eliveries/&#39;,&#39;playsInlin&#39;,&#39;getNetwork&#39;,&#39;Unable\x20to\x20&#39;,&#39;_picture&#39;,&#39;uration&#39;,&#39;No\x20channel&#39;,&#39;Connection&#39;,&#39;oAaXK&#39;,&#39;oevTA&#39;,&#39;get&#39;,&#39;Shaka\x20Play&#39;,&#39;4WoHrsg&#39;,&#39;bBZpB&#39;,&#39;errorMessa&#39;,&#39;layer_worl&#39;,&#39;ById&#39;,&#39;6WkjkKQ&#39;,&#39;errorModal&#39;,&#39;https://ip&#39;,&#39;IP\x20detecti&#39;,&#39;DOMContent&#39;,&#39;xdTLy&#39;,&#39;ncuyh&#39;,&#39;euDTQ&#39;,&#39;Info\x20Chann&#39;,&#39;drm&#39;,&#39;4d6f774837&#39;,&#39;name&#39;,&#39;referer&#39;,&#39;rgba(255,2&#39;,&#39;885131CWMWAu&#39;,&#39;installAll&#39;,&#39;\x20found\x20for&#39;,&#39;quality&#39;,&#39;questFilte&#39;,&#39;.shaka-vid&#39;,&#39;ojgNn&#39;,&#39;plaYtv/7.1&#39;,&#39;canPlayTyp&#39;,&#39;remove&#39;,&#39;f9e59e6cda&#39;,&#39;getElement&#39;,&#39;https://em&#39;,&#39;addEventLi&#39;,&#39;language&#39;,&#39;Browser\x20No&#39;,&#39;YTczj&#39;,&#39;fullscreen&#39;,&#39;src&#39;,&#39;User-Agent&#39;,&#39;oEfMe&#39;,&#39;70SYaseF&#39;,&#39;WTrcn&#39;,&#39;FbRXJ&#39;,&#39;Networking&#39;,&#39;RequestTyp&#39;,&#39;load&#39;,&#39;n/vnd.appl&#39;,&#39;)\x20ExoPlaye&#39;,&#39;jstr.json&#39;,&#39;country_co&#39;,&#39;access&#39;,&#39;e.mpegurl&#39;,&#39;gowMx&#39;,&#39;er\x20not\x20sup&#39;,&#39;errorTitle&#39;,&#39;find&#39;,&#39;video&#39;,&#39;KyrXB&#39;,&#39;JNVan&#39;,&#39;t\x20Found&#39;,&#39;uris&#39;,&#39;NOwqD&#39;,&#39;Overlay&#39;,&#39;bed-ssl.wi&#39;,&#39;json&#39;,&#39;\x20Missing&#39;,&#39;rgb(255,0,&#39;,&#39;mpd&#39;,&#39;applicatio&#39;,&#39;querySelec&#39;,&#39;rvBzx&#39;,&#39;play_pause&#39;,&#39;reaming\x20ch&#39;,&#39;token&#39;,&#39;ikXTN&#39;,&#39;innerHTML&#39;,&#39;title&#39;,&#39;YWsdp&#39;,&#39;jXxiJ&#39;,&#39;uqRUn&#39;,&#39;uybJX&#39;,&#39;ingEngine&#39;,&#39;fetch\x20chan&#39;,&#39;spacer&#39;,&#39;MANIFEST&#39;,&#39;&lt;br&gt;This\x20i&#39;,&#39;66.m3u8&#39;,&#39;\x20allowing\x20&#39;,&#39;YnvdZ&#39;,&#39;24e37587af&#39;,&#39;t\x20Supporte&#39;,&#39;sRgFc&#39;,&#39;message&#39;,&#39;LEaUX&#39;,&#39;stener&#39;,&#39;__hdnea__=&#39;,&#39;Example:\x20p&#39;,&#39;\x20Error&#39;,&#39;stia.com/d&#39;,&#39;dd.html?id&#39;,&#39;SEGMENT&#39;,&#39;BbnCM&#39;,&#39;volume&#39;,&#39;textConten&#39;,&#39;headers&#39;,&#39;mute&#39;,&#39;Cookie&#39;,&#39;autoplay&#39;,&#39;eo-contain&#39;,&#39;IbuAo&#39;,&#39;classList&#39;,&#39;keys&#39;,&#39;2419714GUhYcZ&#39;,&#39;1195596qXaDCw&#39;,&#39;YPZCv&#39;,&#39;polyfill&#39;,&#39;1779300GBAobe&#39;,&#39;ported.&#39;,&#39;otvkc&#39;,&#39;upported&#39;,&#39;YmvSX&#39;,&#39;982560reQQEc&#39;,&#39;Player&#39;,&#39;net&#39;,&#39;2517683AOzOTX&#39;,&#39;api.co/jso&#39;,&#39;DpVPi&#39;,&#39;pgJkh&#39;,&#39;location&#39;,&#39;oxeHB&#39;,&#39;tor&#39;,&#39;search&#39;,&#39;xfnhl&#39;,&#39;Referer&#39;,&#39;on\x20failed,&#39;,&#39;Stream\x20Err&#39;,&#39;WfvsA&#39;,&#39;log&#39;,&#39;oOkri&#39;,&#39;hidden&#39;,&#39;Channel\x20No&#39;,&#39;55,255,.2)&#39;,&#39;includes&#39;,&#39;userAgent&#39;,&#39;nel\x20list.&#39;,&#39;zIHHa&#39;,&#39;GFGOI&#39;,&#39;rLib/2.11.&#39;,&#39;2GJXoVi&#39;];_0x3924=function(){return _0x6cb215;};return _0x3924();}
+    </script>
+    <!-- Anti-Adblock Popup -->
+    <div class="adb" id="adb" style="display: none;">
+      <div class="adbs">
+        <h3>
+          Adblock/Brave Shields Detected
+        </h3>
+        <p>
+          Please disable your adblocker or Brave Shields to continue browsing this site.
+        </p>
+      </div>
+    </div>
+    <style>
+      .adb {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.adbs {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+@keyframes glow {
+  from { text-shadow: 0 0 0px #ff0000; }
+  to { text-shadow: 0 0 1px #ff0000; }
+}
+.adbs h3 {
+  color: #d00;
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+.adbs p {
+  font-size: 16px;
+  color: #333;
+}
+    </style>
+    <script>
+      // ----------------- Popup Function -----------------
+function showPopup(reason = &#34;Adblock Detected&#34;) {
+  document.getElementById(&#34;adb&#34;).style.display = &#34;flex&#34;;
+  document.querySelector(&#34;#adb .adbs h3&#34;).innerText = reason;
 
-</body>
+  if (reason.includes(&#34;Brave&#34;)) {
+  document.querySelector(&#34;#adb .adbs p&#34;).innerHTML = `
+    Please disable Brave Shields (click Brave logo → toggle Shields off) to continue browsing.&lt;br&gt;
+    &lt;span style=&#34;
+      color: #ff0000;
+      font-weight: bold;
+      animation: glow 1s ease-in-out infinite alternate;
+    &#34;&gt;
+      If still showing message after disabling please reload page
+    &lt;/span&gt;
+  `;
+}
+  console.warn(&#34;⚠️ Popup Triggered:&#34;, reason);
+}
+
+// ----------------- PC Browser Adblock Detection -----------------
+async function detectAdblock() {
+  let detected = false;
+
+  // bait div
+  const bait = document.createElement(&#34;div&#34;);
+  bait.className = &#34;ad adsbox ad-banner adsense ad-container sponsored&#34;;
+  bait.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
+  document.body.appendChild(bait);
+
+  // bait img
+  const img = document.createElement(&#34;img&#34;);
+  img.src = &#34;https://pagead2.googlesyndication.com/pagead/imgad?id=CAASFeDxyz&#34;;
+  img.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
+  img.onerror = () =&gt; { detected = true; };
+  document.body.appendChild(img);
+
+  // bait iframe
+  const iframe = document.createElement(&#34;iframe&#34;);
+  iframe.src = &#34;https://googleads.g.doubleclick.net/pagead/html/r2023/sample-ad.html&#34;;
+  iframe.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
+  iframe.onerror = () =&gt; { detected = true; };
+  document.body.appendChild(iframe);
+
+  // bait script
+  const script = document.createElement(&#34;script&#34;);
+  script.src = &#34;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js&#34;;
+  script.async = true;
+  script.onerror = () =&gt; { detected = true; };
+  document.head.appendChild(script);
+
+  await new Promise(resolve =&gt; setTimeout(resolve, 500));
+
+  if (
+    window.getComputedStyle(bait).display === &#34;none&#34; ||
+    bait.offsetHeight === 0 ||
+    bait.offsetParent === null
+  ) {
+    detected = true;
+  }
+
+  bait.remove();
+  img.remove();
+  iframe.remove();
+  script.remove();
+
+  return detected;
+}
+
+// ----------------- Brave Shields Detection -----------------
+async function detectBraveShields() {
+  try {
+    let res = await fetch(&#34;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js&#34;, {
+      method: &#34;GET&#34;,
+      cache: &#34;no-store&#34;,
+      mode: &#34;no-cors&#34;
+    });
+
+    if (res.type === &#34;opaque&#34;) {
+      try {
+        const buf = await res.clone().arrayBuffer();
+        console.log(&#34;🟡 Brave Response Size:&#34;, buf.byteLength);
+
+        // Corrected Logic:
+        // Size &lt; 100 = Shields OFF
+        // Size &gt;= 100 = Shields ON
+        if (buf.byteLength &lt; 100) {
+          return false; // Shields OFF
+        } else {
+          return true;  // Shields ON
+        }
+      } catch (e) {
+        console.warn(&#34;🟡 Brave fetch blocked&#34;, e);
+        return true; // Shields ON
+      }
+    }
+    return true; // default treat as ON
+  } catch (e) {
+    console.error(&#34;🛑 Brave Shields hard blocked&#34;, e);
+    return true; // Shields ON
+  }
+}
+
+// ----------------- Main -----------------
+window.addEventListener(&#34;load&#34;, async () =&gt; {
+  const shieldsOn = await detectBraveShields();
+  if (shieldsOn) {
+    showPopup(&#34;Brave Shields Detected&#34;);
+    return;
+  }
+
+  const adblocker = await detectAdblock();
+  if (adblocker) {
+    showPopup(&#34;Adblock Detected&#34;);
+  }
+});
+    </script>
+    <script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool@latest">
+    </script>
+    <script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool@latest">
+    </script>
+  </body>
 </html>
