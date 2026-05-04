@@ -1,276 +1,656 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script>
-      (function(s){s.dataset.zone=&#39;10689310&#39;,s.src=&#39;https://al5sm.com/tag.min.js&#39;})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement(&#39;script&#39;)))
-    </script>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>
-      AllInOne Reborn
-    </title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.ui.min.js" crossorigin="anonymous">
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/controls.min.css" crossorigin="anonymous" />
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Cinebto Stream · Multi‑Server with Control Form</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    html, body {
-      background: #000;
-      height: 100vh;
-      width: 100vw;
+    body {
+      background: #0a0c10;
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      color: #eef2ff;
+    }
+
+    /* navbar simplified */
+    .navbar {
+      background: rgba(10, 12, 18, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e2b0ff, #8b5cf6, #4f46e5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .badge {
+      background: #1e293b;
+      padding: 0.25rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #a5b4fc;
+      margin-left: 0.75rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* video player */
+    .player-wrapper {
+      background: #000000;
+      border-radius: 28px;
       overflow: hidden;
-      font-family: system-ui, -apple-system, sans-serif;
+      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.7);
+      aspect-ratio: 16 / 9;
+      width: 100%;
+      position: relative;
     }
 
-    .shaka-video-container {
-      position: absolute;
-      inset: 0;
+    iframe {
       width: 100%;
       height: 100%;
+      border: none;
+      display: block;
     }
 
-    video {
-      width: 100%;
-      height: 100%;
-      background: #000;
-      object-fit: contain;
+    /* control form - sleek card */
+    .control-card {
+      background: #0f121ecc;
+      backdrop-filter: blur(8px);
+      border: 1px solid #2a2f45;
+      border-radius: 28px;
+      padding: 1.3rem 1.8rem;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      align-items: flex-end;
     }
 
-    .shaka-spinner-container,
-    .shaka-spinner,
-    .shaka-spinner-svg {
-      display: none !important;
-      visibility: hidden !important;
-      opacity: 0 !important;
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      min-width: 130px;
     }
 
-    .error-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
+    .input-group label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      color: #9ca3cf;
+    }
+
+    .input-group input, .input-group select {
+      background: #0a0d18;
+      border: 1px solid #2f3a60;
+      border-radius: 40px;
+      padding: 0.7rem 1rem;
+      color: white;
+      font-weight: 500;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 6px rgba(139, 92, 246, 0.4);
+    }
+
+    .load-btn {
+      background: #7c3aed;
+      border: none;
+      padding: 0.7rem 1.6rem;
+      border-radius: 40px;
+      font-weight: 700;
+      color: white;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-left: auto;
+      font-family: inherit;
+    }
+
+    .load-btn:hover {
+      background: #9b5cff;
+      transform: scale(0.97);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
+    }
+
+    /* server section (BELOW player + form) */
+    .server-section {
+      margin-top: 2rem;
+      background: #0f1219;
+      border-radius: 32px;
+      padding: 1rem 1rem 1rem 1.4rem;
+      border: 1px solid #24283e;
+    }
+
+    .server-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      gap: 0.6rem;
+    }
+
+    .server-header h4 {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -0.2px;
+      background: #1e253b;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    .server-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      max-height: 130px;
+      overflow-y: auto;
+      padding: 0.3rem 0;
+    }
+
+    .server-btn {
+      background: #11161f;
+      border: 1px solid #2d374e;
+      color: #cbd5e6;
+      padding: 0.5rem 1.1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .server-btn.active {
+      background: #7c3aed;
+      border-color: #a78bfa;
+      color: white;
+      box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
+    }
+
+    .server-btn:hover:not(.active) {
+      background: #20273f;
+      color: #eef2ff;
+      border-color: #5b6e9e;
+    }
+
+    .info-panel {
+      background: #0b0e16;
+      border-radius: 20px;
+      padding: 0.8rem 1.3rem;
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .content-meta {
+      display: flex;
+      gap: 1rem;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .active-server-badge {
+      background: #1a1f2e;
+      padding: 0.25rem 1rem;
+      border-radius: 32px;
+      font-weight: 600;
+    }
+
+    .note {
+      color: #8892b0;
+      font-size: 0.7rem;
+    }
+
+    .error-msg {
+      background: #2c1a2e;
+      border-left: 4px solid #f43f5e;
+      padding: 0.8rem 1.2rem;
+      border-radius: 1rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .loader {
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 10000;
+      height: 100%;
+      background: #05070c;
+      gap: 0.8rem;
+      flex-direction: column;
     }
 
-    .error-modal.hidden { display: none !important; }
-
-    .error-content {
-      background: #222;
-      border-radius: 15px;
-      padding: 25px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
-      color: white;
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 3px solid #2e3e60;
+      border-top: 3px solid #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
     }
 
-    .error-content h3 { color: #ff6b6b; margin-bottom: 15px; }
-    .channel-list { display:none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .close-btn {
-      background: #ff4444;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+    @media (max-width: 780px) {
+      .control-card { flex-direction: column; align-items: stretch; }
+      .load-btn { margin-left: 0; margin-top: 0.5rem; }
+      .server-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.5rem; }
+      .container { padding: 0 1rem; }
     }
-    </style>
-    <script src="https://troopinvariably.com/37/d7/1a/37d71a290dde379f3d1016fe3009fb4b.js">
-    </script>
-  </head>
-  <body>
-    <div id="errorModal" class="error-modal hidden">
-      <div class="error-content">
-        <h3 id="errorTitle">
-          @allinone_reborn
-        </h3>
-        <p id="errorMessage">
-        </p>
-        <button class="close-btn" onclick="document.getElementById(&#39;errorModal&#39;).classList.add(&#39;hidden&#39;)">
-          Close
-        </button>
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div>
+    <span class="logo">🎬 Cinebto · MultiStream</span>
+    <span class="badge">⚡ 24+ SERVERS · FORM CONTROL</span>
+  </div>
+  <div class="note" style="font-size:0.7rem;">👇 Server list below player</div>
+</div>
+
+<div class="container">
+  <!-- PLAYER REGION -->
+  <div class="player-wrapper" id="playerContainer">
+    <div class="loader">
+      <div class="spinner"></div>
+      <span>Ready to stream</span>
+    </div>
+  </div>
+
+  <!-- CONTROL FORM: Media input & type selector -->
+  <div class="control-card">
+    <div class="input-group">
+      <label>🎞️ Content Type</label>
+      <select id="contentTypeSelect">
+        <option value="movie">🎬 Movie</option>
+        <option value="tv">📺 TV Series</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>TMDB / IMDB ID</label>
+      <input type="text" id="mediaIdInput" placeholder="e.g., 1247165, 1399" value="1247165">
+    </div>
+    <div class="input-group" id="seasonGroup">
+      <label>Season</label>
+      <input type="number" id="seasonInput" value="1" min="1">
+    </div>
+    <div class="input-group" id="episodeGroup">
+      <label>Episode</label>
+      <input type="number" id="episodeInput" value="1" min="1">
+    </div>
+    <button class="load-btn" id="loadContentBtn">▶ LOAD & STREAM</button>
+  </div>
+
+  <!-- SERVER SELECTOR (BELOW PLAYER & FORM) -->
+  <div class="server-section">
+    <div class="server-header">
+      <h4>🌐 SELECT STREAMING SERVER</h4>
+      <span class="note">✨ Click any server — embed updates instantly</span>
+    </div>
+    <div id="serverButtonsContainer" class="server-selector">
+      <!-- dynamic server buttons injected -->
+    </div>
+    <div class="info-panel">
+      <div class="content-meta">
+        <span id="contentTypeBadge" class="active-server-badge">🎬 MOVIE</span>
+        <span id="activeServerLabel" class="active-server-badge">⚡ Server: —</span>
+        <span id="customNote" class="note">📌 Use form above to change content</span>
       </div>
+      <select id="quickServerSelect" aria-label="quick server switch" style="background:#10131f; border-radius:2rem; padding:0.3rem 0.8rem; font-size:0.75rem;">
+        <option value="">🔁 Quick jump</option>
+      </select>
     </div>
-    <div class="shaka-video-container" data-shaka-player="" data-shaka-controls="">
-      <video autoplay="" muted="" playsinline="" preload="metadata">
-      </video>
-    </div>
-    <script>
-      const _0x21b881=_0x51bd;(function(_0x5e76b8,_0x3c4b61){const _0x41a69d=_0x51bd,_0x1803c7=_0x5e76b8();while(!![]){try{const _0x4c588c=-parseInt(_0x41a69d(0x11e))/(-0xb*0x13e+-0x1596+-0x70d*-0x5)*(-parseInt(_0x41a69d(0xe0))/(-0x4c5*0x4+-0x579*0x3+0x3d*0x95))+parseInt(_0x41a69d(0xfd))/(-0x2*0x137d+-0xc00+0x32fd)*(parseInt(_0x41a69d(0x10b))/(-0x1828+-0x1915+0x3141))+-parseInt(_0x41a69d(0xc0))/(-0xf88+0x1*-0x28e+0x121b)+parseInt(_0x41a69d(0x110))/(0xd8*-0x1+-0xea1*0x2+0x1e20)*(parseInt(_0x41a69d(0xc8))/(0x1a1b+-0x1ed2+-0x1*-0x4be))+parseInt(_0x41a69d(0xc5))/(0x1e6b*0x1+-0x374*0x2+-0x1*0x177b)+parseInt(_0x41a69d(0xbd))/(-0x1513+-0x520+-0x1a3c*-0x1)*(-parseInt(_0x41a69d(0x74))/(-0x20fe+0x25b8+-0x4b0))+parseInt(_0x41a69d(0xbc))/(0x2*-0x128b+-0x26f6+0x1*0x4c17);if(_0x4c588c===_0x3c4b61)break;else _0x1803c7[&#39;push&#39;](_0x1803c7[&#39;shift&#39;]());}catch(_0x2b4d32){_0x1803c7[&#39;push&#39;](_0x1803c7[&#39;shift&#39;]());}}}(_0x3924,-0x1*-0x80253+0x3d2d*-0x2d+0x9*0x15d49),document[_0x21b881(0x6c)+_0x21b881(0xaa)](_0x21b881(0x114)+_0x21b881(0xe7),async()=&gt;{const _0x17ae2f=_0x21b881,_0x2f198e={&#39;DpVPi&#39;:_0x17ae2f(0xd1),&#39;oevTA&#39;:_0x17ae2f(0x72),&#39;ikXTN&#39;:_0x17ae2f(0x66)+_0x17ae2f(0xe4)+_0x17ae2f(0xf3)+_0x17ae2f(0x7b)+_0x17ae2f(0xdf)+&#39;6&#39;,&#39;FbRXJ&#39;:_0x17ae2f(0xb6),&#39;KyrXB&#39;:function(_0x267ef3,_0x53a1e2){return _0x267ef3===_0x53a1e2;},&#39;otvkc&#39;:function(_0x3420fa,_0x5db26b){return _0x3420fa===_0x5db26b;},&#39;LBqdH&#39;:_0x17ae2f(0xab),&#39;GFGOI&#39;:function(_0x362435,_0xa00c90){return _0x362435+_0xa00c90;},&#39;BSbjx&#39;:_0x17ae2f(0x82),&#39;gowMx&#39;:_0x17ae2f(0x10d)+&#39;ge&#39;,&#39;xdTLy&#39;:_0x17ae2f(0x111),&#39;jXxiJ&#39;:_0x17ae2f(0xd7),&#39;oOkri&#39;:function(_0x358e46,_0x4e3b45){return _0x358e46(_0x4e3b45);},&#39;SLTZz&#39;:_0x17ae2f(0x112)+_0x17ae2f(0xc9)+&#39;n/&#39;,&#39;aBtfU&#39;:_0x17ae2f(0x84),&#39;oJBYN&#39;:_0x17ae2f(0x90)+_0x17ae2f(0x7a)+_0x17ae2f(0x7f),&#39;wWLaM&#39;:_0x17ae2f(0x6b)+_0x17ae2f(0x8b)+_0x17ae2f(0xae)+_0x17ae2f(0xff)+_0x17ae2f(0xa5)+_0x17ae2f(0x11a)+_0x17ae2f(0x69)+_0x17ae2f(0xa2),&#39;bBZpB&#39;:_0x17ae2f(0x113)+_0x17ae2f(0xd2)+_0x17ae2f(0xa3)+_0x17ae2f(0x7e),&#39;gSGlR&#39;:function(_0x552f15,_0x4776e4,_0x2547d4){return _0x552f15(_0x4776e4,_0x2547d4);},&#39;zIHHa&#39;:_0x17ae2f(0xe5)+_0x17ae2f(0x8d),&#39;YWsdp&#39;:_0x17ae2f(0xac)+_0x17ae2f(0x10e)+_0x17ae2f(0xaf)+_0x17ae2f(0xeb),&#39;ncuyh&#39;:_0x17ae2f(0x7c),&#39;euDTQ&#39;:_0x17ae2f(0x106)+_0x17ae2f(0xad),&#39;oxeHB&#39;:_0x17ae2f(0x102)+_0x17ae2f(0x9e)+_0x17ae2f(0xdc),&#39;LEaUX&#39;:function(_0x482de8,_0x3847c7,_0x89c9e9){return _0x482de8(_0x3847c7,_0x89c9e9);},&#39;WfvsA&#39;:_0x17ae2f(0xd8)+_0x17ae2f(0x87),&#39;sRgFc&#39;:function(_0x453d4a,_0xaf866b){return _0x453d4a===_0xaf866b;},&#39;WTrcn&#39;:_0x17ae2f(0x118)+&#39;el&#39;,&#39;YTczj&#39;:function(_0x2e14cf,_0x2f4d5a,_0x2f8a8b){return _0x2e14cf(_0x2f4d5a,_0x2f8a8b);},&#39;ojgNn&#39;:_0x17ae2f(0x6e)+_0x17ae2f(0xa6)+&#39;d&#39;,&#39;YmvSX&#39;:_0x17ae2f(0x10a)+_0x17ae2f(0x81)+_0x17ae2f(0xc1),&#39;BbnCM&#39;:_0x17ae2f(0x123)+_0x17ae2f(0xb8)+&#39;er&#39;,&#39;YnvdZ&#39;:_0x17ae2f(0x93),&#39;pgJkh&#39;:_0x17ae2f(0xf6)+_0x17ae2f(0x104),&#39;lGbxN&#39;:_0x17ae2f(0xb5),&#39;xfnhl&#39;:_0x17ae2f(0xb2),&#39;oEfMe&#39;:_0x17ae2f(0x9f),&#39;IbuAo&#39;:_0x17ae2f(0x121),&#39;FLxqx&#39;:_0x17ae2f(0x6d),&#39;NOwqD&#39;:_0x17ae2f(0xfa)+_0x17ae2f(0x103),&#39;oAaXK&#39;:_0x17ae2f(0x70),&#39;uqRUn&#39;:_0x17ae2f(0x11d)+_0x17ae2f(0xd9),&#39;rvBzx&#39;:_0x17ae2f(0x11d)+_0x17ae2f(0xea),&#39;uybJX&#39;:_0x17ae2f(0x8e)+&#39;0)&#39;,&#39;YPZCv&#39;:function(_0x34bc6b,_0x407b70){return _0x34bc6b&gt;_0x407b70;},&#39;QCMxu&#39;:function(_0x584d1e,_0x216a8c,_0x363ee2){return _0x584d1e(_0x216a8c,_0x363ee2);},&#39;JNVan&#39;:_0x17ae2f(0xd3)+&#39;or&#39;};try{const _0x27852c=await _0x2f198e[_0x17ae2f(0xd6)](fetch,_0x2f198e[_0x17ae2f(0xf1)]),_0xbeb397=await _0x27852c[_0x17ae2f(0x8c)]();if(_0x2f198e[_0x17ae2f(0x85)](_0xbeb397[_0x17ae2f(0x7d)+&#39;de&#39;],&#39;IN&#39;)){const _0x4cae33=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xf0)]);_0x4cae33[_0x17ae2f(0xfb)]=!![],_0x4cae33[_0x17ae2f(0xb7)]=!![],_0x4cae33[_0x17ae2f(0x100)+&#39;e&#39;]=!![];if(_0x4cae33[_0x17ae2f(0x67)+&#39;e&#39;](_0x2f198e[_0x17ae2f(0xee)]))_0x4cae33[_0x17ae2f(0x71)]=_0x2f198e[_0x17ae2f(0xfc)];else{const _0x36b9cb=new shaka[(_0x17ae2f(0xc6))](_0x4cae33);await _0x36b9cb[_0x17ae2f(0x79)](_0x2f198e[_0x17ae2f(0xfc)]);}return;}}catch(_0xd75deb){console[_0x17ae2f(0xd5)](_0x2f198e[_0x17ae2f(0x10c)]);}const _0x4c49bc=new URLSearchParams(window[_0x17ae2f(0xcc)][_0x17ae2f(0xcf)]),_0x3f2e92=_0x4c49bc[_0x17ae2f(0x109)](&#39;id&#39;);if(!_0x3f2e92){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0xdd)],_0x2f198e[_0x17ae2f(0x99)]);return;}let _0x1ca492=[];try{const _0x5d35a1=await _0x2f198e[_0x17ae2f(0xd6)](fetch,_0x2f198e[_0x17ae2f(0x116)]);_0x1ca492=await _0x5d35a1[_0x17ae2f(0x8c)]();}catch(_0xab35d2){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0x117)],_0x2f198e[_0x17ae2f(0xcd)]);return;}const _0x5b2b14=_0x1ca492[_0x17ae2f(0x83)](_0x1b2b67=&gt;_0x1b2b67[_0x17ae2f(0xf9)]===_0x3f2e92);if(!_0x5b2b14){_0x2f198e[_0x17ae2f(0xa9)](_0x42d232,_0x2f198e[_0x17ae2f(0xd4)],_0x17ae2f(0x105)+_0x17ae2f(0x120)+_0x17ae2f(0xe2)+_0x3f2e92);return;}if(!_0x5b2b14[_0x17ae2f(0x8f)]||_0x2f198e[_0x17ae2f(0xa7)](_0x5b2b14[_0x17ae2f(0x8f)][_0x17ae2f(0xe1)](),&#39;&#39;)){_0x2f198e[_0x17ae2f(0xf7)](_0x42d232,_0x2f198e[_0x17ae2f(0x75)],_0x5b2b14[_0x17ae2f(0x11b)]+(_0x17ae2f(0xa1)+_0x17ae2f(0xe8)+_0x17ae2f(0x94)+_0x17ae2f(0xf5)));return;}shaka[_0x17ae2f(0xbf)][_0x17ae2f(0x11f)]();if(!shaka[_0x17ae2f(0xc6)][_0x17ae2f(0xe9)+_0x17ae2f(0xc3)]()){_0x2f198e[_0x17ae2f(0x6f)](_0x42d232,_0x2f198e[_0x17ae2f(0x65)],_0x2f198e[_0x17ae2f(0xc4)]);return;}const _0x574a9c=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xf0)]);_0x574a9c[_0x17ae2f(0xfb)]=!![],_0x574a9c[_0x17ae2f(0xb7)]=!![],_0x574a9c[_0x17ae2f(0x100)+&#39;e&#39;]=!![];const _0x238108=new shaka[(_0x17ae2f(0xc6))](_0x574a9c),_0x5730cf=document[_0x17ae2f(0x91)+_0x17ae2f(0xce)](_0x2f198e[_0x17ae2f(0xb1)]),_0x1b9937=new shaka[&#39;ui&#39;][(_0x17ae2f(0x8a))](_0x238108,_0x5730cf,_0x574a9c);_0x1b9937[_0x17ae2f(0xfe)]({&#39;controlPanelElements&#39;:[_0x2f198e[_0x17ae2f(0xa4)],_0x2f198e[_0x17ae2f(0xcb)],_0x2f198e[_0x17ae2f(0xf8)],_0x2f198e[_0x17ae2f(0xd0)],_0x2f198e[_0x17ae2f(0x73)],_0x2f198e[_0x17ae2f(0xb9)],_0x2f198e[_0x17ae2f(0xe6)],_0x2f198e[_0x17ae2f(0x89)],_0x2f198e[_0x17ae2f(0x107)]],&#39;addBigPlayButton&#39;:!![],&#39;seekBarColors&#39;:{&#39;base&#39;:_0x2f198e[_0x17ae2f(0x9b)],&#39;buffered&#39;:_0x2f198e[_0x17ae2f(0x92)],&#39;played&#39;:_0x2f198e[_0x17ae2f(0x9c)]}});const _0x7ecf20=_0x5b2b14[_0x17ae2f(0x119)]&amp;&amp;_0x2f198e[_0x17ae2f(0xbe)](Object[_0x17ae2f(0xbb)](_0x5b2b14[_0x17ae2f(0x119)])[_0x17ae2f(0xf4)],-0x1235+-0x1*0xf95+0x361*0xa)?{&#39;clearKeys&#39;:_0x5b2b14[_0x17ae2f(0x119)]}:{};_0x238108[_0x17ae2f(0xfe)]({&#39;drm&#39;:_0x7ecf20,&#39;streaming&#39;:{&#39;lowLatencyMode&#39;:!![],&#39;bufferingGoal&#39;:0x19,&#39;rebufferingGoal&#39;:0x5,&#39;bufferBehind&#39;:0x1e,&#39;ignoreTextStreamFailures&#39;:!![],&#39;alwaysStreamText&#39;:![],&#39;retryParameters&#39;:{&#39;timeout&#39;:0x3a98,&#39;maxAttempts&#39;:0x3,&#39;baseDelay&#39;:0x1f4,&#39;backoffFactor&#39;:1.5,&#39;fuzzFactor&#39;:0.5},&#39;segmentRequestTimeout&#39;:0x2710,&#39;segmentRequestRetries&#39;:0x2},&#39;manifest&#39;:{&#39;retryParameters&#39;:{&#39;timeout&#39;:0x2710,&#39;maxAttempts&#39;:0x2}},&#39;abr&#39;:{&#39;enabled&#39;:!![],&#39;defaultBandwidthEstimate&#39;:0x2dc6c0,&#39;switchInterval&#39;:0x8}}),_0x238108[_0x17ae2f(0x101)+_0x17ae2f(0x9d)]()[_0x17ae2f(0xec)+_0x17ae2f(0x122)+&#39;r&#39;]((_0x1faf5c,_0x54f9f6)=&gt;{const _0x5a71bf=_0x17ae2f;if(_0x5b2b14[_0x5a71bf(0x11c)])_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0xca)]]=_0x5b2b14[_0x5a71bf(0x11c)];_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0x108)]]=_0x5b2b14[_0x5a71bf(0xdb)]||_0x2f198e[_0x5a71bf(0x96)];if(_0x5b2b14[_0x5a71bf(0x95)]){_0x54f9f6[_0x5a71bf(0xb4)][_0x2f198e[_0x5a71bf(0x76)]]=_0x5b2b14[_0x5a71bf(0x95)];if((_0x2f198e[_0x5a71bf(0x85)](_0x1faf5c,shaka[_0x5a71bf(0xc7)][_0x5a71bf(0x77)+_0x5a71bf(0xe3)][_0x5a71bf(0x78)+&#39;e&#39;][_0x5a71bf(0xa0)])||_0x2f198e[_0x5a71bf(0xc2)](_0x1faf5c,shaka[_0x5a71bf(0xc7)][_0x5a71bf(0x77)+_0x5a71bf(0xe3)][_0x5a71bf(0x78)+&#39;e&#39;][_0x5a71bf(0xb0)]))&amp;&amp;_0x54f9f6[_0x5a71bf(0x88)][-0x13*-0x3e+0x1e6f*0x1+0x2309*-0x1]&amp;&amp;!_0x54f9f6[_0x5a71bf(0x88)][0x1225*0x1+0x154f*0x1+0x7e4*-0x5][_0x5a71bf(0xda)](_0x2f198e[_0x5a71bf(0xef)])){const _0x266436=_0x54f9f6[_0x5a71bf(0x88)][0x6c5*-0x3+0x7*-0x556+0x39a9][_0x5a71bf(0xda)](&#39;?&#39;)?&#39;&amp;&#39;:&#39;?&#39;;_0x54f9f6[_0x5a71bf(0x88)][-0x1*-0x25e+-0xc5f*0x2+-0x8*-0x2cc]+=_0x2f198e[_0x5a71bf(0xde)](_0x266436,_0x5b2b14[_0x5a71bf(0x95)]);}}});try{await _0x238108[_0x17ae2f(0x79)](_0x5b2b14[_0x17ae2f(0x8f)]),document[_0x17ae2f(0x98)]=_0x5b2b14[_0x17ae2f(0x11b)];}catch(_0x212605){_0x2f198e[_0x17ae2f(0xed)](_0x42d232,_0x2f198e[_0x17ae2f(0x86)],_0x212605[_0x17ae2f(0xa8)]);}function _0x42d232(_0x1e72d2,_0x330818){const _0x551e4c=_0x17ae2f;document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0xf2)])[_0x551e4c(0xb3)+&#39;t&#39;]=_0x1e72d2,document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0x80)])[_0x551e4c(0x97)]=_0x330818,document[_0x551e4c(0x6a)+_0x551e4c(0x10f)](_0x2f198e[_0x551e4c(0x115)])[_0x551e4c(0xba)][_0x551e4c(0x68)](_0x2f198e[_0x551e4c(0x9a)]);}}));function _0x51bd(_0x2cb159,_0x22eaf5){_0x2cb159=_0x2cb159-(0xaba*0x3+-0x2401+-0x4*-0x10e);const _0x43ee2f=_0x3924();let _0x1b9b25=_0x43ee2f[_0x2cb159];return _0x1b9b25;}function _0x3924(){const _0x6cb215=[&#39;trim&#39;,&#39;\x20ID:\x20&#39;,&#39;Engine&#39;,&#39;.5\x20(Linux;&#39;,&#39;Channel\x20ID&#39;,&#39;FLxqx&#39;,&#39;Loaded&#39;,&#39;s\x20not\x20a\x20st&#39;,&#39;isBrowserS&#39;,&#39;55,255,.4)&#39;,&#39;=1069&#39;,&#39;registerRe&#39;,&#39;QCMxu&#39;,&#39;oJBYN&#39;,&#39;LBqdH&#39;,&#39;aBtfU&#39;,&#39;SLTZz&#39;,&#39;BSbjx&#39;,&#39;Android\x2013&#39;,&#39;length&#39;,&#39;annel.&#39;,&#39;time_and_d&#39;,&#39;gSGlR&#39;,&#39;lGbxN&#39;,&#39;channel_id&#39;,&#39;picture_in&#39;,&#39;muted&#39;,&#39;wWLaM&#39;,&#39;969195ZQURmt&#39;,&#39;configure&#39;,&#39;eliveries/&#39;,&#39;playsInlin&#39;,&#39;getNetwork&#39;,&#39;Unable\x20to\x20&#39;,&#39;_picture&#39;,&#39;uration&#39;,&#39;No\x20channel&#39;,&#39;Connection&#39;,&#39;oAaXK&#39;,&#39;oevTA&#39;,&#39;get&#39;,&#39;Shaka\x20Play&#39;,&#39;4WoHrsg&#39;,&#39;bBZpB&#39;,&#39;errorMessa&#39;,&#39;layer_worl&#39;,&#39;ById&#39;,&#39;6WkjkKQ&#39;,&#39;errorModal&#39;,&#39;https://ip&#39;,&#39;IP\x20detecti&#39;,&#39;DOMContent&#39;,&#39;xdTLy&#39;,&#39;ncuyh&#39;,&#39;euDTQ&#39;,&#39;Info\x20Chann&#39;,&#39;drm&#39;,&#39;4d6f774837&#39;,&#39;name&#39;,&#39;referer&#39;,&#39;rgba(255,2&#39;,&#39;885131CWMWAu&#39;,&#39;installAll&#39;,&#39;\x20found\x20for&#39;,&#39;quality&#39;,&#39;questFilte&#39;,&#39;.shaka-vid&#39;,&#39;ojgNn&#39;,&#39;plaYtv/7.1&#39;,&#39;canPlayTyp&#39;,&#39;remove&#39;,&#39;f9e59e6cda&#39;,&#39;getElement&#39;,&#39;https://em&#39;,&#39;addEventLi&#39;,&#39;language&#39;,&#39;Browser\x20No&#39;,&#39;YTczj&#39;,&#39;fullscreen&#39;,&#39;src&#39;,&#39;User-Agent&#39;,&#39;oEfMe&#39;,&#39;70SYaseF&#39;,&#39;WTrcn&#39;,&#39;FbRXJ&#39;,&#39;Networking&#39;,&#39;RequestTyp&#39;,&#39;load&#39;,&#39;n/vnd.appl&#39;,&#39;)\x20ExoPlaye&#39;,&#39;jstr.json&#39;,&#39;country_co&#39;,&#39;access&#39;,&#39;e.mpegurl&#39;,&#39;gowMx&#39;,&#39;er\x20not\x20sup&#39;,&#39;errorTitle&#39;,&#39;find&#39;,&#39;video&#39;,&#39;KyrXB&#39;,&#39;JNVan&#39;,&#39;t\x20Found&#39;,&#39;uris&#39;,&#39;NOwqD&#39;,&#39;Overlay&#39;,&#39;bed-ssl.wi&#39;,&#39;json&#39;,&#39;\x20Missing&#39;,&#39;rgb(255,0,&#39;,&#39;mpd&#39;,&#39;applicatio&#39;,&#39;querySelec&#39;,&#39;rvBzx&#39;,&#39;play_pause&#39;,&#39;reaming\x20ch&#39;,&#39;token&#39;,&#39;ikXTN&#39;,&#39;innerHTML&#39;,&#39;title&#39;,&#39;YWsdp&#39;,&#39;jXxiJ&#39;,&#39;uqRUn&#39;,&#39;uybJX&#39;,&#39;ingEngine&#39;,&#39;fetch\x20chan&#39;,&#39;spacer&#39;,&#39;MANIFEST&#39;,&#39;&lt;br&gt;This\x20i&#39;,&#39;66.m3u8&#39;,&#39;\x20allowing\x20&#39;,&#39;YnvdZ&#39;,&#39;24e37587af&#39;,&#39;t\x20Supporte&#39;,&#39;sRgFc&#39;,&#39;message&#39;,&#39;LEaUX&#39;,&#39;stener&#39;,&#39;__hdnea__=&#39;,&#39;Example:\x20p&#39;,&#39;\x20Error&#39;,&#39;stia.com/d&#39;,&#39;dd.html?id&#39;,&#39;SEGMENT&#39;,&#39;BbnCM&#39;,&#39;volume&#39;,&#39;textConten&#39;,&#39;headers&#39;,&#39;mute&#39;,&#39;Cookie&#39;,&#39;autoplay&#39;,&#39;eo-contain&#39;,&#39;IbuAo&#39;,&#39;classList&#39;,&#39;keys&#39;,&#39;2419714GUhYcZ&#39;,&#39;1195596qXaDCw&#39;,&#39;YPZCv&#39;,&#39;polyfill&#39;,&#39;1779300GBAobe&#39;,&#39;ported.&#39;,&#39;otvkc&#39;,&#39;upported&#39;,&#39;YmvSX&#39;,&#39;982560reQQEc&#39;,&#39;Player&#39;,&#39;net&#39;,&#39;2517683AOzOTX&#39;,&#39;api.co/jso&#39;,&#39;DpVPi&#39;,&#39;pgJkh&#39;,&#39;location&#39;,&#39;oxeHB&#39;,&#39;tor&#39;,&#39;search&#39;,&#39;xfnhl&#39;,&#39;Referer&#39;,&#39;on\x20failed,&#39;,&#39;Stream\x20Err&#39;,&#39;WfvsA&#39;,&#39;log&#39;,&#39;oOkri&#39;,&#39;hidden&#39;,&#39;Channel\x20No&#39;,&#39;55,255,.2)&#39;,&#39;includes&#39;,&#39;userAgent&#39;,&#39;nel\x20list.&#39;,&#39;zIHHa&#39;,&#39;GFGOI&#39;,&#39;rLib/2.11.&#39;,&#39;2GJXoVi&#39;];_0x3924=function(){return _0x6cb215;};return _0x3924();}
-    </script>
-    <!-- Anti-Adblock Popup -->
-    <div class="adb" id="adb" style="display: none;">
-      <div class="adbs">
-        <h3>
-          Adblock/Brave Shields Detected
-        </h3>
-        <p>
-          Please disable your adblocker or Brave Shields to continue browsing this site.
-        </p>
-      </div>
-    </div>
-    <style>
-      .adb {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background: rgba(0, 0, 0, 0.85);
-  z-index: 99999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-.adbs {
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
-  text-align: center;
-  max-width: 400px;
-  width: 90%;
-}
-@keyframes glow {
-  from { text-shadow: 0 0 0px #ff0000; }
-  to { text-shadow: 0 0 1px #ff0000; }
-}
-.adbs h3 {
-  color: #d00;
-  font-size: 24px;
-  margin-bottom: 15px;
-}
-.adbs p {
-  font-size: 16px;
-  color: #333;
-}
-    </style>
-    <script>
-      // ----------------- Popup Function -----------------
-function showPopup(reason = &#34;Adblock Detected&#34;) {
-  document.getElementById(&#34;adb&#34;).style.display = &#34;flex&#34;;
-  document.querySelector(&#34;#adb .adbs h3&#34;).innerText = reason;
+  </div>
+  <div id="errorZone"></div>
+</div>
 
-  if (reason.includes(&#34;Brave&#34;)) {
-  document.querySelector(&#34;#adb .adbs p&#34;).innerHTML = `
-    Please disable Brave Shields (click Brave logo → toggle Shields off) to continue browsing.&lt;br&gt;
-    &lt;span style=&#34;
-      color: #ff0000;
-      font-weight: bold;
-      animation: glow 1s ease-in-out infinite alternate;
-    &#34;&gt;
-      If still showing message after disabling please reload page
-    &lt;/span&gt;
-  `;
-}
-  console.warn(&#34;⚠️ Popup Triggered:&#34;, reason);
-}
+<script>
+  // ------------------------------------------------------------------
+  //  COMPLETE SERVER REGISTRY (24 servers, includes vidsrc.wtf APIs)
+  // ------------------------------------------------------------------
+  const SERVER_REGISTRY = [
+    { id: "vidsrcto", label: "vidsrc.mov ⚡", needsAsync: false, movie: (id) => `https://vidsrc.mov/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
+    { id: "vidzee", label: "Vidzee", needsAsync: false, movie: (id) => `https://player.vidzee.wtf/embed/movie/${id}`, tv: (id, s, e) => `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
+    { id: "vidrock", label: "VidRock", needsAsync: false, movie: (id) => `https://vidrock.net/movie/${id}`, tv: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}` },
+    { id: "vidsrc-wtf-1", label: "VidSrc.WTF (v1)", needsAsync: true, apiVer: 1 },
+    { id: "vidsrc-wtf-2", label: "VidSrc.WTF (v2)", needsAsync: true, apiVer: 2 },
+    { id: "vidsrc-wtf-3", label: "VidSrc.WTF (v3)", needsAsync: true, apiVer: 3 },
+    { id: "vidsrc-wtf-4", label: "VidSrc.WTF (v4)", needsAsync: true, apiVer: 4 },
+    { id: "vidnest", label: "VidNest", needsAsync: false, movie: (id) => `https://vidnest.fun/movie/${id}`, tv: (id, s, e) => `https://vidnest.fun/tv/${id}/${s}/${e}` },
+    { id: "riveembed", label: "RiveEmbed", needsAsync: false, movie: (id) => `https://riveembed.com/embed/movie/${id}`, tv: (id, s, e) => `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
+    { id: "smashystream", label: "SmashyStream", needsAsync: false, movie: (id) => `https://smashystream.com/embed/movie/${id}`, tv: (id, s, e) => `https://smashystream.com/embed/tv/${id}/${s}/${e}` },
+    { id: "111movies", label: "111Movies", needsAsync: false, movie: (id) => `https://111movies.net/movie/${id}`, tv: (id, s, e) => `https://111movies.net/tv/${id}/${s}/${e}` },
+    { id: "videasy", label: "Videasy", needsAsync: false, movie: (id) => `https://player.videasy.net/movie/${id}`, tv: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
+    { id: "vidlink", label: "VidLink", needsAsync: false, movie: (id) => `https://vidlink.pro/movie/${id}`, tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+    { id: "vidfast", label: "VidFast", needsAsync: false, movie: (id) => `https://vidfast.pro/embed/movie/${id}`, tv: (id, s, e) => `https://vidfast.pro/embed/tv/${id}/${s}/${e}` },
+    { id: "embedsu", label: "Embed.su", needsAsync: false, movie: (id) => `https://embed.su/embed/movie/${id}`, tv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
+    { id: "2embed", label: "2Embed", needsAsync: false, movie: (id) => `https://2embed.cc/embed/movie/${id}`, tv: (id, s, e) => `https://2embed.cc/embed/tv/${id}/${s}/${e}` },
+    { id: "moviesapi", label: "MoviesAPI", needsAsync: false, movie: (id) => `https://moviesapi.club/movie/${id}`, tv: (id, s, e) => `https://moviesapi.club/tv/${id}/${s}/${e}` },
+    { id: "autoembed", label: "AutoEmbed", needsAsync: false, movie: (id) => `https://autoembed.to/movie/${id}`, tv: (id, s, e) => `https://autoembed.to/tv/${id}/${s}/${e}` },
+    { id: "multiembed", label: "MultiEmbed", needsAsync: false, movie: (id) => `https://multiembed.to/movie/${id}`, tv: (id, s, e) => `https://multiembed.to/tv/${id}/${s}/${e}` },
+    { id: "vidsrc-xyz", label: "VidSrc.xyz", needsAsync: false, movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+    { id: "primewire", label: "PrimeWire", needsAsync: false, movie: (id) => `https://primewire.tf/embed/movie/${id}`, tv: (id, s, e) => `https://primewire.tf/embed/tv/${id}/${s}/${e}` },
+    { id: "warezcdn", label: "WarezCDN", needsAsync: false, movie: (id) => `https://warezcdn.com/movie/${id}`, tv: (id, s, e) => `https://warezcdn.com/tv/${id}/${s}/${e}` },
+    { id: "superflix", label: "SuperFlix", needsAsync: false, movie: (id) => `https://superflix.net/movie/${id}`, tv: (id, s, e) => `https://superflix.net/tv/${id}/${s}/${e}` },
+    { id: "vidup", label: "VidUp 🔥", needsAsync: false, movie: (id) => `https://vidup.io/embed/movie/${id}`, tv: (id, s, e) => `https://vidup.io/embed/tv/${id}/${s}/${e}` }
+  ];
 
-// ----------------- PC Browser Adblock Detection -----------------
-async function detectAdblock() {
-  let detected = false;
+  // ---------- GLOBAL STATE ----------
+  let currentType = "movie";
+  let currentMediaId = "1247165";
+  let currentSeason = 1;
+  let currentEpisode = 1;
+  let currentServerId = "vidsrcto";
+  let isLoading = false;
 
-  // bait div
-  const bait = document.createElement(&#34;div&#34;);
-  bait.className = &#34;ad adsbox ad-banner adsense ad-container sponsored&#34;;
-  bait.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
-  document.body.appendChild(bait);
+  // DOM elements
+  const playerContainer = document.getElementById("playerContainer");
+  const errorZone = document.getElementById("errorZone");
+  const contentTypeBadge = document.getElementById("contentTypeBadge");
+  const activeServerLabel = document.getElementById("activeServerLabel");
+  const customNoteSpan = document.getElementById("customNote");
+  const serverBtnsContainer = document.getElementById("serverButtonsContainer");
+  const quickSelect = document.getElementById("quickServerSelect");
 
-  // bait img
-  const img = document.createElement(&#34;img&#34;);
-  img.src = &#34;https://pagead2.googlesyndication.com/pagead/imgad?id=CAASFeDxyz&#34;;
-  img.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
-  img.onerror = () =&gt; { detected = true; };
-  document.body.appendChild(img);
+  // Form inputs
+  const contentTypeSelect = document.getElementById("contentTypeSelect");
+  const mediaIdInput = document.getElementById("mediaIdInput");
+  const seasonInput = document.getElementById("seasonInput");
+  const episodeInput = document.getElementById("episodeInput");
+  const seasonGroup = document.getElementById("seasonGroup");
+  const episodeGroup = document.getElementById("episodeGroup");
+  const loadBtn = document.getElementById("loadContentBtn");
 
-  // bait iframe
-  const iframe = document.createElement(&#34;iframe&#34;);
-  iframe.src = &#34;https://googleads.g.doubleclick.net/pagead/html/r2023/sample-ad.html&#34;;
-  iframe.style.cssText = &#34;width:1px;height:1px;position:absolute;left:-9999px;top:-9999px;&#34;;
-  iframe.onerror = () =&gt; { detected = true; };
-  document.body.appendChild(iframe);
+  // Helper: toggle TV season/ep visibility
+  function toggleTvInputs() {
+    const isTv = contentTypeSelect.value === "tv";
+    seasonGroup.style.display = isTv ? "flex" : "none";
+    episodeGroup.style.display = isTv ? "flex" : "none";
+  }
+  contentTypeSelect.addEventListener("change", toggleTvInputs);
+  toggleTvInputs();
 
-  // bait script
-  const script = document.createElement(&#34;script&#34;);
-  script.src = &#34;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js&#34;;
-  script.async = true;
-  script.onerror = () =&gt; { detected = true; };
-  document.head.appendChild(script);
+  // Error display
+  function showError(msg) { errorZone.innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`; }
+  function clearError() { errorZone.innerHTML = ""; }
 
-  await new Promise(resolve =&gt; setTimeout(resolve, 500));
-
-  if (
-    window.getComputedStyle(bait).display === &#34;none&#34; ||
-    bait.offsetHeight === 0 ||
-    bait.offsetParent === null
-  ) {
-    detected = true;
+  // Update UI after state change
+  function refreshUIContentMeta() {
+    contentTypeBadge.innerHTML = currentType === "movie" ? "🎬 MOVIE STREAM" : `📺 TV SERIES · S${currentSeason} E${currentEpisode}`;
+    const currentSrv = SERVER_REGISTRY.find(s => s.id === currentServerId);
+    activeServerLabel.innerHTML = `⚡ ${currentSrv?.label || currentServerId}`;
+    customNoteSpan.innerHTML = currentType === "movie" ? `🎞️ ID: ${currentMediaId}` : `📺 ${currentMediaId} · S${currentSeason}/E${currentEpisode}`;
   }
 
-  bait.remove();
-  img.remove();
-  iframe.remove();
-  script.remove();
+  // Render iframe
+  function renderIframe(src) {
+    if (!src) throw new Error("Empty embed URL");
+    const iframeHtml = `<iframe src="${src}" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
+      allowfullscreen="true"
+      referrerpolicy="strict-origin-when-cross-origin"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation-by-user-activation allow-presentation"
+      style="width:100%; height:100%; border:none;">
+    </iframe>`;
+    playerContainer.innerHTML = iframeHtml;
+  }
 
-  return detected;
-}
+  // Async fetch for vidsrc.wtf
+  async function fetchAsyncEmbed(serverObj) {
+    const apiVer = serverObj.apiVer;
+    const baseApi = `https://vidsrc.wtf/api/${apiVer}`;
+    let endpoint = "";
+    if (currentType === "movie") {
+      endpoint = `${baseApi}/movie/?id=${currentMediaId}&color=8B5CF6`;
+    } else {
+      endpoint = `${baseApi}/tv/?id=${currentMediaId}&s=${currentSeason}&e=${currentEpisode}&color=8B5CF6`;
+    }
+    const resp = await fetch(endpoint, { headers: { "Accept": "application/json" } });
+    if (!resp.ok) throw new Error(`API ${apiVer} responded ${resp.status}`);
+    const data = await resp.json();
+    let extracted = null;
+    if (data.iframe) extracted = data.iframe;
+    else if (data.embed_url) extracted = data.embed_url;
+    else if (data.url) extracted = data.url;
+    else if (data.result?.url) extracted = data.result.url;
+    else if (data.sources?.[0]?.file) extracted = data.sources[0].file;
+    else if (typeof data === "string" && data.startsWith("http")) extracted = data;
+    if (!extracted) throw new Error("No video source from API");
+    if (!extracted.startsWith("http")) extracted = "https:" + extracted;
+    return extracted;
+  }
 
-// ----------------- Brave Shields Detection -----------------
-async function detectBraveShields() {
-  try {
-    let res = await fetch(&#34;https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js&#34;, {
-      method: &#34;GET&#34;,
-      cache: &#34;no-store&#34;,
-      mode: &#34;no-cors&#34;
-    });
+  // MAIN LOAD PLAYER (with current global state & server)
+  async function loadPlayer() {
+    if (isLoading) return;
+    if (!currentMediaId) {
+      showError("Media ID missing. Enter a valid TMDB ID (e.g., 1247165).");
+      return;
+    }
+    clearError();
+    isLoading = true;
+    const server = SERVER_REGISTRY.find(s => s.id === currentServerId);
+    if (!server) {
+      showError(`Server config missing: ${currentServerId}`);
+      isLoading = false;
+      return;
+    }
+    refreshUIContentMeta();
+    playerContainer.innerHTML = `<div class="loader"><div class="spinner"></div><span>Connecting to ${server.label} ...</span></div>`;
 
-    if (res.type === &#34;opaque&#34;) {
-      try {
-        const buf = await res.clone().arrayBuffer();
-        console.log(&#34;🟡 Brave Response Size:&#34;, buf.byteLength);
-
-        // Corrected Logic:
-        // Size &lt; 100 = Shields OFF
-        // Size &gt;= 100 = Shields ON
-        if (buf.byteLength &lt; 100) {
-          return false; // Shields OFF
+    try {
+      let embedUrl = null;
+      if (server.needsAsync && server.apiVer) {
+        embedUrl = await fetchAsyncEmbed(server);
+      } else {
+        if (!server.movie || !server.tv) throw new Error("Invalid embed pattern");
+        if (currentType === "movie") {
+          embedUrl = server.movie(currentMediaId);
         } else {
-          return true;  // Shields ON
+          if (currentSeason == null || currentEpisode == null) throw new Error("Season/Episode required");
+          embedUrl = server.tv(currentMediaId, currentSeason, currentEpisode);
         }
-      } catch (e) {
-        console.warn(&#34;🟡 Brave fetch blocked&#34;, e);
-        return true; // Shields ON
       }
+      if (!embedUrl) throw new Error("Unable to generate embed source");
+      renderIframe(embedUrl);
+    } catch (err) {
+      console.error(err);
+      playerContainer.innerHTML = `<div style="background:#150e1a; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;"><span>❌ Stream error</span><span style="font-size:13px; color:#c084fc;">${err.message}</span></div>`;
+      showError(`${server.label} : ${err.message || "failed to load"}`);
+    } finally {
+      isLoading = false;
     }
-    return true; // default treat as ON
-  } catch (e) {
-    console.error(&#34;🛑 Brave Shields hard blocked&#34;, e);
-    return true; // Shields ON
-  }
-}
-
-// ----------------- Main -----------------
-window.addEventListener(&#34;load&#34;, async () =&gt; {
-  const shieldsOn = await detectBraveShields();
-  if (shieldsOn) {
-    showPopup(&#34;Brave Shields Detected&#34;);
-    return;
   }
 
-  const adblocker = await detectAdblock();
-  if (adblocker) {
-    showPopup(&#34;Adblock Detected&#34;);
+  // Sync state from form and reload content (update URL + player)
+  function syncFromFormAndLoad() {
+    currentType = contentTypeSelect.value;
+    currentMediaId = mediaIdInput.value.trim();
+    if (!currentMediaId) {
+      showError("Please enter a valid ID (movie or TV show ID)");
+      return;
+    }
+    if (currentType === "tv") {
+      let s = parseInt(seasonInput.value, 10);
+      let e = parseInt(episodeInput.value, 10);
+      if (isNaN(s)) s = 1;
+      if (isNaN(e)) e = 1;
+      currentSeason = Math.max(1, s);
+      currentEpisode = Math.max(1, e);
+      seasonInput.value = currentSeason;
+      episodeInput.value = currentEpisode;
+    } else {
+      currentSeason = null;
+      currentEpisode = null;
+    }
+    // Update browser URL without full reload (nice to share)
+    let newUrl = `/watch/${currentType}/${currentMediaId}`;
+    if (currentType === "tv") newUrl += `/${currentSeason}/${currentEpisode}`;
+    newUrl += `?server=${currentServerId}`;
+    window.history.replaceState({}, "", newUrl);
+    refreshUIContentMeta();
+    loadPlayer();
   }
-});
-    </script>
-    <script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool@latest">
-    </script>
-    <script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool@latest">
-    </script>
-  </body>
+
+  // Server switching: change server & reload current content
+  function setActiveServer(serverId) {
+    if (currentServerId === serverId) return;
+    currentServerId = serverId;
+    // Update URL param with new server
+    const url = new URL(window.location.href);
+    url.searchParams.set("server", currentServerId);
+    window.history.replaceState({}, "", url.toString());
+    refreshUIContentMeta();
+    // re-highlight buttons
+    document.querySelectorAll(".server-btn").forEach(btn => {
+      if (btn.dataset.id === currentServerId) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+    if (quickSelect) quickSelect.value = currentServerId;
+    loadPlayer();
+  }
+
+  // Build server UI (buttons + quick select) below player
+  function buildServerUI() {
+    serverBtnsContainer.innerHTML = "";
+    quickSelect.innerHTML = '<option value="">🔽 Quick server</option>';
+    SERVER_REGISTRY.forEach(server => {
+      const btn = document.createElement("button");
+      btn.className = "server-btn";
+      if (server.id === currentServerId) btn.classList.add("active");
+      btn.textContent = server.label;
+      btn.dataset.id = server.id;
+      btn.addEventListener("click", () => setActiveServer(server.id));
+      serverBtnsContainer.appendChild(btn);
+      
+      const option = document.createElement("option");
+      option.value = server.id;
+      option.textContent = server.label;
+      if (server.id === currentServerId) option.selected = true;
+      quickSelect.appendChild(option);
+    });
+    quickSelect.addEventListener("change", (e) => {
+      const newId = e.target.value;
+      if (newId && newId !== currentServerId) setActiveServer(newId);
+    });
+  }
+
+  // initial route parse (for shareable URLs)
+  function parseRouteFromUrl() {
+    const path = window.location.pathname;
+    let match = path.match(/\/watch\/movie\/([^\/?#]+)/i);
+    if (match) {
+      currentType = "movie";
+      currentMediaId = match[1];
+      currentSeason = null;
+      currentEpisode = null;
+      contentTypeSelect.value = "movie";
+      mediaIdInput.value = currentMediaId;
+      toggleTvInputs();
+      return true;
+    }
+    match = path.match(/\/watch\/tv\/([^\/?#]+)\/(\d+)\/(\d+)/i);
+    if (match) {
+      currentType = "tv";
+      currentMediaId = match[1];
+      currentSeason = parseInt(match[2], 10);
+      currentEpisode = parseInt(match[3], 10);
+      contentTypeSelect.value = "tv";
+      mediaIdInput.value = currentMediaId;
+      seasonInput.value = currentSeason;
+      episodeInput.value = currentEpisode;
+      toggleTvInputs();
+      return true;
+    }
+    return false;
+  }
+
+  // get server from URL param
+  function getServerFromUrlParam() {
+    const sp = new URLSearchParams(window.location.search);
+    const s = sp.get("server");
+    if (s && SERVER_REGISTRY.some(serv => serv.id === s)) return s;
+    return null;
+  }
+
+  // initial load
+  function initApp() {
+    const hasRoute = parseRouteFromUrl();
+    if (!hasRoute) {
+      // default demo
+      currentType = "movie";
+      currentMediaId = "1247165";
+      currentSeason = null;
+      currentEpisode = null;
+      contentTypeSelect.value = "movie";
+      mediaIdInput.value = "1247165";
+      toggleTvInputs();
+      const defaultUrl = `/watch/movie/1247165?server=${currentServerId}`;
+      window.history.replaceState({}, "", defaultUrl);
+    }
+    const urlServer = getServerFromUrlParam();
+    if (urlServer && SERVER_REGISTRY.some(s=>s.id===urlServer)) currentServerId = urlServer;
+    else currentServerId = "vidsrcto";
+    
+    buildServerUI();
+    refreshUIContentMeta();
+    loadPlayer();
+  }
+
+  // Event listeners
+  loadBtn.addEventListener("click", syncFromFormAndLoad);
+  window.addEventListener("popstate", () => {
+    const routeOk = parseRouteFromUrl();
+    if (!routeOk) return;
+    const srvParam = getServerFromUrlParam();
+    if (srvParam && SERVER_REGISTRY.find(s=>s.id===srvParam)) currentServerId = srvParam;
+    refreshUIContentMeta();
+    // re-sync server buttons active state
+    document.querySelectorAll(".server-btn").forEach(btn => {
+      if (btn.dataset.id === currentServerId) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+    if (quickSelect) quickSelect.value = currentServerId;
+    loadPlayer();
+  });
+
+  initApp();
+</script>
+</body>
 </html>
