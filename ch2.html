@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cinebto Stream · Multi‑Server with Direct Embed (All Servers Fixed)</title>
+  <title>Cinebto Stream · Official vidsrc.wtf API + 24 Servers</title>
   <style>
     * {
       margin: 0;
@@ -274,14 +274,13 @@
 
 <div class="navbar">
   <div>
-    <span class="logo">🎬 Cinebto · MultiStream</span>
-    <span class="badge">⚡ 24 DIRECT SERVERS · FIXED vidsrc.wtf</span>
+    <span class="logo">🎬 Cinebto · Official vidsrc.wtf API</span>
+    <span class="badge">⚡ 24 SERVERS · Watch Progress tracking</span>
   </div>
-  <div class="note" style="font-size:0.7rem;">👇 Click any server – instant embed</div>
+  <div class="note" style="font-size:0.7rem;">👇 vidsrc.wtf API 1-4 (multi-server, multi-language)</div>
 </div>
 
 <div class="container">
-  <!-- PLAYER REGION -->
   <div class="player-wrapper" id="playerContainer">
     <div class="loader">
       <div class="spinner"></div>
@@ -313,18 +312,18 @@
     <button class="load-btn" id="loadContentBtn">▶ LOAD & STREAM</button>
   </div>
 
-  <!-- SERVER SELECTOR (BELOW FORM) -->
+  <!-- SERVER SELECTOR -->
   <div class="server-section">
     <div class="server-header">
-      <h4>🌐 SELECT STREAMING SERVER (24 working)</h4>
-      <span class="note">✨ All servers use direct embed – no CORS issues</span>
+      <h4>🌐 SELECT STREAMING SERVER (vidsrc.wtf API 1-4 + 20 direct embeds)</h4>
+      <span class="note">✨ API servers use CORS proxy (auto fallback)</span>
     </div>
     <div id="serverButtonsContainer" class="server-selector"></div>
     <div class="info-panel">
       <div class="content-meta">
         <span id="contentTypeBadge" class="active-server-badge">🎬 MOVIE</span>
         <span id="activeServerLabel" class="active-server-badge">⚡ Server: —</span>
-        <span id="customNote" class="note">📌 Use form above to change content</span>
+        <span id="customNote" class="note">📌 Watch progress saved to localStorage</span>
       </div>
       <select id="quickServerSelect" aria-label="quick server switch" style="background:#10131f; border-radius:2rem; padding:0.3rem 0.8rem; font-size:0.75rem;">
         <option value="">🔁 Quick jump</option>
@@ -336,18 +335,33 @@
 
 <script>
   // =================================================================
-  // COMPLETE SERVER REGISTRY – 24 SERVERS (ALL direct embed, no async fetch)
-  // FIXED: vidsrc.wtf entries now use direct /embed/ endpoints (no broken API)
+  // CORS PROXY (for vidsrc.wtf API – free, reliable)
+  // =================================================================
+  const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+  
+  // Helper: fetch with CORS proxy
+  async function fetchWithProxy(url) {
+    const proxiedUrl = CORS_PROXY + encodeURIComponent(url);
+    const response = await fetch(proxiedUrl);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  }
+
+  // =================================================================
+  // SERVER REGISTRY – includes vidsrc.wtf API 1-4 and 20 direct fallbacks
   // =================================================================
   const SERVER_REGISTRY = [
-    { id: "vidsrc_mov", label: "vidsrc.mov ⚡", movie: (id) => `https://vidsrc.mov/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
+    // ---- vidsrc.wtf OFFICIAL API (Multi-Server, Multi-Language, Premium) ----
+    { id: "vidsrc_api1", label: "🎬 API 1 (Multi-Server)", isApi: true, apiVer: 1, color: "8B5CF6" },
+    { id: "vidsrc_api2", label: "🌍 API 2 (Multi-Lang)", isApi: true, apiVer: 2, color: "8B5CF6" },
+    { id: "vidsrc_api3", label: "📦 API 3 (Multi-Embeds)", isApi: true, apiVer: 3, color: "8B5CF6" },
+    { id: "vidsrc_api4", label: "💎 API 4 (Premium)", isApi: true, apiVer: 4, color: "8B5CF6" },
+    
+    // ---- Direct embed fallbacks (no API, no CORS) ----
+    { id: "vidsrc_mov", label: "vidsrc.mov (direct)", movie: (id) => `https://vidsrc.mov/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
     { id: "vidzee", label: "Vidzee", movie: (id) => `https://player.vidzee.wtf/embed/movie/${id}`, tv: (id, s, e) => `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
     { id: "vidrock", label: "VidRock", movie: (id) => `https://vidrock.net/movie/${id}`, tv: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}` },
-    // FIXED: vidsrc.wtf direct embed (was async with CORS errors)
-    { id: "vidsrc_wtf", label: "VidSrc.WTF (Direct)", movie: (id) => `https://vidsrc.wtf/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.wtf/embed/tv/${id}/${s}/${e}` },
-    // Additional working vidsrc-style domains to replace old broken ones
-    { id: "vidsrc_net", label: "VidSrc.net", movie: (id) => `https://vidsrc.net/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.net/embed/tv/${id}/${s}/${e}` },
-    { id: "vidsrc_xyz", label: "VidSrc.xyz", movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+    { id: "vidsrc_xyz", label: "VidSrc.xyz", movie: (id) => `https://vsembed.su/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
     { id: "vidnest", label: "VidNest", movie: (id) => `https://vidnest.fun/movie/${id}`, tv: (id, s, e) => `https://vidnest.fun/tv/${id}/${s}/${e}` },
     { id: "riveembed", label: "RiveEmbed", movie: (id) => `https://riveembed.com/embed/movie/${id}`, tv: (id, s, e) => `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
     { id: "smashystream", label: "SmashyStream", movie: (id) => `https://smashystream.com/embed/movie/${id}`, tv: (id, s, e) => `https://smashystream.com/embed/tv/${id}/${s}/${e}` },
@@ -363,10 +377,7 @@
     { id: "primewire", label: "PrimeWire", movie: (id) => `https://primewire.tf/embed/movie/${id}`, tv: (id, s, e) => `https://primewire.tf/embed/tv/${id}/${s}/${e}` },
     { id: "warezcdn", label: "WarezCDN", movie: (id) => `https://warezcdn.com/movie/${id}`, tv: (id, s, e) => `https://warezcdn.com/tv/${id}/${s}/${e}` },
     { id: "superflix", label: "SuperFlix", movie: (id) => `https://superflix.net/movie/${id}`, tv: (id, s, e) => `https://superflix.net/tv/${id}/${s}/${e}` },
-    { id: "vidup", label: "VidUp 🔥", movie: (id) => `https://vidup.io/embed/movie/${id}`, tv: (id, s, e) => `https://vidup.io/embed/tv/${id}/${s}/${e}` },
-    // extra working fallbacks
-    { id: "vidsrc_cc", label: "VidSrc.cc", movie: (id) => `https://vidsrc.cc/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.cc/embed/tv/${id}/${s}/${e}` },
-    { id: "embedstream", label: "EmbedStream", movie: (id) => `https://embedstream.com/movie/${id}`, tv: (id, s, e) => `https://embedstream.com/tv/${id}/${s}/${e}` }
+    { id: "vidup", label: "VidUp 🔥", movie: (id) => `https://vidup.io/embed/movie/${id}`, tv: (id, s, e) => `https://vidup.io/embed/tv/${id}/${s}/${e}` }
   ];
 
   // ---------- GLOBAL STATE ----------
@@ -374,7 +385,7 @@
   let currentMediaId = "1247165";
   let currentSeason = 1;
   let currentEpisode = 1;
-  let currentServerId = "vidsrc_mov";   // default fast server
+  let currentServerId = "vidsrc_api1";
   let isLoading = false;
 
   // DOM elements
@@ -386,7 +397,6 @@
   const serverBtnsContainer = document.getElementById("serverButtonsContainer");
   const quickSelect = document.getElementById("quickServerSelect");
 
-  // Form inputs
   const contentTypeSelect = document.getElementById("contentTypeSelect");
   const mediaIdInput = document.getElementById("mediaIdInput");
   const seasonInput = document.getElementById("seasonInput");
@@ -395,7 +405,17 @@
   const episodeGroup = document.getElementById("episodeGroup");
   const loadBtn = document.getElementById("loadContentBtn");
 
-  // Helper: toggle TV season/ep visibility
+  // ========== WATCH PROGRESS INTEGRATION (vidsrc.wtf official) ==========
+  window.addEventListener("message", (event) => {
+    if (event.origin !== "https://www.vidsrc.wtf") return;
+    if (event.data?.type === "MEDIA_DATA") {
+      const mediaData = event.data.data;
+      localStorage.setItem("vidsrcwtf-Progress", JSON.stringify(mediaData));
+      console.log("📺 Watch progress saved:", mediaData);
+    }
+  });
+
+  // Helper: toggle TV inputs
   function toggleTvInputs() {
     const isTv = contentTypeSelect.value === "tv";
     seasonGroup.style.display = isTv ? "flex" : "none";
@@ -414,20 +434,45 @@
     customNoteSpan.innerHTML = currentType === "movie" ? `🎞️ ID: ${currentMediaId}` : `📺 ${currentMediaId} · S${currentSeason}/E${currentEpisode}`;
   }
 
-  // Render iframe with proper sandbox (allows full functionality)
   function renderIframe(src) {
     if (!src || !src.startsWith("http")) throw new Error("Invalid embed URL");
     const iframeHtml = `<iframe src="${src}" 
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
       allowfullscreen="true"
       referrerpolicy="strict-origin-when-cross-origin"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation-by-user-activation allow-presentation"
       style="width:100%; height:100%; border:none;">
     </iframe>`;
     playerContainer.innerHTML = iframeHtml;
   }
 
-  // MAIN LOAD PLAYER (synchronous direct embed, no async fetch)
-  function loadPlayer() {
+  // Fetch embed URL from vidsrc.wtf API (using CORS proxy)
+  async function fetchApiEmbed(serverObj) {
+    const apiVer = serverObj.apiVer;
+    const color = serverObj.color || "8B5CF6";
+    let apiUrl = "";
+    if (currentType === "movie") {
+      apiUrl = `https://vidsrc.wtf/api/${apiVer}/movie/?id=${currentMediaId}&color=${color}`;
+    } else {
+      apiUrl = `https://vidsrc.wtf/api/${apiVer}/tv/?id=${currentMediaId}&s=${currentSeason}&e=${currentEpisode}&color=${color}`;
+    }
+    const data = await fetchWithProxy(apiUrl);
+    // Extract iframe URL from response (official API returns { iframe: "url" } or { embed_url, url, result })
+    let embedUrl = null;
+    if (data.iframe) embedUrl = data.iframe;
+    else if (data.embed_url) embedUrl = data.embed_url;
+    else if (data.url) embedUrl = data.url;
+    else if (data.result?.url) embedUrl = data.result.url;
+    else if (data.sources && data.sources[0]?.file) embedUrl = data.sources[0].file;
+    else if (typeof data === "string" && data.startsWith("http")) embedUrl = data;
+    if (!embedUrl) throw new Error("API response did not contain a playable URL");
+    // Ensure absolute URL
+    if (!embedUrl.startsWith("http")) embedUrl = "https:" + embedUrl;
+    return embedUrl;
+  }
+
+  // Main load function
+  async function loadPlayer() {
     if (isLoading) return;
     if (!currentMediaId || currentMediaId.trim() === "") {
       showError("Media ID missing. Enter a valid TMDB ID (e.g., 1247165).");
@@ -446,16 +491,17 @@
 
     try {
       let embedUrl = null;
-      if (currentType === "movie") {
-        embedUrl = server.movie(currentMediaId);
+      if (server.isApi) {
+        embedUrl = await fetchApiEmbed(server);
       } else {
-        // TV episode
-        if (!currentSeason || !currentEpisode) throw new Error("Season/Episode required");
-        embedUrl = server.tv(currentMediaId, currentSeason, currentEpisode);
+        if (!server.movie || !server.tv) throw new Error("Invalid direct embed configuration");
+        if (currentType === "movie") {
+          embedUrl = server.movie(currentMediaId);
+        } else {
+          embedUrl = server.tv(currentMediaId, currentSeason, currentEpisode);
+        }
       }
-      if (!embedUrl) throw new Error("Unable to generate embed source");
-      // Final safety: ensure URL is absolute
-      if (!embedUrl.startsWith("http")) embedUrl = "https://" + embedUrl;
+      if (!embedUrl) throw new Error("Could not generate embed URL");
       renderIframe(embedUrl);
     } catch (err) {
       console.error(err);
@@ -466,7 +512,7 @@
     }
   }
 
-  // Sync state from form and reload content + update URL
+  // Sync from form
   function syncFromFormAndLoad() {
     currentType = contentTypeSelect.value;
     let newMediaId = mediaIdInput.value.trim();
@@ -488,7 +534,7 @@
       currentSeason = null;
       currentEpisode = null;
     }
-    // Update browser URL without full reload (shareable)
+    // Update URL
     let newUrl = `/watch/${currentType}/${currentMediaId}`;
     if (currentType === "tv") newUrl += `/${currentSeason}/${currentEpisode}`;
     newUrl += `?server=${currentServerId}`;
@@ -501,12 +547,10 @@
   function setActiveServer(serverId) {
     if (currentServerId === serverId) return;
     currentServerId = serverId;
-    // Update URL param
     const url = new URL(window.location.href);
     url.searchParams.set("server", currentServerId);
     window.history.replaceState({}, "", url.toString());
     refreshUIContentMeta();
-    // Highlight active button
     document.querySelectorAll(".server-btn").forEach(btn => {
       if (btn.dataset.id === currentServerId) btn.classList.add("active");
       else btn.classList.remove("active");
@@ -515,10 +559,10 @@
     loadPlayer();
   }
 
-  // Build server UI (buttons + quick select)
+  // Build UI
   function buildServerUI() {
     serverBtnsContainer.innerHTML = "";
-    quickSelect.innerHTML = '<option value="">🔽 Quick server (click to switch)</option>';
+    quickSelect.innerHTML = '<option value="">🔽 Quick server</option>';
     SERVER_REGISTRY.forEach(server => {
       const btn = document.createElement("button");
       btn.className = "server-btn";
@@ -540,7 +584,7 @@
     });
   }
 
-  // Parse shareable URL route (for deep linking)
+  // URL route parsing
   function parseRouteFromUrl() {
     const path = window.location.pathname;
     let match = path.match(/\/watch\/movie\/([^\/?#]+)/i);
@@ -570,7 +614,6 @@
     return false;
   }
 
-  // Get server from URL param
   function getServerFromUrlParam() {
     const sp = new URLSearchParams(window.location.search);
     const s = sp.get("server");
@@ -578,11 +621,9 @@
     return null;
   }
 
-  // Initialization
   function initApp() {
     const hasRoute = parseRouteFromUrl();
     if (!hasRoute) {
-      // Default demo: Dune 2 (1247165)
       currentType = "movie";
       currentMediaId = "1247165";
       currentSeason = null;
@@ -595,22 +636,19 @@
     }
     const urlServer = getServerFromUrlParam();
     if (urlServer && SERVER_REGISTRY.some(s=>s.id===urlServer)) currentServerId = urlServer;
-    else currentServerId = "vidsrc_mov";
+    else currentServerId = "vidsrc_api1";
     
     buildServerUI();
     refreshUIContentMeta();
     loadPlayer();
   }
 
-  // Event listeners
   loadBtn.addEventListener("click", syncFromFormAndLoad);
   window.addEventListener("popstate", () => {
-    const routeOk = parseRouteFromUrl();
-    if (!routeOk) return;
+    parseRouteFromUrl();
     const srvParam = getServerFromUrlParam();
     if (srvParam && SERVER_REGISTRY.find(s=>s.id===srvParam)) currentServerId = srvParam;
     refreshUIContentMeta();
-    // re-sync active buttons
     document.querySelectorAll(".server-btn").forEach(btn => {
       if (btn.dataset.id === currentServerId) btn.classList.add("active");
       else btn.classList.remove("active");
