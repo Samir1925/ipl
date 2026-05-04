@@ -53,7 +53,6 @@
             overflow-x: hidden;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             height: 5px;
             width: 5px;
@@ -69,7 +68,7 @@
             background: rgba(255, 255, 255, 0.22);
         }
 
-        /* ============ NAVBAR ============ */
+        /* NAVBAR */
         .navbar {
             position: sticky;
             top: 0;
@@ -114,13 +113,8 @@
             animation: pulse-glow 2s ease-in-out infinite;
         }
         @keyframes pulse-glow {
-            0%,
-            100% {
-                filter: drop-shadow(0 0 8px var(--accent-glow));
-            }
-            50% {
-                filter: drop-shadow(0 0 22px rgba(229, 9, 20, 0.65));
-            }
+            0%, 100% { filter: drop-shadow(0 0 8px var(--accent-glow)); }
+            50% { filter: drop-shadow(0 0 22px rgba(229, 9, 20, 0.65)); }
         }
         .logo-text {
             background: linear-gradient(135deg, #e50914, #ff4d4d);
@@ -163,14 +157,13 @@
             text-transform: uppercase;
             white-space: nowrap;
         }
-
         .content-badge.tv {
             background: rgba(139, 92, 246, 0.15);
             border-color: rgba(139, 92, 246, 0.3);
             color: #b794f4;
         }
 
-        /* ============ MAIN LAYOUT ============ */
+        /* MAIN LAYOUT */
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -210,7 +203,7 @@
             }
         }
 
-        /* ============ PLAYER SECTION ============ */
+        /* PLAYER SECTION */
         .player-section {
             display: flex;
             flex-direction: column;
@@ -255,11 +248,7 @@
             border-radius: 50%;
             animation: spin 0.75s linear infinite;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .loader-text {
             font-size: 14px;
@@ -267,7 +256,7 @@
             letter-spacing: 0.3px;
         }
 
-        /* ============ INFO BAR ============ */
+        /* INFO BAR */
         .info-bar {
             background: var(--bg-secondary);
             border-radius: var(--card-radius-sm);
@@ -304,13 +293,8 @@
             animation: pulse-dot 1.5s ease-in-out infinite;
         }
         @keyframes pulse-dot {
-            0%,
-            100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         .content-id-label {
@@ -328,7 +312,7 @@
             font-style: italic;
         }
 
-        /* ============ SERVER SIDEBAR ============ */
+        /* SERVER SIDEBAR */
         .server-sidebar {
             background: var(--bg-secondary);
             border-radius: var(--card-radius);
@@ -430,7 +414,7 @@
             color: #ff8a8a;
         }
 
-        /* ============ ERROR ============ */
+        /* ERROR */
         .error-banner {
             background: rgba(244, 63, 94, 0.1);
             border: 1px solid rgba(244, 63, 94, 0.3);
@@ -450,7 +434,7 @@
             font-size: 16px;
         }
 
-        /* ============ TOAST ============ */
+        /* TOAST */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -472,27 +456,15 @@
             animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), toastOut 0.3s ease 2.5s forwards;
         }
         @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         @keyframes toastOut {
-            from {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-10px);
-            }
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
         }
 
-        /* ============ RESPONSIVE SIDEBAR ============ */
+        /* RESPONSIVE SIDEBAR */
         @media (max-width: 1024px) {
             .server-sidebar {
                 position: static;
@@ -530,10 +502,8 @@
         }
     </style>
 </head>
-
 <body>
 
-    <!-- NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-left">
             <a href="/" class="logo" title="Back to StreamHub">
@@ -547,7 +517,6 @@
         <div class="content-badge" id="contentTypeBadge">🎬 MOVIE</div>
     </nav>
 
-    <!-- MAIN CONTAINER -->
     <div class="main-container">
         <!-- Player Column -->
         <div class="player-section">
@@ -558,7 +527,6 @@
                 </div>
             </div>
 
-            <!-- Info Bar -->
             <div class="info-bar">
                 <div class="info-left">
                     <div class="server-indicator" id="activeServerLabel">
@@ -569,7 +537,6 @@
                 <span class="info-note" id="customNote">✨ Select a server from the sidebar</span>
             </div>
 
-            <!-- Error Zone -->
             <div id="errorZone"></div>
         </div>
 
@@ -584,72 +551,33 @@
 
     <script>
         // ==================================================================
-        // SERVER REGISTRY — All sources preserved from original
+        // SERVER REGISTRY (unchanged - all original sources)
         // ==================================================================
         const SERVER_LIST = [
-            { id: "vidsrcto", label: "VidSrc.mov", tag: "⭐ Primary", needsAsync: false, baseMovie: (id) =>
-                    `https://vidsrc.mov/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
-            { id: "vidzee", label: "VidZee", tag: "fast", needsAsync: false, baseMovie: (id) =>
-                    `https://player.vidzee.wtf/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
-            { id: "vidrock", label: "VidRock", tag: "popular", needsAsync: false, baseMovie: (id) =>
-                    `https://vidrock.net/movie/${id}`, baseTv: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}` },
+            { id: "vidsrcto", label: "VidSrc.mov", tag: "⭐ Primary", needsAsync: false, baseMovie: (id) => `https://vidsrc.mov/embed/movie/${id}`, baseTv: (id, s, e) => `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
+            { id: "vidzee", label: "VidZee", tag: "fast", needsAsync: false, baseMovie: (id) => `https://player.vidzee.wtf/embed/movie/${id}`, baseTv: (id, s, e) => `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
+            { id: "vidrock", label: "VidRock", tag: "popular", needsAsync: false, baseMovie: (id) => `https://vidrock.net/movie/${id}`, baseTv: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}` },
             { id: "vidsrc-wtf-1", label: "VidSrc.wtf API v1", tag: "async", needsAsync: true, apiVersion: 1 },
             { id: "vidsrc-wtf-2", label: "VidSrc.wtf API v2", tag: "async", needsAsync: true, apiVersion: 2 },
             { id: "vidsrc-wtf-3", label: "VidSrc.wtf API v3", tag: "async", needsAsync: true, apiVersion: 3 },
             { id: "vidsrc-wtf-4", label: "VidSrc.wtf API v4", tag: "async", needsAsync: true, apiVersion: 4 },
-            { id: "vidnest", label: "VidNest", tag: "HD", needsAsync: false, baseMovie: (id) =>
-                    `https://vidnest.fun/movie/${id}`, baseTv: (id, s, e) =>
-                `https://vidnest.fun/tv/${id}/${s}/${e}` },
-            { id: "riveembed", label: "RiveEmbed", tag: "4K", needsAsync: false, baseMovie: (id) =>
-                    `https://riveembed.com/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
-            { id: "smashystream", label: "SmashyStream", tag: "multi", needsAsync: false, baseMovie: (id) =>
-                    `https://smashystream.com/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://smashystream.com/embed/tv/${id}/${s}/${e}` },
-            { id: "111movies", label: "111Movies", tag: "classic", needsAsync: false, baseMovie: (id) =>
-                    `https://111movies.net/movie/${id}`, baseTv: (id, s, e) =>
-                `https://111movies.net/tv/${id}/${s}/${e}` },
-            { id: "videasy", label: "Videasy", tag: "smooth", needsAsync: false, baseMovie: (id) =>
-                    `https://player.videasy.net/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://player.videasy.net/tv/${id}/${s}/${e}` },
-            { id: "vidlink", label: "VidLink", tag: "direct", needsAsync: false, baseMovie: (id) =>
-                    `https://vidlink.pro/movie/${id}`, baseTv: (id, s, e) =>
-                `https://vidlink.pro/tv/${id}/${s}/${e}` },
-            { id: "vidfast", label: "VidFast", tag: "quick", needsAsync: false, baseMovie: (id) =>
-                    `https://vidfast.pro/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://vidfast.pro/embed/tv/${id}/${s}/${e}` },
-            { id: "embedsu", label: "Embed.su", tag: "stable", needsAsync: false, baseMovie: (id) =>
-                    `https://embed.su/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://embed.su/embed/tv/${id}/${s}/${e}` },
-            { id: "2embed", label: "2Embed", tag: "legacy", needsAsync: false, baseMovie: (id) =>
-                    `https://2embed.cc/embed/movie/${id}`, baseTv: (id, s, e) =>
-                `https://2embed.cc/embed/tv/${id}/${s}/${e}` },
-            { id: "moviesapi", label: "MoviesAPI", tag: "api", needsAsync: false, baseMovie: (id) =>
-                    `https://moviesapi.club/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://moviesapi.club/tv/${id}/${s}/${e}` },
-            { id: "autoembed", label: "AutoEmbed", tag: "auto", needsAsync: false, baseMovie: (id) =>
-                    `https://autoembed.to/movie/${id}`, baseTv: (id, s, e) =>
-                `https://autoembed.to/tv/${id}/${s}/${e}` },
-            { id: "multiembed", label: "MultiEmbed", tag: "multi", needsAsync: false, baseMovie: (id) =>
-                    `https://multiembed.to/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://multiembed.to/tv/${id}/${s}/${e}` },
-            { id: "vidsrc-xyz", label: "VidSrc.xyz", tag: "alt", needsAsync: false, baseMovie: (id) =>
-                    `https://vidsrc.xyz/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
-            { id: "primewire", label: "PrimeWire", tag: "classic", needsAsync: false, baseMovie: (id) =>
-                    `https://primewire.tf/embed/movie/${id}`, baseTv: (id, s, e) =>
-                    `https://primewire.tf/embed/tv/${id}/${s}/${e}` },
-            { id: "warezcdn", label: "WarezCDN", tag: "cdn", needsAsync: false, baseMovie: (id) =>
-                    `https://warezcdn.com/movie/${id}`, baseTv: (id, s, e) =>
-                `https://warezcdn.com/tv/${id}/${s}/${e}` },
-            { id: "superflix", label: "SuperFlix", tag: "fast", needsAsync: false, baseMovie: (id) =>
-                    `https://superflix.net/movie/${id}`, baseTv: (id, s, e) =>
-                `https://superflix.net/tv/${id}/${s}/${e}` },
-            { id: "vidup", label: "VidUp", tag: "active", needsAsync: false, baseMovie: (id) =>
-                    `https://vidup.io/embed/movie/${id}`, baseTv: (id, s, e) =>
-                `https://vidup.io/embed/tv/${id}/${s}/${e}` }
+            { id: "vidnest", label: "VidNest", tag: "HD", needsAsync: false, baseMovie: (id) => `https://vidnest.fun/movie/${id}`, baseTv: (id, s, e) => `https://vidnest.fun/tv/${id}/${s}/${e}` },
+            { id: "riveembed", label: "RiveEmbed", tag: "4K", needsAsync: false, baseMovie: (id) => `https://riveembed.com/embed/movie/${id}`, baseTv: (id, s, e) => `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
+            { id: "smashystream", label: "SmashyStream", tag: "multi", needsAsync: false, baseMovie: (id) => `https://smashystream.com/embed/movie/${id}`, baseTv: (id, s, e) => `https://smashystream.com/embed/tv/${id}/${s}/${e}` },
+            { id: "111movies", label: "111Movies", tag: "classic", needsAsync: false, baseMovie: (id) => `https://111movies.net/movie/${id}`, baseTv: (id, s, e) => `https://111movies.net/tv/${id}/${s}/${e}` },
+            { id: "videasy", label: "Videasy", tag: "smooth", needsAsync: false, baseMovie: (id) => `https://player.videasy.net/movie/${id}`, baseTv: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
+            { id: "vidlink", label: "VidLink", tag: "direct", needsAsync: false, baseMovie: (id) => `https://vidlink.pro/movie/${id}`, baseTv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
+            { id: "vidfast", label: "VidFast", tag: "quick", needsAsync: false, baseMovie: (id) => `https://vidfast.pro/embed/movie/${id}`, baseTv: (id, s, e) => `https://vidfast.pro/embed/tv/${id}/${s}/${e}` },
+            { id: "embedsu", label: "Embed.su", tag: "stable", needsAsync: false, baseMovie: (id) => `https://embed.su/embed/movie/${id}`, baseTv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
+            { id: "2embed", label: "2Embed", tag: "legacy", needsAsync: false, baseMovie: (id) => `https://2embed.cc/embed/movie/${id}`, baseTv: (id, s, e) => `https://2embed.cc/embed/tv/${id}/${s}/${e}` },
+            { id: "moviesapi", label: "MoviesAPI", tag: "api", needsAsync: false, baseMovie: (id) => `https://moviesapi.club/movie/${id}`, baseTv: (id, s, e) => `https://moviesapi.club/tv/${id}/${s}/${e}` },
+            { id: "autoembed", label: "AutoEmbed", tag: "auto", needsAsync: false, baseMovie: (id) => `https://autoembed.to/movie/${id}`, baseTv: (id, s, e) => `https://autoembed.to/tv/${id}/${s}/${e}` },
+            { id: "multiembed", label: "MultiEmbed", tag: "multi", needsAsync: false, baseMovie: (id) => `https://multiembed.to/movie/${id}`, baseTv: (id, s, e) => `https://multiembed.to/tv/${id}/${s}/${e}` },
+            { id: "vidsrc-xyz", label: "VidSrc.xyz", tag: "alt", needsAsync: false, baseMovie: (id) => `https://vidsrc.xyz/embed/movie/${id}`, baseTv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+            { id: "primewire", label: "PrimeWire", tag: "classic", needsAsync: false, baseMovie: (id) => `https://primewire.tf/embed/movie/${id}`, baseTv: (id, s, e) => `https://primewire.tf/embed/tv/${id}/${s}/${e}` },
+            { id: "warezcdn", label: "WarezCDN", tag: "cdn", needsAsync: false, baseMovie: (id) => `https://warezcdn.com/movie/${id}`, baseTv: (id, s, e) => `https://warezcdn.com/tv/${id}/${s}/${e}` },
+            { id: "superflix", label: "SuperFlix", tag: "fast", needsAsync: false, baseMovie: (id) => `https://superflix.net/movie/${id}`, baseTv: (id, s, e) => `https://superflix.net/tv/${id}/${s}/${e}` },
+            { id: "vidup", label: "VidUp", tag: "active", needsAsync: false, baseMovie: (id) => `https://vidup.io/embed/movie/${id}`, baseTv: (id, s, e) => `https://vidup.io/embed/tv/${id}/${s}/${e}` }
         ];
 
         // ============ GLOBAL STATE ============
@@ -660,6 +588,9 @@
         let currentServerId = "vidsrcto";
         let isLoading = false;
 
+        // Helps pass server param from hash to getServerFromUrl
+        window.__hashServer = null;
+
         // DOM refs
         const playerContainer = document.getElementById("playerContainer");
         const errorZone = document.getElementById("errorZone");
@@ -669,8 +600,9 @@
         const customNote = document.getElementById("customNote");
         const serverListContainer = document.getElementById("serverListContainer");
 
-        // ============ ROUTE PARSING ============
+        // ============ ROUTE PARSING (NEW: hash support) ============
         function parseRoute() {
+            // 1. Try clean URL path (e.g., /watch/movie/12345)
             const path = window.location.pathname;
             const movieMatch = path.match(/\/watch\/movie\/([^\/?#]+)/i);
             if (movieMatch) {
@@ -688,6 +620,40 @@
                 currentEpisode = parseInt(tvMatch[3], 10);
                 return true;
             }
+
+            // 2. Fallback: parse hash (e.g., #/movie/1247165?server=vidzee)
+            const hash = window.location.hash.substring(1); // remove '#'
+            if (hash) {
+                const [hashPath, queryString] = hash.split('?');
+                const movieHashMatch = hashPath.match(/^\/movie\/([^\/]+)/);
+                if (movieHashMatch) {
+                    currentType = "movie";
+                    currentId = movieHashMatch[1];
+                    currentSeason = null;
+                    currentEpisode = null;
+                    if (queryString) {
+                        const hashParams = new URLSearchParams(queryString);
+                        const serverFromHash = hashParams.get("server");
+                        if (serverFromHash) window.__hashServer = serverFromHash;
+                    }
+                    return true;
+                }
+                const tvHashMatch = hashPath.match(/^\/tv\/([^\/]+)\/(\d+)\/(\d+)/);
+                if (tvHashMatch) {
+                    currentType = "tv";
+                    currentId = tvHashMatch[1];
+                    currentSeason = parseInt(tvHashMatch[2], 10);
+                    currentEpisode = parseInt(tvHashMatch[3], 10);
+                    if (queryString) {
+                        const hashParams = new URLSearchParams(queryString);
+                        const serverFromHash = hashParams.get("server");
+                        if (serverFromHash) window.__hashServer = serverFromHash;
+                    }
+                    return true;
+                }
+            }
+
+            // 3. Last resort: query string (?id=...&type=movie)
             const urlParams = new URLSearchParams(window.location.search);
             const fallbackId = urlParams.get("id");
             if (fallbackId) {
@@ -705,14 +671,35 @@
             return false;
         }
 
+        // ============ GET SERVER FROM URL / HASH ============
         function getServerFromUrl() {
+            // Check real query string first
             const params = new URLSearchParams(window.location.search);
-            const srv = params.get("server");
+            let srv = params.get("server");
             if (srv && SERVER_LIST.some(s => s.id === srv)) return srv;
+
+            // Check hash-passed server (stored temporarily)
+            if (window.__hashServer && SERVER_LIST.some(s => s.id === window.__hashServer)) {
+                const hashServer = window.__hashServer;
+                window.__hashServer = null; // consume once
+                return hashServer;
+            }
+
+            // Scan hash query string as a fallback
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const [, queryString] = hash.split('?');
+                if (queryString) {
+                    const hashParams = new URLSearchParams(queryString);
+                    srv = hashParams.get("server");
+                    if (srv && SERVER_LIST.some(s => s.id === srv)) return srv;
+                }
+            }
             return null;
         }
 
         function updateUrlServer(serverId) {
+            // Update the server param in the current URL (works with hash or clean URL)
             const url = new URL(window.location.href);
             url.searchParams.set("server", serverId);
             window.history.replaceState({}, "", url.toString());
@@ -731,8 +718,7 @@
 
         // ============ ERROR ============
         function showError(message) {
-            errorZone.innerHTML =
-                `<div class="error-banner"><i class="fa-solid fa-triangle-exclamation"></i> ${message}</div>`;
+            errorZone.innerHTML = `<div class="error-banner"><i class="fa-solid fa-triangle-exclamation"></i> ${message}</div>`;
         }
 
         function clearError() { errorZone.innerHTML = ""; }
@@ -741,18 +727,15 @@
         async function loadPlayer() {
             if (isLoading) return;
             if (!currentId) {
-                showError(
-                    "No valid movie/TV ID found. Use a URL like /watch/movie/1247165 or /watch/tv/1399/1/1");
-                playerContainer.innerHTML =
-                    `<div class="loader-overlay"><span style="color:#aaa;">Invalid request: missing content ID</span></div>`;
+                showError("No valid movie/TV ID found. Use a URL like /watch/movie/1247165 or /watch/tv/1399/1/1");
+                playerContainer.innerHTML = `<div class="loader-overlay"><span style="color:#aaa;">Invalid request – missing content ID</span></div>`;
                 return;
             }
             clearError();
             isLoading = true;
             const server = SERVER_LIST.find(s => s.id === currentServerId);
             const serverLabel = server ? server.label : currentServerId;
-            playerContainer.innerHTML =
-                `<div class="loader-overlay"><div class="spinner"></div><span class="loader-text">Connecting to ${serverLabel}…</span></div>`;
+            playerContainer.innerHTML = `<div class="loader-overlay"><div class="spinner"></div><span class="loader-text">Connecting to ${serverLabel}…</span></div>`;
 
             try {
                 if (!server) throw new Error(`Unknown server: ${currentServerId}`);
@@ -765,16 +748,13 @@
                     contentTypeBadge.textContent = `📺 TV · S${currentSeason} E${currentEpisode}`;
                     contentTypeBadge.classList.add("tv");
                 }
-                activeServerLabel.innerHTML =
-                    `<i class="fa-solid fa-circle"></i> Server: ${server.label}`;
+                activeServerLabel.innerHTML = `<i class="fa-solid fa-circle"></i> Server: ${server.label}`;
                 contentIdLabel.textContent = `ID: ${currentId}`;
-                customNote.textContent = currentType === "movie" ?
-                    `TMDB/IMDB: ${currentId}` :
-                    `Season ${currentSeason} · Episode ${currentEpisode}`;
+                customNote.textContent = currentType === "movie" ? `TMDB/IMDB: ${currentId}` : `Season ${currentSeason} · Episode ${currentEpisode}`;
 
                 let embedUrl = null;
 
-                // --- ASYNC: vidsrc.wtf APIs ---
+                // ASYNC: vidsrc.wtf APIs
                 if (server.needsAsync && server.apiVersion) {
                     const apiVersion = server.apiVersion;
                     const apiBase = `https://vidsrc.wtf/api/${apiVersion}`;
@@ -782,8 +762,7 @@
                     if (currentType === "movie") {
                         apiEndpoint = `${apiBase}/movie/?id=${currentId}&color=7C3AED`;
                     } else {
-                        apiEndpoint =
-                        `${apiBase}/tv/?id=${currentId}&s=${currentSeason}&e=${currentEpisode}&color=7C3AED`;
+                        apiEndpoint = `${apiBase}/tv/?id=${currentId}&s=${currentSeason}&e=${currentEpisode}&color=7C3AED`;
                     }
                     const response = await fetch(apiEndpoint, { headers: { "Accept": "application/json" } });
                     if (!response.ok) throw new Error(`API v${apiVersion} responded with ${response.status}`);
@@ -793,13 +772,9 @@
                     else if (data.url) finalSrc = data.url;
                     else if (data.embed_url) finalSrc = data.embed_url;
                     else if (data.result && data.result.url) finalSrc = data.result.url;
-                    else if (data.sources && data.sources[0] && data.sources[0].file) finalSrc = data.sources[0]
-                        .file;
+                    else if (data.sources && data.sources[0] && data.sources[0].file) finalSrc = data.sources[0].file;
                     else if (typeof data === "string" && data.startsWith("http")) finalSrc = data;
-                    else {
-                        console.warn("API raw response:", data);
-                        throw new Error("Could not extract video source from API response");
-                    }
+                    else throw new Error("Could not extract video source from API response");
                     if (!finalSrc.startsWith("http")) finalSrc = "https:" + finalSrc;
                     embedUrl = finalSrc;
                     renderIframe(embedUrl);
@@ -807,21 +782,19 @@
                     return;
                 }
 
-                // --- SYNC: static embed providers ---
+                // SYNC: static embed providers
                 if (!server.baseMovie || !server.baseTv) throw new Error("Server config missing embed pattern");
                 if (currentType === "movie") {
                     embedUrl = server.baseMovie(currentId);
                 } else {
-                    if (!currentSeason || !currentEpisode) throw new Error(
-                        "TV show missing season/episode");
+                    if (!currentSeason || !currentEpisode) throw new Error("TV show missing season/episode");
                     embedUrl = server.baseTv(currentId, currentSeason, currentEpisode);
                 }
                 if (!embedUrl) throw new Error("Could not construct embed URL");
                 renderIframe(embedUrl);
             } catch (err) {
                 console.error(err);
-                playerContainer.innerHTML =
-                    `<div class="loader-overlay"><span style="font-size:28px;">❌</span><span style="color:#f87171;">Failed to load</span><span style="font-size:13px;color:#b77cff;">${err.message}</span></div>`;
+                playerContainer.innerHTML = `<div class="loader-overlay"><span style="font-size:28px;">❌</span><span style="color:#f87171;">Failed to load</span><span style="font-size:13px;color:#b77cff;">${err.message}</span></div>`;
                 showError(`${server?.label || currentServerId}: ${err.message}`);
             } finally {
                 isLoading = false;
@@ -829,16 +802,8 @@
         }
 
         function renderIframe(src) {
-            if (!src) throw new Error("Empty embed source");
-            const iframeHtml = `
-            <iframe src="${src}"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowfullscreen
-              frameborder="0"
-              referrerpolicy="origin"
-              style="width:100%; height:100%; border:none;"
-            ></iframe>`;
-            playerContainer.innerHTML = iframeHtml;
+            if (!src) return;
+            playerContainer.innerHTML = `<iframe src="${src}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0" referrerpolicy="origin" style="width:100%; height:100%; border:none;" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation allow-presentation"></iframe>`;
         }
 
         // ============ SERVER UI ============
@@ -849,10 +814,10 @@
                 btn.className = "server-option";
                 if (server.id === currentServerId) btn.classList.add("active");
                 btn.innerHTML = `
-              <span class="server-dot"></span>
-              <span>${server.label}</span>
-              <span class="server-tag">${server.tag || ''}</span>
-            `;
+                    <span class="server-dot"></span>
+                    <span>${server.label}</span>
+                    <span class="server-tag">${server.tag || ''}</span>
+                `;
                 btn.addEventListener("click", () => {
                     if (currentServerId === server.id) return;
                     currentServerId = server.id;
@@ -869,14 +834,11 @@
             allBtns.forEach(btn => {
                 const labelSpan = btn.querySelector("span:nth-child(2)");
                 const serverId = SERVER_LIST.find(s => s.label === labelSpan?.textContent)?.id;
-                if (serverId === currentServerId) {
-                    btn.classList.add("active");
-                } else {
-                    btn.classList.remove("active");
-                }
+                if (serverId === currentServerId) btn.classList.add("active");
+                else btn.classList.remove("active");
             });
             const server = SERVER_LIST.find(s => s.id === currentServerId);
-            if (server && activeServerLabel) {
+            if (server) {
                 activeServerLabel.innerHTML = `<i class="fa-solid fa-circle"></i> Server: ${server.label}`;
             }
         }
@@ -885,12 +847,12 @@
         function initApp() {
             const routeExists = parseRoute();
             if (!routeExists) {
-                // Default demo content
+                // If no route at all, fallback to a demo movie (optional)
                 currentType = "movie";
-                currentId = "1247165";
+                currentId = "1247165"; // example TMDB ID
                 currentSeason = null;
                 currentEpisode = null;
-                const demoUrl = `/watch/movie/1247165?server=${currentServerId}`;
+                const demoUrl = `watch.html#/movie/1247165?server=vidsrcto`;
                 window.history.replaceState({}, "", demoUrl);
             } else {
                 const serverParam = getServerFromUrl();
@@ -902,16 +864,15 @@
             loadPlayer();
         }
 
-        // Handle browser back/forward
         window.addEventListener("popstate", () => {
             parseRoute();
             const srv = getServerFromUrl();
-            if (srv && SERVER_LIST.find(s => s.id === srv)) currentServerId = srv;
+            if (srv) currentServerId = srv;
             refreshActiveServerUI();
             loadPlayer();
         });
 
-        // Start
+        // Start everything
         initApp();
     </script>
 </body>
