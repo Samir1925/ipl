@@ -433,7 +433,7 @@
   // Async fetch for vidsrc.wtf
   async function fetchAsyncEmbed(serverObj) {
     const apiVer = serverObj.apiVer;
-    const baseApi = `https://vidsrc.wtf/api/${apiVer}`;
+    const baseApi = `https://vidsrc.wtf/api/${apiVer}/`;
     let endpoint = "";
     if (currentType === "movie") {
       endpoint = `${baseApi}/movie/?id=${currentMediaId}&color=8B5CF6`;
