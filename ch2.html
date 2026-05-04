@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Cinebto Stream · Official vidsrc.wtf API + 24 Servers</title>
+  <title>Sam TV – Watch Movies & Shows</title>
   <style>
     * {
       margin: 0;
@@ -12,59 +12,119 @@
     }
 
     body {
-      background: #0a0c10;
-      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-      color: #eef2ff;
+      background-color: #141414;
+      font-family: 'Segoe UI', -apple-system, 'Netflix Sans', 'Helvetica Neue', Arial, sans-serif;
+      color: #e5e5e5;
     }
 
+    /* Netflix-style scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #2d2d2d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e50914;
+      border-radius: 4px;
+    }
+
+    /* Navbar */
     .navbar {
-      background: rgba(10, 12, 18, 0.96);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-      padding: 0.9rem 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%);
+      backdrop-filter: blur(8px);
+      padding: 0.8rem 3rem;
       display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      align-items: center;
+      gap: 2.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
     }
 
     .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #e50914;
+      text-decoration: none;
+    }
+    .logo span {
+      background: #e50914;
+      padding: 0.2rem 0.55rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo .logo-text {
+      background: transparent;
+      color: #e50914;
       font-size: 1.6rem;
       font-weight: 800;
-      background: linear-gradient(135deg, #e2b0ff, #8b5cf6, #4f46e5);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.3px;
+      letter-spacing: -0.5px;
     }
 
-    .badge {
-      background: #1e293b;
-      padding: 0.25rem 0.9rem;
-      border-radius: 40px;
-      font-size: 0.7rem;
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      color: #a5b4fc;
-      margin-left: 0.75rem;
+    }
+    .nav-links a {
+      color: #e5e5e5;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .nav-links a:hover { color: #b3b3b3; }
+
+    /* main container */
+    .watch-container {
+      padding-top: 70px;
     }
 
-    .container {
-      max-width: 1400px;
-      margin: 1.5rem auto;
-      padding: 0 1.5rem;
+    /* category & title row */
+    .title-row {
+      padding: 1rem 3rem 0.5rem 3rem;
+      background: linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+    }
+    .category-badge {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #e50914;
+      letter-spacing: 1px;
+      margin-bottom: 0.3rem;
+    }
+    .movie-title {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
-    .player-wrapper {
-      background: #000000;
-      border-radius: 28px;
-      overflow: hidden;
-      box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.7);
-      aspect-ratio: 16 / 9;
-      width: 100%;
+    /* player section */
+    .player-section {
+      background: #000;
       position: relative;
+      width: 100%;
+      margin: 0.5rem 0 1rem 0;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
     }
-
+    .player-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
     iframe {
       width: 100%;
       height: 100%;
@@ -72,591 +132,511 @@
       display: block;
     }
 
-    .control-card {
-      background: #0f121ecc;
-      backdrop-filter: blur(8px);
-      border: 1px solid #2a2f45;
-      border-radius: 28px;
-      padding: 1.3rem 1.8rem;
-      margin-top: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.2rem;
-      align-items: flex-end;
-    }
-
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      min-width: 130px;
-    }
-
-    .input-group label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 600;
-      color: #9ca3cf;
-    }
-
-    .input-group input, .input-group select {
-      background: #0a0d18;
-      border: 1px solid #2f3a60;
-      border-radius: 40px;
-      padding: 0.7rem 1rem;
-      color: white;
-      font-weight: 500;
-      font-size: 0.85rem;
-      outline: none;
-      transition: all 0.2s;
-    }
-
-    .input-group input:focus, .input-group select:focus {
-      border-color: #8b5cf6;
-      box-shadow: 0 0 6px rgba(139, 92, 246, 0.4);
-    }
-
-    .load-btn {
-      background: #7c3aed;
-      border: none;
-      padding: 0.7rem 1.6rem;
-      border-radius: 40px;
-      font-weight: 700;
-      color: white;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-left: auto;
-      font-family: inherit;
-    }
-
-    .load-btn:hover {
-      background: #9b5cff;
-      transform: scale(0.97);
-      box-shadow: 0 0 12px rgba(124, 58, 237, 0.5);
-    }
-
+    /* server list (horizontal scroll) */
     .server-section {
-      margin-top: 2rem;
-      background: #0f1219;
-      border-radius: 32px;
-      padding: 1rem 1rem 1rem 1.4rem;
-      border: 1px solid #24283e;
+      padding: 1rem 3rem;
+      background: #0a0a0a;
+      border-top: 1px solid #2a2a2a;
+      border-bottom: 1px solid #2a2a2a;
     }
-
     .server-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
       flex-wrap: wrap;
       margin-bottom: 1rem;
-      gap: 0.6rem;
     }
-
     .server-header h4 {
-      font-weight: 600;
       font-size: 1rem;
-      letter-spacing: -0.2px;
-      background: #1e253b;
-      padding: 0.3rem 1rem;
-      border-radius: 30px;
-      display: inline-block;
+      font-weight: 600;
+      color: #e5e5e5;
+      letter-spacing: 0.5px;
     }
-
     .server-selector {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      max-height: 130px;
-      overflow-y: auto;
-      padding: 0.3rem 0;
+      gap: 0.8rem;
+      overflow-x: auto;
+      padding-bottom: 0.6rem;
+      scrollbar-width: thin;
     }
-
     .server-btn {
-      background: #11161f;
-      border: 1px solid #2d374e;
-      color: #cbd5e6;
-      padding: 0.5rem 1.1rem;
-      border-radius: 40px;
-      font-size: 0.75rem;
+      background: #2a2a2a;
+      border: none;
+      color: #e5e5e5;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: inherit;
+      transition: all 0.2s;
       white-space: nowrap;
+      font-family: inherit;
     }
-
     .server-btn.active {
-      background: #7c3aed;
-      border-color: #a78bfa;
+      background: #e50914;
       color: white;
-      box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
+      box-shadow: 0 0 8px rgba(229,9,20,0.5);
     }
-
     .server-btn:hover:not(.active) {
-      background: #20273f;
-      color: #eef2ff;
-      border-color: #5b6e9e;
+      background: #3a3a3a;
+      transform: scale(0.97);
     }
 
+    /* movie details: two-column layout (poster + info) */
+    .details-section {
+      padding: 2rem 3rem;
+      background: #141414;
+    }
+    .details-grid {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .poster-sm {
+      flex-shrink: 0;
+      width: 180px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    .poster-sm img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
     .info-panel {
-      background: #0b0e16;
-      border-radius: 20px;
-      padding: 0.8rem 1.3rem;
-      margin-top: 1rem;
+      flex: 1;
+    }
+    .info-panel h2 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .meta-row {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.8rem;
-      font-size: 0.8rem;
-    }
-
-    .content-meta {
-      display: flex;
       gap: 1rem;
-      align-items: baseline;
-      flex-wrap: wrap;
+      margin: 0.8rem 0;
+      font-size: 0.85rem;
+      color: #a3a3a3;
     }
-
-    .active-server-badge {
-      background: #1a1f2e;
-      padding: 0.25rem 1rem;
-      border-radius: 32px;
+    .rating-badge {
+      background: #e50914;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      color: white;
       font-weight: 600;
     }
-
-    .note {
-      color: #8892b0;
-      font-size: 0.7rem;
+    .overview {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+      color: #cccccc;
+      max-width: 800px;
     }
-
-    .error-msg {
-      background: #2c1a2e;
-      border-left: 4px solid #f43f5e;
-      padding: 0.8rem 1.2rem;
-      border-radius: 1rem;
+    .cast-crew {
       margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .cast-crew h4 {
       font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      color: #e50914;
+    }
+    .cast-crew p {
+      font-size: 0.8rem;
+      color: #b3b3b3;
     }
 
-    .loader {
+    /* recommendations / you may also like */
+    .similar-section {
+      padding: 2rem 3rem 3rem 3rem;
+      background: #0a0a0a;
+      border-top: 1px solid #2a2a2a;
+    }
+    .similar-section h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      letter-spacing: -0.2px;
+    }
+    .similar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .similar-card {
+      background: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .similar-card:hover {
+      transform: scale(1.03);
+    }
+    .similar-card img {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+    }
+    .similar-card .title {
+      padding: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    .loader, .error-state {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100%;
-      background: #05070c;
-      gap: 0.8rem;
+      gap: 1rem;
+      padding: 3rem;
       flex-direction: column;
     }
-
     .spinner {
-      width: 34px;
-      height: 34px;
-      border: 3px solid #2e3e60;
-      border-top: 3px solid #a78bfa;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #2a2a2a;
+      border-top: 3px solid #e50914;
       border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 780px) {
-      .control-card { flex-direction: column; align-items: stretch; }
-      .load-btn { margin-left: 0; margin-top: 0.5rem; }
-      .server-selector { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.5rem; }
-      .container { padding: 0 1rem; }
+      .navbar { padding: 0.8rem 1.2rem; }
+      .title-row, .server-section, .details-section, .similar-section { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .poster-sm { width: 120px; }
+      .movie-title { font-size: 1.4rem; }
+      .similar-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
     }
   </style>
 </head>
 <body>
 
 <div class="navbar">
-  <div>
-    <span class="logo">🎬 Cinebto · Official vidsrc.wtf API</span>
-    <span class="badge">⚡ 24 SERVERS · Watch Progress tracking</span>
+  <div class="logo">
+    <span>▶</span>
+    <span class="logo-text">Sam tv</span>
   </div>
-  <div class="note" style="font-size:0.7rem;">👇 vidsrc.wtf API 1-4 (multi-server, multi-language)</div>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">TV Shows</a>
+    <a href="#">Movies</a>
+    <a href="#">My List</a>
+  </div>
 </div>
 
-<div class="container">
-  <div class="player-wrapper" id="playerContainer">
-    <div class="loader">
-      <div class="spinner"></div>
-      <span>Ready to stream</span>
+<div class="watch-container">
+  <!-- category & title row -->
+  <div class="title-row">
+    <div class="category-badge" id="categoryBadge">MOVIE</div>
+    <div class="movie-title" id="movieTitle">Loading...</div>
+  </div>
+
+  <!-- player -->
+  <div class="player-section">
+    <div class="player-wrapper" id="playerContainer">
+      <div class="loader"><div class="spinner"></div><span>Preparing stream...</span></div>
     </div>
   </div>
 
-  <!-- CONTROL FORM -->
-  <div class="control-card">
-    <div class="input-group">
-      <label>🎞️ Content Type</label>
-      <select id="contentTypeSelect">
-        <option value="movie">🎬 Movie</option>
-        <option value="tv">📺 TV Series</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <label>TMDB / IMDB ID</label>
-      <input type="text" id="mediaIdInput" placeholder="e.g., 1247165, 1399" value="1247165">
-    </div>
-    <div class="input-group" id="seasonGroup">
-      <label>Season</label>
-      <input type="number" id="seasonInput" value="1" min="1">
-    </div>
-    <div class="input-group" id="episodeGroup">
-      <label>Episode</label>
-      <input type="number" id="episodeInput" value="1" min="1">
-    </div>
-    <button class="load-btn" id="loadContentBtn">▶ LOAD & STREAM</button>
-  </div>
-
-  <!-- SERVER SELECTOR -->
+  <!-- server list (horizontal) -->
   <div class="server-section">
     <div class="server-header">
-      <h4>🌐 SELECT STREAMING SERVER (vidsrc.wtf API 1-4 + 20 direct embeds)</h4>
-      <span class="note">✨ API servers use CORS proxy (auto fallback)</span>
+      <h4>🌐 SELECT STREAMING SERVER</h4>
+      <span id="activeServerBadge" style="font-size:0.75rem; background:#2a2a2a; padding:0.2rem 0.8rem; border-radius:20px;">Active: —</span>
     </div>
     <div id="serverButtonsContainer" class="server-selector"></div>
-    <div class="info-panel">
-      <div class="content-meta">
-        <span id="contentTypeBadge" class="active-server-badge">🎬 MOVIE</span>
-        <span id="activeServerLabel" class="active-server-badge">⚡ Server: —</span>
-        <span id="customNote" class="note">📌 Watch progress saved to localStorage</span>
-      </div>
-      <select id="quickServerSelect" aria-label="quick server switch" style="background:#10131f; border-radius:2rem; padding:0.3rem 0.8rem; font-size:0.75rem;">
-        <option value="">🔁 Quick jump</option>
-      </select>
+  </div>
+
+  <!-- movie details (poster + info) -->
+  <div class="details-section" id="detailsSection">
+    <div class="loader"><div class="spinner"></div><span>Loading movie details...</span></div>
+  </div>
+
+  <!-- recommendations -->
+  <div class="similar-section" id="similarSection">
+    <h3>📺 You May Also Like</h3>
+    <div id="similarGrid" class="similar-grid">
+      <div class="loader"><div class="spinner"></div><span>Loading...</span></div>
     </div>
   </div>
-  <div id="errorZone"></div>
 </div>
 
 <script>
-  // =================================================================
-  // CORS PROXY (for vidsrc.wtf API – free, reliable)
-  // =================================================================
-  const CORS_PROXY = "https://api.allorigins.win/raw?url=";
-  
-  // Helper: fetch with CORS proxy
-  async function fetchWithProxy(url) {
-    const proxiedUrl = CORS_PROXY + encodeURIComponent(url);
-    const response = await fetch(proxiedUrl);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  }
+  // ==================== TMDB API (replace with your key) ====================
+  const TMDB_API_KEY = "YOUR_TMDB_API_KEY";  // 🔴 REPLACE WITH YOUR OWN TMDB API KEY
+  const TMDB_BASE = "https://api.themoviedb.org/3";
+  const TMDB_IMG = "https://image.tmdb.org/t/p/original";
+  const TMDB_POSTER = "https://image.tmdb.org/t/p/w342";
 
-  // =================================================================
-  // SERVER REGISTRY – includes vidsrc.wtf API 1-4 and 20 direct fallbacks
-  // =================================================================
+  // ==================== SERVER REGISTRY (no vidsrc.wtf) ====================
   const SERVER_REGISTRY = [
-    // ---- vidsrc.wtf OFFICIAL API (Multi-Server, Multi-Language, Premium) ----
-    { id: "vidsrc_api1", label: "🎬 API 1 (Multi-Server)", isApi: true, apiVer: 1, color: "8B5CF6" },
-    { id: "vidsrc_api2", label: "🌍 API 2 (Multi-Lang)", isApi: true, apiVer: 2, color: "8B5CF6" },
-    { id: "vidsrc_api3", label: "📦 API 3 (Multi-Embeds)", isApi: true, apiVer: 3, color: "8B5CF6" },
-    { id: "vidsrc_api4", label: "💎 API 4 (Premium)", isApi: true, apiVer: 4, color: "8B5CF6" },
-    
-    // ---- Direct embed fallbacks (no API, no CORS) ----
-    { id: "vidsrc_mov", label: "vidsrc.mov (direct)", movie: (id) => `https://vidsrc.mov/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
-    { id: "vidzee", label: "Vidzee", movie: (id) => `https://player.vidzee.wtf/embed/movie/${id}`, tv: (id, s, e) => `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
-    { id: "vidrock", label: "VidRock", movie: (id) => `https://vidrock.net/movie/${id}`, tv: (id, s, e) => `https://vidrock.net/tv/${id}/${s}/${e}` },
-    { id: "vidsrc_xyz", label: "VidSrc.xyz", movie: (id) => `https://vsembed.su/embed/movie/${id}`, tv: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
-    { id: "vidnest", label: "VidNest", movie: (id) => `https://vidnest.fun/movie/${id}`, tv: (id, s, e) => `https://vidnest.fun/tv/${id}/${s}/${e}` },
-    { id: "riveembed", label: "RiveEmbed", movie: (id) => `https://riveembed.com/embed/movie/${id}`, tv: (id, s, e) => `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
-    { id: "smashystream", label: "SmashyStream", movie: (id) => `https://smashystream.com/embed/movie/${id}`, tv: (id, s, e) => `https://smashystream.com/embed/tv/${id}/${s}/${e}` },
-    { id: "111movies", label: "111Movies", movie: (id) => `https://111movies.net/movie/${id}`, tv: (id, s, e) => `https://111movies.net/tv/${id}/${s}/${e}` },
-    { id: "videasy", label: "Videasy", movie: (id) => `https://player.videasy.net/movie/${id}`, tv: (id, s, e) => `https://player.videasy.net/tv/${id}/${s}/${e}` },
-    { id: "vidlink", label: "VidLink", movie: (id) => `https://vidlink.pro/movie/${id}`, tv: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}` },
-    { id: "vidfast", label: "VidFast", movie: (id) => `https://vidfast.pro/embed/movie/${id}`, tv: (id, s, e) => `https://vidfast.pro/embed/tv/${id}/${s}/${e}` },
-    { id: "embedsu", label: "Embed.su", movie: (id) => `https://embed.su/embed/movie/${id}`, tv: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}` },
-    { id: "2embed", label: "2Embed", movie: (id) => `https://2embed.cc/embed/movie/${id}`, tv: (id, s, e) => `https://2embed.cc/embed/tv/${id}/${s}/${e}` },
-    { id: "moviesapi", label: "MoviesAPI", movie: (id) => `https://moviesapi.club/movie/${id}`, tv: (id, s, e) => `https://moviesapi.club/tv/${id}/${s}/${e}` },
-    { id: "autoembed", label: "AutoEmbed", movie: (id) => `https://autoembed.to/movie/${id}`, tv: (id, s, e) => `https://autoembed.to/tv/${id}/${s}/${e}` },
-    { id: "multiembed", label: "MultiEmbed", movie: (id) => `https://multiembed.to/movie/${id}`, tv: (id, s, e) => `https://multiembed.to/tv/${id}/${s}/${e}` },
-    { id: "primewire", label: "PrimeWire", movie: (id) => `https://primewire.tf/embed/movie/${id}`, tv: (id, s, e) => `https://primewire.tf/embed/tv/${id}/${s}/${e}` },
-    { id: "warezcdn", label: "WarezCDN", movie: (id) => `https://warezcdn.com/movie/${id}`, tv: (id, s, e) => `https://warezcdn.com/tv/${id}/${s}/${e}` },
-    { id: "superflix", label: "SuperFlix", movie: (id) => `https://superflix.net/movie/${id}`, tv: (id, s, e) => `https://superflix.net/tv/${id}/${s}/${e}` },
-    { id: "vidup", label: "VidUp 🔥", movie: (id) => `https://vidup.io/embed/movie/${id}`, tv: (id, s, e) => `https://vidup.io/embed/tv/${id}/${s}/${e}` }
+    { id: "vidzee", label: "Vidzee", movie: (id) => `https://player.vidzee.wtf/embed/movie/${id}` },
+    { id: "vidrock", label: "VidRock", movie: (id) => `https://vidrock.net/movie/${id}` },
+    { id: "vidnest", label: "VidNest", movie: (id) => `https://vidnest.fun/movie/${id}` },
+    { id: "riveembed", label: "RiveEmbed", movie: (id) => `https://riveembed.com/embed/movie/${id}` },
+    { id: "smashystream", label: "SmashyStream", movie: (id) => `https://smashystream.com/embed/movie/${id}` },
+    { id: "111movies", label: "111Movies", movie: (id) => `https://111movies.net/movie/${id}` },
+    { id: "videasy", label: "Videasy", movie: (id) => `https://player.videasy.net/movie/${id}` },
+    { id: "vidlink", label: "VidLink", movie: (id) => `https://vidlink.pro/movie/${id}` },
+    { id: "vidfast", label: "VidFast", movie: (id) => `https://vidfast.pro/embed/movie/${id}` },
+    { id: "embedsu", label: "Embed.su", movie: (id) => `https://embed.su/embed/movie/${id}` },
+    { id: "2embed", label: "2Embed", movie: (id) => `https://2embed.cc/embed/movie/${id}` },
+    { id: "moviesapi", label: "MoviesAPI", movie: (id) => `https://moviesapi.club/movie/${id}` },
+    { id: "autoembed", label: "AutoEmbed", movie: (id) => `https://autoembed.to/movie/${id}` },
+    { id: "multiembed", label: "MultiEmbed", movie: (id) => `https://multiembed.to/movie/${id}` },
+    { id: "primewire", label: "PrimeWire", movie: (id) => `https://primewire.tf/embed/movie/${id}` },
+    { id: "warezcdn", label: "WarezCDN", movie: (id) => `https://warezcdn.com/movie/${id}` },
+    { id: "superflix", label: "SuperFlix", movie: (id) => `https://superflix.net/movie/${id}` },
+    { id: "vidup", label: "VidUp 🔥", movie: (id) => `https://vidup.io/embed/movie/${id}` },
+    { id: "cinehub", label: "CineHub", movie: (id) => `https://cinehub.wtf/embed/movie/${id}` },
+    { id: "moviestream", label: "MovieStream", movie: (id) => `https://moviestream.to/embed/movie/${id}` },
+    { id: "flixhq", label: "FlixHQ", movie: (id) => `https://flixhq.to/embed/movie/${id}` }
   ];
 
-  // ---------- GLOBAL STATE ----------
-  let currentType = "movie";
-  let currentMediaId = "1247165";
-  let currentSeason = 1;
-  let currentEpisode = 1;
-  let currentServerId = "vidsrc_api1";
+  // ---------- GLOBAL ----------
+  let currentMovieId = null;
+  let currentServerId = SERVER_REGISTRY[0]?.id || "vidzee";
+  let movieDataCache = null;
   let isLoading = false;
 
   // DOM elements
   const playerContainer = document.getElementById("playerContainer");
-  const errorZone = document.getElementById("errorZone");
-  const contentTypeBadge = document.getElementById("contentTypeBadge");
-  const activeServerLabel = document.getElementById("activeServerLabel");
-  const customNoteSpan = document.getElementById("customNote");
+  const detailsSection = document.getElementById("detailsSection");
+  const similarGrid = document.getElementById("similarGrid");
   const serverBtnsContainer = document.getElementById("serverButtonsContainer");
-  const quickSelect = document.getElementById("quickServerSelect");
+  const activeServerBadge = document.getElementById("activeServerBadge");
+  const movieTitleEl = document.getElementById("movieTitle");
+  const categoryBadge = document.getElementById("categoryBadge");
 
-  const contentTypeSelect = document.getElementById("contentTypeSelect");
-  const mediaIdInput = document.getElementById("mediaIdInput");
-  const seasonInput = document.getElementById("seasonInput");
-  const episodeInput = document.getElementById("episodeInput");
-  const seasonGroup = document.getElementById("seasonGroup");
-  const episodeGroup = document.getElementById("episodeGroup");
-  const loadBtn = document.getElementById("loadContentBtn");
+  // helper: get movie ID from URL (query param "id" or path /watch/123)
+  function getMovieIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get("id");
+    if (id) return id;
+    const match = window.location.pathname.match(/\/watch\/(\d+)/);
+    if (match) return match[1];
+    return null;
+  }
 
-  // ========== WATCH PROGRESS INTEGRATION (vidsrc.wtf official) ==========
-  window.addEventListener("message", (event) => {
-    if (event.origin !== "https://www.vidsrc.wtf") return;
-    if (event.data?.type === "MEDIA_DATA") {
-      const mediaData = event.data.data;
-      localStorage.setItem("vidsrcwtf-Progress", JSON.stringify(mediaData));
-      console.log("📺 Watch progress saved:", mediaData);
+  // update URL with current movie & server
+  function updateUrl() {
+    if (!currentMovieId) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("id", currentMovieId);
+    url.searchParams.set("server", currentServerId);
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  // fetch movie details + credits
+  async function fetchMovieDetails(movieId) {
+    const [detailsRes, creditsRes] = await Promise.all([
+      fetch(`${TMDB_BASE}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`),
+      fetch(`${TMDB_BASE}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`)
+    ]);
+    if (!detailsRes.ok) throw new Error("Movie not found");
+    const movie = await detailsRes.json();
+    const credits = await creditsRes.json();
+    return { movie, credits };
+  }
+
+  // fetch recommendations
+  async function fetchRecommendations(movieId) {
+    const res = await fetch(`${TMDB_BASE}/movie/${movieId}/recommendations?api_key=${TMDB_API_KEY}&language=en-US&page=1`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results.slice(0, 12);
+  }
+
+  // render movie details and credits (director + cast)
+  function renderDetails(movie, credits) {
+    const poster = movie.poster_path ? TMDB_POSTER + movie.poster_path : "https://via.placeholder.com/300x450?text=No+Poster";
+    const year = new Date(movie.release_date).getFullYear() || "N/A";
+    const runtime = movie.runtime ? `${movie.runtime} min` : "";
+    const genres = movie.genres.map(g => g.name).join(" · ");
+    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "—";
+    
+    // director
+    const director = credits.crew?.find(person => person.job === "Director")?.name || "Not listed";
+    // main cast (top 5)
+    const cast = credits.cast?.slice(0, 6).map(c => c.name).join(", ") || "No data";
+
+    const html = `
+      <div class="details-grid">
+        <div class="poster-sm">
+          <img src="${poster}" alt="${movie.title}">
+        </div>
+        <div class="info-panel">
+          <h2>${movie.title}</h2>
+          <div class="meta-row">
+            <span>${year}</span>
+            <span>${runtime}</span>
+            <span class="rating-badge">⭐ ${rating}</span>
+            <span>${genres}</span>
+          </div>
+          <div class="overview">${movie.overview || "No overview available."}</div>
+          <div class="cast-crew">
+            <div>
+              <h4>DIRECTOR</h4>
+              <p>${director}</p>
+            </div>
+            <div>
+              <h4>STARRING</h4>
+              <p>${cast}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    detailsSection.innerHTML = html;
+  }
+
+  // render recommendations grid
+  function renderRecommendations(recommendations) {
+    if (!recommendations.length) {
+      similarGrid.innerHTML = `<div style="padding:2rem; text-align:center;">No similar movies found</div>`;
+      return;
     }
-  });
-
-  // Helper: toggle TV inputs
-  function toggleTvInputs() {
-    const isTv = contentTypeSelect.value === "tv";
-    seasonGroup.style.display = isTv ? "flex" : "none";
-    episodeGroup.style.display = isTv ? "flex" : "none";
-  }
-  contentTypeSelect.addEventListener("change", toggleTvInputs);
-  toggleTvInputs();
-
-  function showError(msg) { errorZone.innerHTML = `<div class="error-msg">⚠️ ${msg}</div>`; }
-  function clearError() { errorZone.innerHTML = ""; }
-
-  function refreshUIContentMeta() {
-    contentTypeBadge.innerHTML = currentType === "movie" ? "🎬 MOVIE STREAM" : `📺 TV SERIES · S${currentSeason} E${currentEpisode}`;
-    const currentSrv = SERVER_REGISTRY.find(s => s.id === currentServerId);
-    activeServerLabel.innerHTML = `⚡ ${currentSrv?.label || currentServerId}`;
-    customNoteSpan.innerHTML = currentType === "movie" ? `🎞️ ID: ${currentMediaId}` : `📺 ${currentMediaId} · S${currentSeason}/E${currentEpisode}`;
+    const gridHtml = recommendations.map(movie => `
+      <div class="similar-card" data-id="${movie.id}">
+        <img src="${movie.poster_path ? TMDB_POSTER + movie.poster_path : 'https://via.placeholder.com/342x513?text=No+Image'}" alt="${movie.title}">
+        <div class="title">${movie.title}</div>
+      </div>
+    `).join("");
+    similarGrid.innerHTML = gridHtml;
+    // add click event to each card
+    document.querySelectorAll(".similar-card").forEach(card => {
+      card.addEventListener("click", (e) => {
+        const id = card.dataset.id;
+        if (id) {
+          window.history.pushState({}, "", `/watch/${id}`);
+          loadContentById(id);
+        }
+      });
+    });
   }
 
-  function renderIframe(src) {
-    if (!src || !src.startsWith("http")) throw new Error("Invalid embed URL");
-    const iframeHtml = `<iframe src="${src}" 
+  // load player with current server and movie ID
+  function loadPlayer() {
+    if (!currentMovieId) return;
+    const server = SERVER_REGISTRY.find(s => s.id === currentServerId);
+    if (!server) return;
+    const embedUrl = server.movie(currentMovieId);
+    if (!embedUrl) {
+      playerContainer.innerHTML = `<div class="loader"><span>⚠️ Server error: invalid URL</span></div>`;
+      return;
+    }
+    const iframeHtml = `<iframe src="${embedUrl}" 
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" 
       allowfullscreen="true"
       referrerpolicy="strict-origin-when-cross-origin"
+      sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-top-navigation-by-user-activation allow-presentation"
       style="width:100%; height:100%; border:none;">
     </iframe>`;
     playerContainer.innerHTML = iframeHtml;
+    activeServerBadge.innerHTML = `Active: ${server.label}`;
+    document.querySelectorAll(".server-btn").forEach(btn => {
+      if (btn.dataset.id === currentServerId) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
   }
 
-  // Fetch embed URL from vidsrc.wtf API (using CORS proxy)
-  async function fetchApiEmbed(serverObj) {
-    const apiVer = serverObj.apiVer;
-    const color = serverObj.color || "8B5CF6";
-    let apiUrl = "";
-    if (currentType === "movie") {
-      apiUrl = `https://vidsrc.wtf/api/${apiVer}/movie/?id=${currentMediaId}&color=${color}`;
-    } else {
-      apiUrl = `https://vidsrc.wtf/api/${apiVer}/tv/?id=${currentMediaId}&s=${currentSeason}&e=${currentEpisode}&color=${color}`;
-    }
-    const data = await fetchWithProxy(apiUrl);
-    // Extract iframe URL from response (official API returns { iframe: "url" } or { embed_url, url, result })
-    let embedUrl = null;
-    if (data.iframe) embedUrl = data.iframe;
-    else if (data.embed_url) embedUrl = data.embed_url;
-    else if (data.url) embedUrl = data.url;
-    else if (data.result?.url) embedUrl = data.result.url;
-    else if (data.sources && data.sources[0]?.file) embedUrl = data.sources[0].file;
-    else if (typeof data === "string" && data.startsWith("http")) embedUrl = data;
-    if (!embedUrl) throw new Error("API response did not contain a playable URL");
-    // Ensure absolute URL
-    if (!embedUrl.startsWith("http")) embedUrl = "https:" + embedUrl;
-    return embedUrl;
-  }
-
-  // Main load function
-  async function loadPlayer() {
+  // full page load: fetch movie data, update UI, load player, recommendations
+  async function loadContentById(movieId) {
     if (isLoading) return;
-    if (!currentMediaId || currentMediaId.trim() === "") {
-      showError("Media ID missing. Enter a valid TMDB ID (e.g., 1247165).");
-      return;
-    }
-    clearError();
     isLoading = true;
-    const server = SERVER_REGISTRY.find(s => s.id === currentServerId);
-    if (!server) {
-      showError(`Server config missing: ${currentServerId}`);
-      isLoading = false;
-      return;
-    }
-    refreshUIContentMeta();
-    playerContainer.innerHTML = `<div class="loader"><div class="spinner"></div><span>Loading ${server.label} ...</span></div>`;
+    currentMovieId = movieId;
+    updateUrl();
+
+    // show loading states
+    movieTitleEl.innerText = "Loading...";
+    categoryBadge.innerText = "MOVIE";
+    detailsSection.innerHTML = `<div class="loader"><div class="spinner"></div><span>Loading movie details...</span></div>`;
+    similarGrid.innerHTML = `<div class="loader"><div class="spinner"></div><span>Loading recommendations...</span></div>`;
+    playerContainer.innerHTML = `<div class="loader"><div class="spinner"></div><span>Preparing stream...</span></div>`;
 
     try {
-      let embedUrl = null;
-      if (server.isApi) {
-        embedUrl = await fetchApiEmbed(server);
-      } else {
-        if (!server.movie || !server.tv) throw new Error("Invalid direct embed configuration");
-        if (currentType === "movie") {
-          embedUrl = server.movie(currentMediaId);
-        } else {
-          embedUrl = server.tv(currentMediaId, currentSeason, currentEpisode);
-        }
-      }
-      if (!embedUrl) throw new Error("Could not generate embed URL");
-      renderIframe(embedUrl);
+      const { movie, credits } = await fetchMovieDetails(movieId);
+      movieDataCache = { movie, credits };
+      // title row
+      movieTitleEl.innerText = movie.title;
+      categoryBadge.innerText = "MOVIE";
+      // details
+      renderDetails(movie, credits);
+      // recommendations
+      const recos = await fetchRecommendations(movieId);
+      renderRecommendations(recos);
+      // player (first server or current)
+      loadPlayer();
     } catch (err) {
       console.error(err);
-      playerContainer.innerHTML = `<div style="background:#150e1a; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center;"><span>❌ Stream error</span><span style="font-size:13px; color:#c084fc;">${err.message}</span></div>`;
-      showError(`${server.label} : ${err.message || "failed to load"}`);
+      detailsSection.innerHTML = `<div class="error-state"><span>❌ ${err.message}</span><button onclick="location.reload()" style="background:#e50914; border:none; padding:0.5rem 1rem; border-radius:30px; color:white; cursor:pointer;">Retry</button></div>`;
+      similarGrid.innerHTML = `<div class="error-state">Could not load recommendations</div>`;
+      playerContainer.innerHTML = `<div class="loader"><span>⚠️ Failed to load movie</span></div>`;
     } finally {
       isLoading = false;
     }
   }
 
-  // Sync from form
-  function syncFromFormAndLoad() {
-    currentType = contentTypeSelect.value;
-    let newMediaId = mediaIdInput.value.trim();
-    if (!newMediaId) {
-      showError("Please enter a valid ID (movie or TV show ID)");
-      return;
-    }
-    currentMediaId = newMediaId;
-    if (currentType === "tv") {
-      let s = parseInt(seasonInput.value, 10);
-      let e = parseInt(episodeInput.value, 10);
-      if (isNaN(s)) s = 1;
-      if (isNaN(e)) e = 1;
-      currentSeason = Math.max(1, s);
-      currentEpisode = Math.max(1, e);
-      seasonInput.value = currentSeason;
-      episodeInput.value = currentEpisode;
-    } else {
-      currentSeason = null;
-      currentEpisode = null;
-    }
-    // Update URL
-    let newUrl = `/watch/${currentType}/${currentMediaId}`;
-    if (currentType === "tv") newUrl += `/${currentSeason}/${currentEpisode}`;
-    newUrl += `?server=${currentServerId}`;
-    window.history.replaceState({}, "", newUrl);
-    refreshUIContentMeta();
-    loadPlayer();
-  }
-
-  // Server switching
-  function setActiveServer(serverId) {
+  // change server (called from UI)
+  function changeServer(serverId) {
     if (currentServerId === serverId) return;
     currentServerId = serverId;
-    const url = new URL(window.location.href);
-    url.searchParams.set("server", currentServerId);
-    window.history.replaceState({}, "", url.toString());
-    refreshUIContentMeta();
+    updateUrl();
+    loadPlayer();
+    // highlight active
     document.querySelectorAll(".server-btn").forEach(btn => {
-      if (btn.dataset.id === currentServerId) btn.classList.add("active");
+      if (btn.dataset.id === serverId) btn.classList.add("active");
       else btn.classList.remove("active");
     });
-    if (quickSelect) quickSelect.value = currentServerId;
-    loadPlayer();
+    activeServerBadge.innerText = `Active: ${SERVER_REGISTRY.find(s => s.id === serverId)?.label || serverId}`;
   }
 
-  // Build UI
-  function buildServerUI() {
+  // build server buttons UI
+  function buildServerButtons() {
     serverBtnsContainer.innerHTML = "";
-    quickSelect.innerHTML = '<option value="">🔽 Quick server</option>';
     SERVER_REGISTRY.forEach(server => {
       const btn = document.createElement("button");
       btn.className = "server-btn";
       if (server.id === currentServerId) btn.classList.add("active");
       btn.textContent = server.label;
       btn.dataset.id = server.id;
-      btn.addEventListener("click", () => setActiveServer(server.id));
+      btn.addEventListener("click", () => changeServer(server.id));
       serverBtnsContainer.appendChild(btn);
-      
-      const option = document.createElement("option");
-      option.value = server.id;
-      option.textContent = server.label;
-      if (server.id === currentServerId) option.selected = true;
-      quickSelect.appendChild(option);
-    });
-    quickSelect.addEventListener("change", (e) => {
-      const newId = e.target.value;
-      if (newId && newId !== currentServerId) setActiveServer(newId);
     });
   }
 
-  // URL route parsing
-  function parseRouteFromUrl() {
-    const path = window.location.pathname;
-    let match = path.match(/\/watch\/movie\/([^\/?#]+)/i);
-    if (match) {
-      currentType = "movie";
-      currentMediaId = decodeURIComponent(match[1]);
-      currentSeason = null;
-      currentEpisode = null;
-      contentTypeSelect.value = "movie";
-      mediaIdInput.value = currentMediaId;
-      toggleTvInputs();
-      return true;
+  // init: get ID from URL, set default server (first), load everything
+  async function init() {
+    buildServerButtons();
+    const id = getMovieIdFromUrl();
+    if (id && !isNaN(parseInt(id))) {
+      await loadContentById(id);
+    } else {
+      // fallback demo: Dune: Part Two (949229)
+      await loadContentById("949229");
     }
-    match = path.match(/\/watch\/tv\/([^\/?#]+)\/(\d+)\/(\d+)/i);
-    if (match) {
-      currentType = "tv";
-      currentMediaId = decodeURIComponent(match[1]);
-      currentSeason = parseInt(match[2], 10);
-      currentEpisode = parseInt(match[3], 10);
-      contentTypeSelect.value = "tv";
-      mediaIdInput.value = currentMediaId;
-      seasonInput.value = currentSeason;
-      episodeInput.value = currentEpisode;
-      toggleTvInputs();
-      return true;
-    }
-    return false;
   }
 
-  function getServerFromUrlParam() {
-    const sp = new URLSearchParams(window.location.search);
-    const s = sp.get("server");
-    if (s && SERVER_REGISTRY.some(serv => serv.id === s)) return s;
-    return null;
-  }
-
-  function initApp() {
-    const hasRoute = parseRouteFromUrl();
-    if (!hasRoute) {
-      currentType = "movie";
-      currentMediaId = "1247165";
-      currentSeason = null;
-      currentEpisode = null;
-      contentTypeSelect.value = "movie";
-      mediaIdInput.value = "1247165";
-      toggleTvInputs();
-      const defaultUrl = `/watch/movie/1247165?server=${currentServerId}`;
-      window.history.replaceState({}, "", defaultUrl);
-    }
-    const urlServer = getServerFromUrlParam();
-    if (urlServer && SERVER_REGISTRY.some(s=>s.id===urlServer)) currentServerId = urlServer;
-    else currentServerId = "vidsrc_api1";
-    
-    buildServerUI();
-    refreshUIContentMeta();
-    loadPlayer();
-  }
-
-  loadBtn.addEventListener("click", syncFromFormAndLoad);
+  // handle popstate (back/forward)
   window.addEventListener("popstate", () => {
-    parseRouteFromUrl();
-    const srvParam = getServerFromUrlParam();
-    if (srvParam && SERVER_REGISTRY.find(s=>s.id===srvParam)) currentServerId = srvParam;
-    refreshUIContentMeta();
-    document.querySelectorAll(".server-btn").forEach(btn => {
-      if (btn.dataset.id === currentServerId) btn.classList.add("active");
-      else btn.classList.remove("active");
-    });
-    if (quickSelect) quickSelect.value = currentServerId;
-    loadPlayer();
+    const newId = getMovieIdFromUrl();
+    const urlServer = new URLSearchParams(window.location.search).get("server");
+    if (newId && newId !== currentMovieId) {
+      loadContentById(newId);
+    } else if (urlServer && SERVER_REGISTRY.some(s => s.id === urlServer)) {
+      currentServerId = urlServer;
+      loadPlayer();
+      buildServerButtons(); // re-highlight
+    }
   });
 
-  initApp();
+  init();
 </script>
 </body>
 </html>
