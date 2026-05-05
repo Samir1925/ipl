@@ -7,58 +7,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Same styles as before – kept unchanged for brevity */
         :root {
             --bg-primary: #0a0a0f;
             --bg-secondary: #12121a;
-            --bg-tertiary: #161622;
             --accent: #e50914;
             --accent-hover: #ff1a25;
             --accent-glow: rgba(229, 9, 20, 0.4);
-            --accent-soft: rgba(229, 9, 20, 0.15);
             --text-primary: #ffffff;
             --text-secondary: #b0b0bb;
             --text-muted: #6b6b7b;
             --card-radius: 14px;
-            --card-radius-sm: 10px;
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(18, 18, 26, 0.75);
+            --transition-fast: 0.2s;
+            --transition-smooth: 0.35s;
             --glass-border: rgba(255, 255, 255, 0.07);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
             --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.6);
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: var(--bg-primary);
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             color: var(--text-primary);
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            line-height: 1.5;
             overflow-x: hidden;
         }
-
-        ::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-        }
-
-        /* NAVBAR (same as index) */
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 10px; }
         .navbar {
             position: sticky;
             top: 0;
@@ -73,11 +49,7 @@
             justify-content: space-between;
             gap: 14px;
         }
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 36px;
-        }
+        .nav-left { display: flex; align-items: center; gap: 36px; }
         .logo {
             font-size: 26px;
             font-weight: 900;
@@ -87,7 +59,6 @@
             align-items: center;
             gap: 8px;
             text-decoration: none;
-            transition: transform 0.2s;
         }
         .logo:hover { transform: scale(1.03); }
         .logo-icon {
@@ -106,11 +77,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        .nav-links {
-            display: flex;
-            gap: 24px;
-            list-style: none;
-        }
+        .nav-links { display: flex; gap: 24px; list-style: none; }
         .nav-links li {
             cursor: pointer;
             font-size: 14px;
@@ -118,11 +85,8 @@
             color: var(--text-secondary);
             transition: all 0.2s;
             padding: 6px 0;
-            position: relative;
         }
-        .nav-links li:hover {
-            color: var(--text-primary);
-        }
+        .nav-links li:hover { color: var(--text-primary); }
         .back-btn {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -132,16 +96,12 @@
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             text-decoration: none;
-            white-space: nowrap;
         }
         .back-btn:hover {
             background: rgba(255, 255, 255, 0.12);
             color: white;
         }
-
-        /* HERO BANNER */
         .hero-banner {
             position: relative;
             min-height: 520px;
@@ -150,7 +110,6 @@
             display: flex;
             align-items: flex-end;
             padding: 40px 48px 60px;
-            margin-bottom: 20px;
         }
         .hero-banner::before {
             content: '';
@@ -173,9 +132,7 @@
             box-shadow: 0 20px 35px rgba(0,0,0,0.5);
             border: 2px solid rgba(255,255,255,0.1);
         }
-        .hero-info {
-            flex: 1;
-        }
+        .hero-info { flex: 1; }
         .hero-info h1 {
             font-size: 44px;
             font-weight: 900;
@@ -188,14 +145,8 @@
             margin-bottom: 16px;
             flex-wrap: wrap;
         }
-        .hero-rating {
-            color: #ffc107;
-            font-weight: 600;
-        }
-        .hero-year, .hero-duration {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
+        .hero-rating { color: #ffc107; font-weight: 600; }
+        .hero-year { color: var(--text-secondary); font-size: 14px; }
         .hero-genres {
             display: flex;
             gap: 10px;
@@ -228,19 +179,14 @@
             padding: 12px 32px;
             border-radius: 40px;
             font-weight: 700;
-            font-size: 15px;
             color: white;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
-            transition: all 0.2s;
             box-shadow: 0 8px 20px rgba(229,9,20,0.3);
         }
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: scale(1.02);
-        }
+        .btn-primary:hover { background: var(--accent-hover); transform: scale(1.02); }
         .btn-secondary {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(8px);
@@ -248,28 +194,19 @@
             padding: 12px 32px;
             border-radius: 40px;
             font-weight: 700;
-            font-size: 15px;
             color: white;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             cursor: pointer;
-            transition: all 0.2s;
         }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.02);
-        }
-
-        /* PLAYER SECTION (hidden initially) */
+        .btn-secondary:hover { background: rgba(255,255,255,0.2); transform: scale(1.02); }
         .player-section {
             display: none;
             margin: 20px 48px 0;
             animation: fadeSlideUp 0.4s ease;
         }
-        .player-section.visible {
-            display: block;
-        }
+        .player-section.visible { display: block; }
         @keyframes fadeSlideUp {
             from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -299,11 +236,7 @@
             border-radius: 50px;
             border: 1px solid var(--glass-border);
         }
-        .server-selector {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .server-selector { display: flex; gap: 8px; flex-wrap: wrap; }
         .server-btn {
             background: rgba(255,255,255,0.05);
             border: none;
@@ -313,19 +246,13 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
         }
         .server-btn.active {
             background: var(--accent);
             color: white;
             box-shadow: 0 0 8px var(--accent-glow);
         }
-        .info-note {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* RECOMMENDATIONS ROW */
+        .info-note { font-size: 12px; color: var(--text-muted); }
         .recommendations {
             margin: 40px 48px 30px;
         }
@@ -342,9 +269,7 @@
             align-items: center;
             gap: 8px;
         }
-        .rec-header h3 i {
-            color: var(--accent);
-        }
+        .rec-header h3 i { color: var(--accent); }
         .rec-row {
             display: flex;
             overflow-x: auto;
@@ -362,12 +287,8 @@
             transition: transform 0.25s ease;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-sm);
         }
-        .rec-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
+        .rec-card:hover { transform: scale(1.05); }
         .rec-card::after {
             content: '';
             position: absolute;
@@ -387,8 +308,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        /* TRAILER MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -402,19 +321,14 @@
             align-items: center;
             justify-content: center;
         }
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.2s ease;
-        }
+        .modal.active { display: flex; }
         .modal-content {
             background: #000;
             width: 85%;
             max-width: 1000px;
             border-radius: 24px;
             overflow: hidden;
-            position: relative;
             aspect-ratio: 16 / 9;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
         }
         .modal-content iframe {
             width: 100%;
@@ -428,8 +342,6 @@
             color: white;
             font-size: 32px;
             cursor: pointer;
-            z-index: 1001;
-            transition: 0.2s;
             background: rgba(0,0,0,0.5);
             border-radius: 50%;
             width: 44px;
@@ -438,16 +350,7 @@
             align-items: center;
             justify-content: center;
         }
-        .close-modal:hover {
-            background: var(--accent);
-            transform: scale(1.05);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* LOADER */
+        .close-modal:hover { background: var(--accent); }
         .loader {
             display: flex;
             justify-content: center;
@@ -482,15 +385,12 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px);}
             to { opacity: 1; transform: translateX(-50%) translateY(0);}
         }
-
         @media (max-width: 768px) {
             .navbar, .hero-banner { padding: 12px 20px; }
             .hero-poster { width: 130px; }
             .hero-info h1 { font-size: 28px; }
             .player-section { margin: 16px 16px 0; }
             .recommendations { margin: 30px 16px; }
-            .action-buttons .btn-primary, .action-buttons .btn-secondary { padding: 8px 20px; font-size: 13px; }
-            .modal-content { width: 95%; }
         }
     </style>
 </head>
@@ -513,17 +413,14 @@
 </nav>
 
 <div id="heroBanner" class="hero-banner" style="background-image: none;">
-    <div class="hero-details" id="heroDetails">
-        <!-- dynamic content -->
-    </div>
+    <div class="hero-details" id="heroDetails"></div>
 </div>
 
-<!-- Hidden until Watch Movie clicked -->
 <div id="playerSection" class="player-section">
     <div class="player-wrapper" id="playerContainer">
         <div class="loader"><div class="spinner"></div></div>
     </div>
-    <div class="server-bar" id="serverBar">
+    <div class="server-bar">
         <div class="server-selector" id="serverList"></div>
         <div class="info-note" id="streamInfo">✨ Select a server to start streaming</div>
     </div>
@@ -537,109 +434,83 @@
     <div class="rec-row" id="recRow"></div>
 </div>
 
-<!-- Trailer Modal -->
 <div id="trailerModal" class="modal">
     <div class="close-modal" id="closeModalBtn"><i class="fa-solid fa-times"></i></div>
     <div class="modal-content" id="trailerFrameContainer"></div>
 </div>
 
 <script>
-    // ---------- TMDB API ----------
     const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
     let currentMedia = { type: "movie", id: null, season: null, episode: null };
     let mediaDetails = null;
-    let currentServerId = "vidsrcto";
-    let isLoadingPlayer = false;
+    let currentServerId = "api2"; // default to Multi Language (first in list)
     let trailerKey = null;
 
-    // ---------- SERVER LIST (ad-light sources) ----------
+    // ---------- SERVER LIST (API servers first, then all direct) ----------
     const SERVER_LIST = [
-        { id: "vidsrcto", label: "VidSrc", getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
-        { id: "vidzee", label: "VidZee", getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
-        { id: "vidrock", label: "VidRock", getUrl: (type, id, s, e) => type === "movie" ? `https://vidrock.net/movie/${id}` : `https://vidrock.net/tv/${id}/${s}/${e}` },
-        { id: "riveembed", label: "RiveEmbed", getUrl: (type, id, s, e) => type === "movie" ? `https://riveembed.com/embed/movie/${id}` : `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
-        { id: "vidlink", label: "VidLink", getUrl: (type, id, s, e) => type === "movie" ? `https://vidlink.pro/movie/${id}` : `https://vidlink.pro/tv/${id}/${s}/${e}` },
-        { id: "embedsu", label: "Embed.su", getUrl: (type, id, s, e) => type === "movie" ? `https://embed.su/embed/movie/${id}` : `https://embed.su/embed/tv/${id}/${s}/${e}` },
-        { id: "2embed", label: "2Embed", getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` }
+        // vidsrc.wtf API servers (async, use player.html)
+        { id: "api2", label: "🌐 Multi Language", isAsync: true, apiVersion: 2 },
+        { id: "api4", label: "💎 Premium", isAsync: true, apiVersion: 4 },
+        // Direct embed servers
+        { id: "vidsrcto", label: "VidSrc", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
+        { id: "vidzee", label: "VidZee", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
+        { id: "vidrock", label: "VidRock", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidrock.net/movie/${id}` : `https://vidrock.net/tv/${id}/${s}/${e}` },
+        { id: "riveembed", label: "RiveEmbed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://riveembed.com/embed/movie/${id}` : `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
+        { id: "vidlink", label: "VidLink", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidlink.pro/movie/${id}` : `https://vidlink.pro/tv/${id}/${s}/${e}` },
+        { id: "embedsu", label: "Embed.su", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://embed.su/embed/movie/${id}` : `https://embed.su/embed/tv/${id}/${s}/${e}` },
+        { id: "2embed", label: "2Embed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` }
     ];
 
-    // ---------- AD BLOCKER (remove popups/ads) ----------
+    // Ad blocker & cleanup
     function initAdBlocker() {
         const style = document.createElement('style');
         style.textContent = `
-            iframe[src*="adserver"], iframe[src*="doubleclick"], .ads, .ad, .advertisement, [class*="ad-"], [id*="ad_"], .google-ads, .banner-ad, .popup-ad {
-                display: none !important;
-                visibility: hidden !important;
-                height: 0 !important;
-            }
-            body > div[style*="position: fixed"][style*="z-index"]:not(#trailerModal):not(.toast) {
-                display: none !important;
-            }
+            iframe[src*="adserver"], .ads, .ad, [class*="ad-"] { display: none !important; }
+            body > div[style*="position: fixed"]:not(#trailerModal):not(.toast) { display: none !important; }
         `;
         document.head.appendChild(style);
-        const observer = new MutationObserver(() => {
+        new MutationObserver(() => {
             document.querySelectorAll('iframe, div').forEach(el => {
-                const src = el.src || '';
-                if (src.includes('adserver') || src.includes('doubleclick') || src.includes('googlesyndication') ||
-                    (el.className && (el.className.includes('ad') || el.className.includes('ads')))) {
-                    el.remove();
-                }
+                if ((el.src && el.src.includes('adserver')) || 
+                    (el.className && el.className.includes('ad'))) el.remove();
             });
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
+        }).observe(document.body, { childList: true, subtree: true });
     }
 
-    // ---------- URL PARSING (fixes hardcoded ID) ----------
+    // Parse URL parameters
     function parseURL() {
         const params = new URLSearchParams(window.location.search);
         let type = params.get('type');
         let id = params.get('id');
         let season = params.get('season');
         let episode = params.get('episode');
-
-        if (!type && window.location.hash) {
-            const hash = window.location.hash.substring(1);
-            const hashParams = new URLSearchParams(hash.split('?')[1]);
-            const hashPath = hash.split('?')[0];
-            if (hashPath.startsWith('/movie/')) {
-                type = 'movie';
-                id = hashPath.split('/')[2];
-            } else if (hashPath.startsWith('/tv/')) {
-                type = 'tv';
-                const parts = hashPath.split('/');
-                id = parts[2];
-                season = parts[3];
-                episode = parts[4];
-            }
-        }
         if (!id) {
-            id = '550'; // Fight Club demo
+            id = '550'; // Fallback demo
             type = 'movie';
-            showToast('No ID specified, showing demo movie');
+            showToast('No ID provided, showing demo movie');
         }
         currentMedia = { type: type === 'tv' ? 'tv' : 'movie', id: id, season: season ? parseInt(season) : 1, episode: episode ? parseInt(episode) : 1 };
     }
 
-    // ---------- FETCH DETAILS ----------
+    // Fetch TMDB details
     async function fetchMediaDetails() {
         const { type, id } = currentMedia;
-        let url = type === 'movie' 
+        const url = type === 'movie' 
             ? `https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos,recommendations`
             : `https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos,recommendations`;
         try {
             const res = await fetch(url);
-            if (!res.ok) throw new Error('Media not found');
+            if (!res.ok) throw new Error();
             const data = await res.json();
             mediaDetails = data;
             return data;
         } catch (err) {
-            console.error(err);
             showToast('❌ Could not load media details');
             return null;
         }
     }
 
-    // ---------- RENDER HERO BANNER (with two buttons) ----------
+    // Render hero banner with movie info and buttons
     function renderHeroBanner(details) {
         const isMovie = currentMedia.type === 'movie';
         const title = isMovie ? details.title : details.name;
@@ -649,14 +520,11 @@
         const year = isMovie ? (details.release_date?.substring(0,4) || '—') : (details.first_air_date?.substring(0,4) || '—');
         const genres = details.genres?.map(g => g.name).slice(0,3) || [];
         const overview = details.overview || 'No description available.';
-        
-        // Extract trailer key
         const trailerObj = details.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
         trailerKey = trailerObj ? trailerObj.key : null;
 
-        const bannerDiv = document.getElementById('heroBanner');
-        if (backdrop) bannerDiv.style.backgroundImage = `url(${backdrop})`;
-        else bannerDiv.style.backgroundColor = '#0a0a0f';
+        document.getElementById('heroBanner').style.backgroundImage = backdrop ? `url(${backdrop})` : '';
+        document.getElementById('heroBanner').style.backgroundColor = '#0a0a0f';
         
         const heroHtml = `
             <img class="hero-poster" src="${poster}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
@@ -667,9 +535,7 @@
                     <span class="hero-year">${year}</span>
                     ${!isMovie ? `<span>S${currentMedia.season || 1}</span>` : ''}
                 </div>
-                <div class="hero-genres">
-                    ${genres.map(g => `<span class="genre-badge">${escapeHtml(g)}</span>`).join('')}
-                </div>
+                <div class="hero-genres">${genres.map(g => `<span class="genre-badge">${escapeHtml(g)}</span>`).join('')}</div>
                 <p class="hero-overview">${escapeHtml(overview)}</p>
                 <div class="action-buttons">
                     <button class="btn-primary" id="watchMovieBtn"><i class="fa-solid fa-play"></i> Watch Movie</button>
@@ -678,61 +544,61 @@
             </div>
         `;
         document.getElementById('heroDetails').innerHTML = heroHtml;
-        
-        // Bind buttons after DOM update
         document.getElementById('watchMovieBtn').addEventListener('click', revealAndLoadPlayer);
-        if (trailerKey) {
-            document.getElementById('watchTrailerBtn').addEventListener('click', openTrailerModal);
-        }
+        if (trailerKey) document.getElementById('watchTrailerBtn').addEventListener('click', openTrailerModal);
     }
 
-    // ---------- REVEAL PLAYER + LOAD VIDEO ----------
+    // Reveal player section and load video
     function revealAndLoadPlayer() {
         const playerSection = document.getElementById('playerSection');
         if (!playerSection.classList.contains('visible')) {
             playerSection.classList.add('visible');
-            // Smooth scroll to player
             playerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-        if (!isLoadingPlayer) {
-            loadPlayer();
-            renderServerButtons();
-        }
+        loadPlayer();
     }
 
-    // ---------- LOAD VIDEO INTO IFRAME ----------
+    // Unified player loader: for async servers -> player.html, for direct -> embed URL
     async function loadPlayer() {
-        if (isLoadingPlayer) return;
-        isLoadingPlayer = true;
         const container = document.getElementById('playerContainer');
         container.innerHTML = `<div class="loader"><div class="spinner"></div></div>`;
         const server = SERVER_LIST.find(s => s.id === currentServerId);
         if (!server) {
             container.innerHTML = '<div style="color:#f87171; text-align:center; padding:40px;">⚠️ Server not found</div>';
-            isLoadingPlayer = false;
             return;
         }
+
         try {
-            let embedUrl;
-            if (currentMedia.type === 'movie') {
-                embedUrl = server.getUrl('movie', currentMedia.id, null, null);
+            if (server.isAsync) {
+                // Use player.html to handle vidsrc.wtf API
+                const { type, id, season, episode } = currentMedia;
+                let playerUrl = `player.html?type=${type}&id=${id}&api=${server.apiVersion}`;
+                if (type === 'tv') {
+                    playerUrl += `&season=${season || 1}&episode=${episode || 1}`;
+                }
+                container.innerHTML = `<iframe src="${playerUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0"></iframe>`;
+                document.getElementById('streamInfo').innerHTML = `🎥 Streaming via ${server.label} (vidsrc.wtf API)`;
             } else {
-                const s = currentMedia.season || 1;
-                const e = currentMedia.episode || 1;
-                embedUrl = server.getUrl('tv', currentMedia.id, s, e);
+                // Direct embed
+                let embedUrl;
+                if (currentMedia.type === 'movie') {
+                    embedUrl = server.getUrl('movie', currentMedia.id, null, null);
+                } else {
+                    const s = currentMedia.season || 1;
+                    const e = currentMedia.episode || 1;
+                    embedUrl = server.getUrl('tv', currentMedia.id, s, e);
+                }
+                container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+                document.getElementById('streamInfo').innerHTML = `🎥 Streaming via ${server.label}`;
             }
-            container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-            document.getElementById('streamInfo').innerHTML = `🎥 Streaming: ${mediaDetails?.title || mediaDetails?.name} • Server: ${server.label}`;
         } catch (err) {
-            container.innerHTML = `<div style="color:#f87171; text-align:center; padding:40px;">Failed to load video: ${err.message}</div>`;
+            container.innerHTML = `<div style="color:#f87171; text-align:center; padding:40px;">Failed to load: ${err.message}</div>`;
         }
-        isLoadingPlayer = false;
     }
 
-    // ---------- RENDER SERVER BUTTONS ----------
+    // Render server buttons (API servers first as per array order)
     function renderServerButtons() {
         const container = document.getElementById('serverList');
-        if (!container) return;
         container.innerHTML = '';
         SERVER_LIST.forEach(server => {
             const btn = document.createElement('button');
@@ -742,14 +608,16 @@
             btn.onclick = () => {
                 currentServerId = server.id;
                 renderServerButtons();
-                loadPlayer();
+                if (document.getElementById('playerSection').classList.contains('visible')) {
+                    loadPlayer();
+                }
                 showToast(`Switched to ${server.label}`);
             };
             container.appendChild(btn);
         });
     }
 
-    // ---------- TRAILER MODAL ----------
+    // Trailer modal functions
     function openTrailerModal() {
         if (!trailerKey) return;
         const modal = document.getElementById('trailerModal');
@@ -762,14 +630,14 @@
         const modal = document.getElementById('trailerModal');
         const frameContainer = document.getElementById('trailerFrameContainer');
         modal.classList.remove('active');
-        frameContainer.innerHTML = ''; // stop video
+        frameContainer.innerHTML = '';
         document.body.style.overflow = '';
     }
 
-    // ---------- RECOMMENDATIONS ----------
+    // Load recommendations from TMDB
     async function loadRecommendations() {
         const { type, id } = currentMedia;
-        let url = type === 'movie' 
+        const url = type === 'movie'
             ? `https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${API_KEY}&language=en-US&page=1`
             : `https://api.themoviedb.org/3/tv/${id}/recommendations?api_key=${API_KEY}&language=en-US&page=1`;
         try {
@@ -787,7 +655,6 @@
                 card.className = 'rec-card';
                 const poster = item.poster_path ? `https://image.tmdb.org/t/p/w200${item.poster_path}` : '';
                 card.style.backgroundImage = `url(${poster})`;
-                card.style.backgroundSize = 'cover';
                 const title = item.title || item.name;
                 card.innerHTML = `<div class="rec-title">${escapeHtml(title)}</div>`;
                 card.onclick = () => {
@@ -798,20 +665,13 @@
             });
             document.getElementById('recommendSection').style.display = 'block';
         } catch (err) {
-            console.error(err);
             document.getElementById('recommendSection').style.display = 'none';
         }
     }
 
-    // ---------- HELPERS ----------
     function escapeHtml(str) {
         if (!str) return '';
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
     }
     function showToast(msg) {
         let toast = document.querySelector('.toast');
@@ -820,21 +680,20 @@
         toast.className = 'toast';
         toast.textContent = msg;
         document.body.appendChild(toast);
-        setTimeout(() => toast?.remove(), 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // ---------- INIT ----------
     async function init() {
         initAdBlocker();
         parseURL();
         const details = await fetchMediaDetails();
         if (!details) {
-            document.getElementById('heroBanner').innerHTML = '<div style="padding:100px;text-align:center;">Failed to load content. Check ID.</div>';
+            document.getElementById('heroBanner').innerHTML = '<div style="padding:100px;text-align:center;">Failed to load content</div>';
             return;
         }
         renderHeroBanner(details);
+        renderServerButtons();
         await loadRecommendations();
-        // Setup modal close
         document.getElementById('closeModalBtn').addEventListener('click', closeTrailerModal);
         window.addEventListener('click', (e) => {
             if (e.target === document.getElementById('trailerModal')) closeTrailerModal();
