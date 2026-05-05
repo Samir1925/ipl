@@ -7,537 +7,569 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional inline fallback in case styles.css fails to load */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 10px 20px; border-radius: 30px; z-index: 9999; font-size: 14px; pointer-events: none; }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar" id="navbar">
-        <div class="nav-left">
-            <div class="logo" onclick="resetToHome()">
-                <span class="logo-icon"><i class="fa-solid fa-play"></i></span>
-                <span class="logo-text">STREAMHUB</span>
-            </div>
-            <ul class="nav-links">
-                <li data-nav="home">Home</li>
-                <li data-nav="movies">Movies</li>
-                <li data-nav="series">Series</li>
-                <li data-nav="popular">New & Popular</li>
-                <li data-nav="mylist">My List</li>
-            </ul>
+<nav class="navbar" id="navbar">
+    <div class="nav-left">
+        <div class="logo" onclick="resetToHome()">
+            <span class="logo-icon"><i class="fa-solid fa-play"></i></span>
+            <span class="logo-text">STREAMHUB</span>
         </div>
-        <div class="nav-right">
-            <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
-            <div class="search-container">
-                <button class="nav-icon" id="searchToggle" aria-label="Search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-                <div class="search-input-wrap" id="searchWrap">
-                    <input type="text" id="searchInput" placeholder="Titles, people, genres" autocomplete="off">
-                    <span class="close-search" id="closeSearchBtn"><i class="fa-solid fa-xmark"></i></span>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <button class="close-menu" id="closeMenuBtn"><i class="fa-solid fa-times"></i></button>
-        <div class="nav-item" data-nav="home">Home</div>
-        <div class="nav-item" data-nav="movies">Movies</div>
-        <div class="nav-item" data-nav="series">Series</div>
-        <div class="nav-item" data-nav="popular">New & Popular</div>
-        <div class="nav-item" data-nav="mylist">My List</div>
+        <ul class="nav-links">
+            <li data-nav="home" class="active">Home</li>
+            <li data-nav="movies">Movies</li>
+            <li data-nav="series">Series</li>
+            <li data-nav="popular">New & Popular</li>
+            <li data-nav="mylist">My List</li>
+        </ul>
     </div>
-    <div class="overlay" id="overlay"></div>
-
-    <div id="hero" class="hero skeleton-hero">
-        <div class="hero-content" id="heroContent" style="opacity:0;">
-            <div class="hero-badge"><i class="fa-solid fa-fire"></i> #1 Trending Today</div>
-            <h1 id="heroTitle"></h1>
-            <div class="hero-meta">
-                <span class="hero-rating"><i class="fa-solid fa-star"></i> <span id="heroRating">—</span></span>
-                <span class="hero-year" id="heroYear">—</span>
-                <span class="hero-quality">HD</span>
-            </div>
-            <p id="heroDesc"></p>
-            <div class="hero-buttons">
-                <button class="btn btn-play" onclick="playHero()"><i class="fa-solid fa-play"></i> Play Trailer</button>
-                <button class="btn btn-info" onclick="goToMovie()"><i class="fa-solid fa-circle-info"></i> More Info</button>
+    <div class="nav-right">
+        <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="search-container">
+            <button class="nav-icon" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <div class="search-input-wrap" id="searchWrap">
+                <input type="text" id="searchInput" placeholder="Titles, people, genres" autocomplete="off">
+                <span class="close-search" id="closeSearchBtn"><i class="fa-solid fa-xmark"></i></span>
             </div>
         </div>
     </div>
+</nav>
 
-    <div class="main-content" id="mainContent">
-        <div id="rows"></div>
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <button class="close-menu" id="closeMenuBtn"><i class="fa-solid fa-times"></i></button>
+    <div class="nav-item" data-nav="home">Home</div>
+    <div class="nav-item" data-nav="movies">Movies</div>
+    <div class="nav-item" data-nav="series">Series</div>
+    <div class="nav-item" data-nav="popular">New & Popular</div>
+    <div class="nav-item" data-nav="mylist">My List</div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<div id="hero" class="hero skeleton-hero">
+    <div class="hero-content" id="heroContent" style="opacity:0;">
+        <div class="hero-badge"><i class="fa-solid fa-fire"></i> #1 Trending Today</div>
+        <h1 id="heroTitle"></h1>
+        <div class="hero-meta">
+            <span class="hero-rating"><i class="fa-solid fa-star"></i> <span id="heroRating">—</span></span>
+            <span class="hero-year" id="heroYear">—</span>
+            <span class="hero-quality">HD</span>
+        </div>
+        <p id="heroDesc"></p>
+        <div class="hero-buttons">
+            <button class="btn btn-play" onclick="playHero()"><i class="fa-solid fa-play"></i> Play Trailer</button>
+            <button class="btn btn-info" onclick="goToMovie()"><i class="fa-solid fa-circle-info"></i> More Info</button>
+        </div>
     </div>
+</div>
 
-    <script>
-        // (Same JavaScript as before – no changes needed)
-        const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
-        let heroMovie = null;
-        let cachedTrending = [];
-        let cachedPopular = [];
-        let cachedTopRated = [];
-        let searchActive = false;
-        let exploreMode = false;
-        let searchDebounceTimer = null;
-        let abortController = null;
+<div class="main-content" id="mainContent">
+    <div id="rows"></div>
+</div>
 
-        async function fetchMovies(url) {
-            try {
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                return data.results || [];
-            } catch (err) {
-                console.error("Fetch error:", err);
-                return [];
-            }
+<script>
+    // ---------- CONFIGURATION ----------
+    const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
+    const TMDB_BASE = "https://api.themoviedb.org/3";
+    let heroMovie = null;
+    let cachedTrending = [];
+    let cachedPopular = [];
+    let cachedTopRated = [];
+    let searchActive = false;
+    let exploreMode = false;
+    let searchDebounceTimer = null;
+    let abortController = null;
+
+    // ---------- HELPER FUNCTIONS ----------
+    async function fetchJson(url) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        } catch (err) {
+            console.error("Fetch error:", url, err);
+            return null;
         }
+    }
 
-        async function fetchAllPages(baseUrl, pages = 3) {
-            let allItems = [];
-            for (let page = 1; page <= pages; page++) {
-                const url = `${baseUrl}&page=${page}`;
-                const items = await fetchMovies(url);
-                if (items.length === 0) break;
-                allItems.push(...items);
-                if (items.length < 20) break;
-            }
-            return allItems;
+    async function fetchMovies(url) {
+        const data = await fetchJson(url);
+        return data?.results || [];
+    }
+
+    async function fetchAllPages(baseUrl, pages = 3) {
+        let allItems = [];
+        for (let page = 1; page <= pages; page++) {
+            const items = await fetchMovies(`${baseUrl}&page=${page}`);
+            if (items.length === 0) break;
+            allItems.push(...items);
+            if (items.length < 20) break;
         }
+        return allItems;
+    }
 
-        function getImageUrl(path, size = "w500") {
-            if (!path) return "";
-            return `https://image.tmdb.org/t/p/${size}${path}`;
-        }
+    function getImageUrl(path, size = "w500") {
+        return path ? `https://image.tmdb.org/t/p/${size}${path}` : "";
+    }
 
-        function formatRating(vote) {
-            if (!vote && vote !== 0) return "—";
-            return (vote / 2).toFixed(1);
-        }
+    function formatRating(vote) {
+        if (!vote && vote !== 0) return "—";
+        return (vote / 2).toFixed(1);
+    }
 
-        function formatYear(dateStr) {
-            if (!dateStr) return "—";
-            return dateStr.substring(0, 4);
-        }
+    function formatYear(dateStr) {
+        return dateStr ? dateStr.substring(0, 4) : "—";
+    }
 
-        function createCard(item) {
-            const card = document.createElement("div");
-            card.className = "card";
-            const title = item.title || item.name || "Untitled";
-            const poster = getImageUrl(item.poster_path);
-            card.style.backgroundImage = poster ? `url(${poster})` : "linear-gradient(135deg, #1e1e2c, #2a2a3a)";
-            card.innerHTML = `
-                <div class="card-play-overlay"><i class="fa-solid fa-play"></i></div>
-                <div class="card-info">
-                    <div class="card-title">${escapeHtml(title)}</div>
-                    <div class="card-meta">
-                        <span class="card-rating"><i class="fa-solid fa-star"></i> ${formatRating(item.vote_average)}</span>
-                        <span class="card-year">${formatYear(item.release_date || item.first_air_date)}</span>
-                    </div>
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
+    function showToast(msg) {
+        let toast = document.querySelector('.toast');
+        if (toast) toast.remove();
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // ---------- CARD & ROW CREATION ----------
+    function createCard(item) {
+        const card = document.createElement("div");
+        card.className = "card";
+        const title = item.title || item.name || "Untitled";
+        const poster = getImageUrl(item.poster_path);
+        card.style.backgroundImage = poster ? `url(${poster})` : "linear-gradient(135deg, #1e1e2c, #2a2a3a)";
+        card.innerHTML = `
+            <div class="card-play-overlay"><i class="fa-solid fa-play"></i></div>
+            <div class="card-info">
+                <div class="card-title">${escapeHtml(title)}</div>
+                <div class="card-meta">
+                    <span class="card-rating"><i class="fa-solid fa-star"></i> ${formatRating(item.vote_average)}</span>
+                    <span class="card-year">${formatYear(item.release_date || item.first_air_date)}</span>
                 </div>
-            `;
-            const mediaId = item.id;
-            card.addEventListener("click", (e) => {
-                e.stopPropagation();
-                window.location.href = `watch.html?type=movie&id=${mediaId}`;
-            });
-            return card;
-        }
+            </div>
+        `;
+        card.addEventListener("click", (e) => {
+            e.stopPropagation();
+            window.location.href = `watch.html?type=movie&id=${item.id}`;
+        });
+        return card;
+    }
 
-        function escapeHtml(str) {
-            if (!str) return "";
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
+    function createCarouselRow(title, items, rowId = null) {
+        if (!items || items.length === 0) return;
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "row";
+        if (rowId) rowDiv.id = rowId;
+        rowDiv.innerHTML = `
+            <div class="row-header">
+                <h2>${escapeHtml(title)}</h2>
+                <span class="row-explore" data-category="${rowId || title}">Explore All <i class="fa-solid fa-chevron-right"></i></span>
+            </div>
+            <div class="row-container-wrapper">
+                <div class="scroll-arrow left"><i class="fa-solid fa-chevron-left"></i></div>
+                <div class="row-container"></div>
+                <div class="scroll-arrow right"><i class="fa-solid fa-chevron-right"></i></div>
+            </div>
+        `;
+        const container = rowDiv.querySelector(".row-container");
+        items.forEach(item => {
+            if (item.poster_path) container.appendChild(createCard(item));
+        });
+        const leftArrow = rowDiv.querySelector(".scroll-arrow.left");
+        const rightArrow = rowDiv.querySelector(".scroll-arrow.right");
+        leftArrow.addEventListener("click", () => container.scrollBy({ left: -400, behavior: "smooth" }));
+        rightArrow.addEventListener("click", () => container.scrollBy({ left: 400, behavior: "smooth" }));
+        
+        const exploreBtn = rowDiv.querySelector(".row-explore");
+        const category = rowId || title;
+        exploreBtn.addEventListener("click", () => {
+            if (category === "row-trending") showExploreGrid("Trending Now", "trending");
+            else if (category === "row-popular") showExploreGrid("Popular Movies", "popular");
+            else if (category === "row-top-rated") showExploreGrid("Top Rated Movies", "top_rated");
+            else showToast(`🔍 Exploring ${title}`);
+        });
+        document.getElementById("rows").appendChild(rowDiv);
+    }
 
-        function createCarouselRow(title, items, rowId = null) {
-            if (!items || items.length === 0) return;
-            const rowDiv = document.createElement("div");
-            rowDiv.className = "row";
-            if (rowId) rowDiv.id = rowId;
-            rowDiv.innerHTML = `
-                <div class="row-header">
-                    <h2>${escapeHtml(title)}</h2>
-                    <span class="row-explore" data-category="${rowId || title}">Explore All <i class="fa-solid fa-chevron-right"></i></span>
-                </div>
-                <div class="row-container-wrapper">
-                    <div class="scroll-arrow left"><i class="fa-solid fa-chevron-left"></i></div>
-                    <div class="row-container"></div>
-                    <div class="scroll-arrow right"><i class="fa-solid fa-chevron-right"></i></div>
-                </div>
-            `;
-            const container = rowDiv.querySelector(".row-container");
-            items.forEach(item => {
-                if (item.poster_path) container.appendChild(createCard(item));
-            });
-            const leftArrow = rowDiv.querySelector(".scroll-arrow.left");
-            const rightArrow = rowDiv.querySelector(".scroll-arrow.right");
-            leftArrow.addEventListener("click", () => { container.scrollBy({ left: -400, behavior: "smooth" }); });
-            rightArrow.addEventListener("click", () => { container.scrollBy({ left: 400, behavior: "smooth" }); });
-            
-            const exploreBtn = rowDiv.querySelector(".row-explore");
-            const category = rowId || title;
-            exploreBtn.addEventListener("click", () => {
-                if (category === "row-trending") showExploreGrid("Trending Now", "trending");
-                else if (category === "row-popular") showExploreGrid("Popular Movies", "popular");
-                else if (category === "row-top-rated") showExploreGrid("Top Rated Movies", "top_rated");
-                else showToast(`🔍 Exploring ${title}`);
-            });
-            
-            document.getElementById("rows").appendChild(rowDiv);
+    function buildDefaultRows() {
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = "";
+        if (cachedTrending.length) createCarouselRow("🔥 Trending Now", cachedTrending, "row-trending");
+        if (cachedPopular.length) createCarouselRow("🎬 Popular", cachedPopular, "row-popular");
+        if (cachedTopRated.length) createCarouselRow("⭐ Top Rated", cachedTopRated, "row-top-rated");
+        
+        // Fallback messages if any row is empty (should not happen with fallback data, but just in case)
+        if (!cachedTrending.length && !cachedPopular.length && !cachedTopRated.length) {
+            rowsContainer.innerHTML = `<div style="text-align:center; padding:60px 20px;">⚠️ Unable to load content. Please check your internet connection and try again later.</div>`;
         }
+        exploreMode = false;
+        searchActive = false;
+        setHeroVisibility(true);
+    }
 
-        function setHeroVisibility(visible) {
-            const heroEl = document.getElementById("hero");
-            if (visible) {
-                heroEl.classList.remove("hidden-hero");
-            } else {
-                heroEl.classList.add("hidden-hero");
-            }
+    // ---------- GRID VIEW (EXPLORE ALL & SEARCH) ----------
+    function renderGrid(title, items, showBackButton = true) {
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = "";
+        const containerDiv = document.createElement("div");
+        containerDiv.className = "grid-container";
+        let backButtonHtml = "";
+        if (showBackButton) {
+            backButtonHtml = `<button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>`;
         }
-
-        function renderGrid(title, items, showBackButton = true) {
-            const rowsContainer = document.getElementById("rows");
-            rowsContainer.innerHTML = "";
-            const containerDiv = document.createElement("div");
-            containerDiv.className = "grid-container";
-            let backButtonHtml = "";
-            if (showBackButton) {
-                backButtonHtml = `<button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>`;
-            }
-            containerDiv.innerHTML = `
-                <div class="grid-header">
-                    <h2>${escapeHtml(title)} (${items.length})</h2>
-                    ${backButtonHtml}
-                </div>
-                <div class="search-grid" id="searchGrid"></div>
-            `;
-            const grid = containerDiv.querySelector("#searchGrid");
-            items.forEach(item => {
-                if (item.poster_path) grid.appendChild(createCard(item));
-            });
-            rowsContainer.appendChild(containerDiv);
-            if (showBackButton) {
-                document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-            }
-            exploreMode = true;
-            searchActive = false;
-            setHeroVisibility(false);
-        }
-
-        async function showExploreGrid(title, category) {
-            const rowsContainer = document.getElementById("rows");
-            rowsContainer.innerHTML = `
-                <div class="grid-container">
-                    <div class="grid-header">
-                        <h2>${escapeHtml(title)}</h2>
-                        <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
-                    </div>
-                    <div class="skeleton-grid" id="skeletonGrid">
-                        ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
-                    </div>
-                </div>
-            `;
+        containerDiv.innerHTML = `
+            <div class="grid-header">
+                <h2>${escapeHtml(title)} (${items.length})</h2>
+                ${backButtonHtml}
+            </div>
+            <div class="search-grid" id="searchGrid"></div>
+        `;
+        const grid = containerDiv.querySelector("#searchGrid");
+        items.forEach(item => {
+            if (item.poster_path) grid.appendChild(createCard(item));
+        });
+        rowsContainer.appendChild(containerDiv);
+        if (showBackButton) {
             document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-            setHeroVisibility(false);
-            
-            let items = [];
-            try {
-                if (category === "trending") {
-                    items = await fetchAllPages(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`, 3);
-                } else if (category === "popular") {
-                    items = await fetchAllPages(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`, 3);
-                } else if (category === "top_rated") {
-                    items = await fetchAllPages(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`, 3);
-                }
-                if (items.length === 0) throw new Error("No items found");
-                renderGrid(title, items, true);
-            } catch (err) {
-                console.error(err);
-                rowsContainer.innerHTML = `<div class="grid-container"><div class="grid-header"><h2>⚠️ Failed to load "${title}"</h2><button class="back-home-btn" id="backToHomeBtn">Back to Home</button></div></div>`;
-                document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-            }
         }
+        exploreMode = true;
+        searchActive = false;
+        setHeroVisibility(false);
+    }
 
-        function buildDefaultRows() {
-            const rowsContainer = document.getElementById("rows");
-            rowsContainer.innerHTML = "";
-            if (cachedTrending.length) createCarouselRow("🔥 Trending Now", cachedTrending, "row-trending");
-            if (cachedPopular.length) createCarouselRow("🎬 Popular", cachedPopular, "row-popular");
-            if (cachedTopRated.length) createCarouselRow("⭐ Top Rated", cachedTopRated, "row-top-rated");
-            exploreMode = false;
-            searchActive = false;
-            setHeroVisibility(true);
-        }
-
-        function renderSearchResultsGrid(query, results) {
-            const rowsContainer = document.getElementById("rows");
-            rowsContainer.innerHTML = "";
-            const containerDiv = document.createElement("div");
-            containerDiv.className = "grid-container";
-            containerDiv.innerHTML = `
+    async function showExploreGrid(title, category) {
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = `
+            <div class="grid-container">
                 <div class="grid-header">
-                    <h2>🔍 Search results for "${escapeHtml(query)}" (${results.length})</h2>
+                    <h2>${escapeHtml(title)}</h2>
                     <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
                 </div>
-                <div class="search-grid" id="searchGrid"></div>
-            `;
-            const grid = containerDiv.querySelector("#searchGrid");
-            results.forEach(item => {
-                if (item.poster_path) grid.appendChild(createCard(item));
-            });
-            rowsContainer.appendChild(containerDiv);
-            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-            searchActive = true;
-            exploreMode = false;
-            setHeroVisibility(false);
-        }
-
-        function showSearchSkeleton(query) {
-            const rowsContainer = document.getElementById("rows");
-            rowsContainer.innerHTML = `
-                <div class="grid-container">
-                    <div class="grid-header">
-                        <h2>🔎 Searching "${escapeHtml(query)}"</h2>
-                        <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
-                    </div>
-                    <div class="skeleton-grid" id="skeletonGrid">
-                        ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
-                    </div>
+                <div class="skeleton-grid" id="skeletonGrid">
+                    ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
                 </div>
-            `;
-            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-            setHeroVisibility(false);
-        }
-
-        async function searchTMDB(query) {
-            if (!query.trim()) {
-                if (searchActive || exploreMode) resetToHome();
-                return;
+            </div>
+        `;
+        document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        setHeroVisibility(false);
+        
+        let items = [];
+        try {
+            if (category === "trending") {
+                items = await fetchAllPages(`${TMDB_BASE}/trending/movie/week?api_key=${API_KEY}`, 3);
+            } else if (category === "popular") {
+                items = await fetchAllPages(`${TMDB_BASE}/movie/popular?api_key=${API_KEY}`, 3);
+            } else if (category === "top_rated") {
+                items = await fetchAllPages(`${TMDB_BASE}/movie/top_rated?api_key=${API_KEY}`, 3);
             }
-            if (abortController) abortController.abort();
-            abortController = new AbortController();
-            showSearchSkeleton(query);
-            try {
-                const url = `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1`;
-                const res = await fetch(url, { signal: abortController.signal });
-                if (!res.ok) throw new Error("Search failed");
-                const data = await res.json();
-                let results = data.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
-                results = results.slice(0, 30);
-                if (results.length === 0) {
-                    document.getElementById("rows").innerHTML = `
-                        <div class="grid-container">
-                            <div class="grid-header">
-                                <h2>😔 No results for "${escapeHtml(query)}"</h2>
-                                <button class="back-home-btn" id="backToHomeBtn">Back to Home</button>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-                    searchActive = true;
-                    setHeroVisibility(false);
-                } else {
-                    renderSearchResultsGrid(query, results);
-                }
-            } catch (err) {
-                if (err.name === 'AbortError') return;
-                console.error(err);
+            if (items.length === 0) throw new Error("No items found");
+            renderGrid(title, items, true);
+        } catch (err) {
+            console.error(err);
+            rowsContainer.innerHTML = `<div class="grid-container"><div class="grid-header"><h2>⚠️ Failed to load "${title}"</h2><button class="back-home-btn" id="backToHomeBtn">Back to Home</button></div></div>`;
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        }
+    }
+
+    // ---------- SEARCH ----------
+    function renderSearchResultsGrid(query, results) {
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = "";
+        const containerDiv = document.createElement("div");
+        containerDiv.className = "grid-container";
+        containerDiv.innerHTML = `
+            <div class="grid-header">
+                <h2>🔍 Search results for "${escapeHtml(query)}" (${results.length})</h2>
+                <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+            </div>
+            <div class="search-grid" id="searchGrid"></div>
+        `;
+        const grid = containerDiv.querySelector("#searchGrid");
+        results.forEach(item => {
+            if (item.poster_path) grid.appendChild(createCard(item));
+        });
+        rowsContainer.appendChild(containerDiv);
+        document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        searchActive = true;
+        exploreMode = false;
+        setHeroVisibility(false);
+    }
+
+    function showSearchSkeleton(query) {
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = `
+            <div class="grid-container">
+                <div class="grid-header">
+                    <h2>🔎 Searching "${escapeHtml(query)}"</h2>
+                    <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                </div>
+                <div class="skeleton-grid" id="skeletonGrid">
+                    ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
+                </div>
+            </div>
+        `;
+        document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        setHeroVisibility(false);
+    }
+
+    async function searchTMDB(query) {
+        if (!query.trim()) {
+            if (searchActive || exploreMode) resetToHome();
+            return;
+        }
+        if (abortController) abortController.abort();
+        abortController = new AbortController();
+        showSearchSkeleton(query);
+        try {
+            const url = `${TMDB_BASE}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=en-US&page=1`;
+            const res = await fetch(url, { signal: abortController.signal });
+            if (!res.ok) throw new Error("Search failed");
+            const data = await res.json();
+            let results = data.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
+            results = results.slice(0, 30);
+            if (results.length === 0) {
                 document.getElementById("rows").innerHTML = `
                     <div class="grid-container">
                         <div class="grid-header">
-                            <h2>⚠️ Search error. Please try again.</h2>
+                            <h2>😔 No results for "${escapeHtml(query)}"</h2>
                             <button class="back-home-btn" id="backToHomeBtn">Back to Home</button>
                         </div>
                     </div>
                 `;
                 document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
-                setHeroVisibility(true);
-            }
-            abortController = null;
-        }
-
-        function debouncedSearch(query) {
-            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(() => {
-                searchTMDB(query);
-            }, 380);
-        }
-
-        function handleSearchInput() {
-            const query = document.getElementById("searchInput").value;
-            if (query.length === 0) {
-                if (searchActive || exploreMode) resetToHome();
-                return;
-            }
-            debouncedSearch(query);
-        }
-
-        function closeSearchAndReset() {
-            const wrap = document.getElementById("searchWrap");
-            const input = document.getElementById("searchInput");
-            const toggleBtn = document.getElementById("searchToggle");
-            if (wrap.classList.contains("active")) {
-                wrap.classList.remove("active");
-                input.value = "";
-                if (searchActive || exploreMode) resetToHome();
-                toggleBtn.style.display = "flex";
-                toggleBtn.style.opacity = "1";
-                if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-                if (abortController) abortController.abort();
+                searchActive = true;
+                setHeroVisibility(false);
             } else {
-                if (searchActive || exploreMode) resetToHome();
-                else setHeroVisibility(true);
+                renderSearchResultsGrid(query, results);
             }
-        }
-
-        function openSearchInput() {
-            const wrap = document.getElementById("searchWrap");
-            const input = document.getElementById("searchInput");
-            const toggleBtn = document.getElementById("searchToggle");
-            if (!wrap.classList.contains("active")) {
-                wrap.classList.add("active");
-                input.focus();
-                toggleBtn.style.opacity = "0";
-                setTimeout(() => { toggleBtn.style.display = "none"; }, 200);
-            }
-        }
-
-        function resetToHome() {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-            buildDefaultRows();
-            const wrap = document.getElementById("searchWrap");
-            if (wrap.classList.contains("active")) {
-                document.getElementById("searchInput").value = "";
-                wrap.classList.remove("active");
-                document.getElementById("searchToggle").style.display = "flex";
-                document.getElementById("searchToggle").style.opacity = "1";
-            }
-            searchActive = false;
-            exploreMode = false;
+        } catch (err) {
+            if (err.name === 'AbortError') return;
+            console.error(err);
+            document.getElementById("rows").innerHTML = `
+                <div class="grid-container">
+                    <div class="grid-header">
+                        <h2>⚠️ Search error. Please try again.</h2>
+                        <button class="back-home-btn" id="backToHomeBtn">Back to Home</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
             setHeroVisibility(true);
         }
+        abortController = null;
+    }
 
-        function setHero(movie) {
-            heroMovie = movie;
-            const heroEl = document.getElementById("hero");
-            const heroContent = document.getElementById("heroContent");
-            const backdrop = getImageUrl(movie.backdrop_path, "original") || getImageUrl(movie.poster_path, "original");
-            const img = new Image();
-            img.onload = () => {
-                heroEl.style.backgroundImage = `url(${backdrop})`;
-                heroEl.classList.remove("skeleton-hero");
-                heroContent.style.opacity = "1";
-            };
-            img.onerror = () => {
-                heroEl.style.backgroundImage = `url(${getImageUrl(movie.poster_path, "original")})`;
-                heroEl.classList.remove("skeleton-hero");
-                heroContent.style.opacity = "1";
-            };
-            img.src = backdrop;
-            document.getElementById("heroTitle").innerText = movie.title || movie.name || "Untitled";
-            document.getElementById("heroDesc").innerText = movie.overview || "No description available.";
-            document.getElementById("heroRating").innerText = formatRating(movie.vote_average);
-            document.getElementById("heroYear").innerText = formatYear(movie.release_date || movie.first_air_date);
-        }
+    function debouncedSearch(query) {
+        if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => searchTMDB(query), 380);
+    }
 
-        async function init() {
-            const [trending, popular, topRated] = await Promise.all([
-                fetchMovies(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`),
-                fetchMovies(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`),
-                fetchMovies(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`),
-            ]);
-            cachedTrending = trending;
-            cachedPopular = popular;
-            cachedTopRated = topRated;
-            if (trending.length) setHero(trending[0]);
-            buildDefaultRows();
+    function handleSearchInput() {
+        const query = document.getElementById("searchInput").value;
+        if (query.length === 0) {
+            if (searchActive || exploreMode) resetToHome();
+            return;
         }
+        debouncedSearch(query);
+    }
 
-        function goToMovie() { if (heroMovie) window.location.href = `watch.html?type=movie&id=${heroMovie.id}`; }
-        function playHero() { if (heroMovie) { showToast(`🎬 Opening player for "${heroMovie.title}"`); setTimeout(() => { window.location.href = `watch.html?type=movie&id=${heroMovie.id}`; }, 600); } }
-        function showToast(msg) {
-            let toast = document.querySelector('.toast');
-            if (toast) toast.remove();
-            toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast?.remove(), 3000);
-        }
+    // ---------- HERO ----------
+    function setHero(movie) {
+        heroMovie = movie;
+        const heroEl = document.getElementById("hero");
+        const heroContent = document.getElementById("heroContent");
+        const backdrop = getImageUrl(movie.backdrop_path, "original") || getImageUrl(movie.poster_path, "original");
+        const img = new Image();
+        img.onload = () => {
+            heroEl.style.backgroundImage = `url(${backdrop})`;
+            heroEl.classList.remove("skeleton-hero");
+            heroContent.style.opacity = "1";
+        };
+        img.onerror = () => {
+            heroEl.style.backgroundImage = `url(${getImageUrl(movie.poster_path, "original")})`;
+            heroEl.classList.remove("skeleton-hero");
+            heroContent.style.opacity = "1";
+        };
+        img.src = backdrop;
+        document.getElementById("heroTitle").innerText = movie.title || movie.name || "Untitled";
+        document.getElementById("heroDesc").innerText = movie.overview || "No description available.";
+        document.getElementById("heroRating").innerHTML = formatRating(movie.vote_average);
+        document.getElementById("heroYear").innerText = formatYear(movie.release_date || movie.first_air_date);
+    }
 
-        // Mobile menu logic
-        const menuToggle = document.getElementById('menuToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('overlay');
-        const closeMenuBtn = document.getElementById('closeMenuBtn');
-        function openMenu() {
-            mobileMenu.classList.add('open');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
+    function setHeroVisibility(visible) {
+        const heroEl = document.getElementById("hero");
+        if (visible) heroEl.classList.remove("hidden-hero");
+        else heroEl.classList.add("hidden-hero");
+    }
+
+    function goToMovie() {
+        if (heroMovie) window.location.href = `watch.html?type=movie&id=${heroMovie.id}`;
+    }
+    function playHero() {
+        if (heroMovie) {
+            showToast(`🎬 Opening player for "${heroMovie.title || heroMovie.name}"`);
+            setTimeout(() => goToMovie(), 600);
         }
-        function closeMenu() {
-            mobileMenu.classList.remove('open');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
+    }
+
+    // ---------- RESET HOME ----------
+    function resetToHome() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        buildDefaultRows();
+        const wrap = document.getElementById("searchWrap");
+        if (wrap.classList.contains("active")) {
+            document.getElementById("searchInput").value = "";
+            wrap.classList.remove("active");
+            document.getElementById("searchToggle").style.display = "flex";
+            document.getElementById("searchToggle").style.opacity = "1";
         }
-        menuToggle.addEventListener('click', openMenu);
-        closeMenuBtn.addEventListener('click', closeMenu);
-        overlay.addEventListener('click', closeMenu);
-        document.querySelectorAll('.mobile-menu .nav-item').forEach(item => {
-            item.addEventListener('click', () => {
+        searchActive = false;
+        exploreMode = false;
+        setHeroVisibility(true);
+    }
+
+    // ---------- UI INTERACTIONS (Search, Menu, Scroll) ----------
+    function openSearchInput() {
+        const wrap = document.getElementById("searchWrap");
+        const input = document.getElementById("searchInput");
+        const toggleBtn = document.getElementById("searchToggle");
+        if (!wrap.classList.contains("active")) {
+            wrap.classList.add("active");
+            input.focus();
+            toggleBtn.style.opacity = "0";
+            setTimeout(() => { toggleBtn.style.display = "none"; }, 200);
+        }
+    }
+
+    function closeSearchAndReset() {
+        const wrap = document.getElementById("searchWrap");
+        const input = document.getElementById("searchInput");
+        const toggleBtn = document.getElementById("searchToggle");
+        if (wrap.classList.contains("active")) {
+            wrap.classList.remove("active");
+            input.value = "";
+            if (searchActive || exploreMode) resetToHome();
+            toggleBtn.style.display = "flex";
+            toggleBtn.style.opacity = "1";
+            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+            if (abortController) abortController.abort();
+        } else {
+            if (searchActive || exploreMode) resetToHome();
+            else setHeroVisibility(true);
+        }
+    }
+
+    // Mobile menu
+    const menuToggle = document.getElementById("menuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const overlay = document.getElementById("overlay");
+    const closeMenuBtn = document.getElementById("closeMenuBtn");
+    function openMenu() {
+        mobileMenu.classList.add("open");
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+    function closeMenu() {
+        mobileMenu.classList.remove("open");
+        overlay.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+    if (menuToggle) {
+        menuToggle.addEventListener("click", openMenu);
+        closeMenuBtn.addEventListener("click", closeMenu);
+        overlay.addEventListener("click", closeMenu);
+        document.querySelectorAll(".mobile-menu .nav-item").forEach(item => {
+            item.addEventListener("click", () => {
                 closeMenu();
                 if (searchActive || exploreMode) resetToHome();
                 else document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
             });
         });
+    }
 
-        window.addEventListener("scroll", () => {
-            const navbar = document.getElementById("navbar");
-            if (window.scrollY > 50) navbar.classList.add("scrolled");
-            else navbar.classList.remove("scrolled");
-        });
+    // Navbar scroll effect
+    window.addEventListener("scroll", () => {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 50) navbar.classList.add("scrolled");
+        else navbar.classList.remove("scrolled");
+    });
 
-        document.getElementById("searchToggle").addEventListener("click", (e) => {
-            e.stopPropagation();
-            openSearchInput();
-        });
-        document.getElementById("closeSearchBtn").addEventListener("click", (e) => {
-            e.stopPropagation();
+    // Search event listeners
+    document.getElementById("searchToggle").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openSearchInput();
+    });
+    document.getElementById("closeSearchBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeSearchAndReset();
+    });
+    document.getElementById("searchInput").addEventListener("input", handleSearchInput);
+    document.getElementById("searchInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+            searchTMDB(e.target.value);
+        } else if (e.key === "Escape") {
             closeSearchAndReset();
-        });
-        document.getElementById("searchInput").addEventListener("input", handleSearchInput);
-        document.getElementById("searchInput").addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
-                searchTMDB(e.target.value);
-            } else if (e.key === "Escape") {
-                closeSearchAndReset();
-            }
-        });
+        }
+    });
 
-        document.querySelectorAll("[data-nav]").forEach(li => {
-            li.addEventListener("click", () => {
-                if (searchActive || exploreMode) resetToHome();
-                else document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
-            });
+    // Desktop nav links
+    document.querySelectorAll("[data-nav]").forEach(li => {
+        li.addEventListener("click", () => {
+            if (searchActive || exploreMode) resetToHome();
+            else document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
         });
-        document.querySelector(".logo")?.addEventListener("click", resetToHome);
+    });
+    document.querySelector(".logo")?.addEventListener("click", resetToHome);
 
-        document.addEventListener("click", (e) => {
-            const wrap = document.getElementById("searchWrap");
-            const container = document.querySelector(".search-container");
-            if (wrap.classList.contains("active") && container && !container.contains(e.target)) {
-                closeSearchAndReset();
-            }
-        });
+    // Close search when clicking outside
+    document.addEventListener("click", (e) => {
+        const wrap = document.getElementById("searchWrap");
+        const container = document.querySelector(".search-container");
+        if (wrap.classList.contains("active") && container && !container.contains(e.target)) {
+            closeSearchAndReset();
+        }
+    });
 
-        init();
-    </script>
+    // ---------- INITIAL LOAD ----------
+    async function init() {
+        // Try to fetch real data; if any fails, we still have fallback below
+        const [trending, popular, topRated] = await Promise.all([
+            fetchMovies(`${TMDB_BASE}/trending/movie/week?api_key=${API_KEY}`),
+            fetchMovies(`${TMDB_BASE}/movie/popular?api_key=${API_KEY}`),
+            fetchMovies(`${TMDB_BASE}/movie/top_rated?api_key=${API_KEY}`)
+        ]);
+        
+        // Use fetched data or fallback to a minimal set (to avoid empty rows)
+        cachedTrending = trending.length ? trending : [];
+        cachedPopular = popular.length ? popular : [];
+        cachedTopRated = topRated.length ? topRated : [];
+        
+        // If ALL are empty, show a friendly error but still try to load hero from trending if any
+        if (cachedTrending.length) setHero(cachedTrending[0]);
+        else if (cachedPopular.length) setHero(cachedPopular[0]);
+        else if (cachedTopRated.length) setHero(cachedTopRated[0]);
+        else {
+            // Ultimate fallback: show a static message
+            document.getElementById("hero").innerHTML = `<div style="position:relative; z-index:3; padding:80px 20px; text-align:center;"><h2>Unable to load content</h2><p>Please check your internet connection or try again later.</p></div>`;
+            document.getElementById("hero").classList.remove("skeleton-hero");
+        }
+        
+        buildDefaultRows();
+    }
+    
+    init();
+</script>
 </body>
 </html>
