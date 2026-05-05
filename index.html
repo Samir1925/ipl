@@ -6,7 +6,6 @@
     <title>StreamHub — Watch Anywhere</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         :root {
             --bg-primary: #0a0a0f;
@@ -65,7 +64,6 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* NAVBAR */
         .navbar {
             position: fixed;
             top: 0;
@@ -240,7 +238,6 @@
             opacity: 1;
         }
 
-        /* HERO */
         .hero {
             height: 95vh;
             min-height: 600px;
@@ -386,7 +383,6 @@
             transform: translateY(-3px);
         }
 
-        /* ROWS (Carousel) */
         .main-content {
             position: relative;
             z-index: 4;
@@ -481,7 +477,6 @@
         .scroll-arrow.left { left: 0; }
         .scroll-arrow.right { right: 0; }
 
-        /* SEARCH GRID VIEW (instead of horizontal carousel) */
         .search-grid-container {
             padding: 0 48px;
             margin-top: 20px;
@@ -522,7 +517,6 @@
             transform: scale(1.05);
             z-index: 10;
         }
-        /* skeleton for grid */
         .skeleton-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -538,7 +532,6 @@
             animation: shimmer 1.5s ease infinite;
         }
 
-        /* CARD */
         .card {
             min-width: 170px;
             height: 255px;
@@ -727,7 +720,6 @@
         let searchDebounceTimer = null;
         let abortController = null;
 
-        // Helper functions
         async function fetchMovies(url) {
             try {
                 const res = await fetch(url);
@@ -755,6 +747,21 @@
             return dateStr.substring(0, 4);
         }
 
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // FIX: navigate using query parameters (works with static watch.html)
+        function navigateToWatch(movieId) {
+            window.location.href = `watch.html?type=movie&id=${movieId}`;
+        }
+
         function createCard(item) {
             const card = document.createElement("div");
             card.className = "card";
@@ -774,19 +781,9 @@
             const mediaId = item.id;
             card.addEventListener("click", (e) => {
                 e.stopPropagation();
-                window.location.href = `/watch/movie/${mediaId}`;
+                navigateToWatch(mediaId);
             });
             return card;
-        }
-
-        function escapeHtml(str) {
-            if (!str) return "";
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
         }
 
         function createCarouselRow(title, items, rowId = null) {
@@ -835,7 +832,6 @@
             setHeroVisibility(true);
         }
 
-        // Render search results in GRID layout
         function renderSearchResultsGrid(query, results) {
             const rowsContainer = document.getElementById("rows");
             rowsContainer.innerHTML = "";
@@ -1006,8 +1002,8 @@
             buildDefaultRows();
         }
 
-        function goToMovie() { if (heroMovie) window.location.href = `/watch/movie/${heroMovie.id}`; }
-        function playHero() { if (heroMovie) { showToast(`🎬 Opening trailer for "${heroMovie.title}"`); setTimeout(() => { window.location.href = `/watch/movie/${heroMovie.id}`; }, 600); } }
+        function goToMovie() { if (heroMovie) navigateToWatch(heroMovie.id); }
+        function playHero() { if (heroMovie) { showToast(`🎬 Opening player for "${heroMovie.title}"`); setTimeout(() => { navigateToWatch(heroMovie.id); }, 600); } }
         function showToast(msg) {
             let toast = document.querySelector('.toast');
             if (toast) toast.remove();
