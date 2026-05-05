@@ -191,7 +191,9 @@
                 if (type === 'tv') {
                     playerUrl += `&season=${season || 1}&episode=${episode || 1}`;
                 }
-                container.innerHTML = `<iframe src="${playerUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0"></iframe>`;
+                container.innerHTML = `<iframe src="${playerUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0 allowfullscreen 
+        webkitallowfullscreen 
+        mozallowfullscreen"></iframe>`;
                 document.getElementById('streamInfo').innerHTML = `🎥 Streaming via ${server.label} (vidsrc.wtf API)`;
             } else {
                 // Direct embed
