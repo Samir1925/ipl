@@ -58,7 +58,7 @@
             border-radius: 10px;
         }
 
-        /* NAVBAR (identical to index) */
+        /* NAVBAR (same as index) */
         .navbar {
             position: sticky;
             top: 0;
@@ -144,13 +144,13 @@
         /* HERO BANNER */
         .hero-banner {
             position: relative;
-            min-height: 480px;
+            min-height: 520px;
             background-size: cover;
             background-position: center 30%;
             display: flex;
             align-items: flex-end;
             padding: 40px 48px 60px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .hero-banner::before {
             content: '';
@@ -162,13 +162,13 @@
         .hero-details {
             position: relative;
             z-index: 2;
-            max-width: 650px;
+            max-width: 750px;
             display: flex;
-            gap: 24px;
+            gap: 28px;
             flex-wrap: wrap;
         }
         .hero-poster {
-            width: 180px;
+            width: 200px;
             border-radius: 16px;
             box-shadow: 0 20px 35px rgba(0,0,0,0.5);
             border: 2px solid rgba(255,255,255,0.1);
@@ -177,7 +177,7 @@
             flex: 1;
         }
         .hero-info h1 {
-            font-size: 42px;
+            font-size: 44px;
             font-weight: 900;
             letter-spacing: -1px;
             margin-bottom: 12px;
@@ -211,18 +211,24 @@
         .hero-overview {
             color: #c8c8d4;
             line-height: 1.6;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .trailer-btn {
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
             background: var(--accent);
             border: none;
-            padding: 12px 28px;
+            padding: 12px 32px;
             border-radius: 40px;
             font-weight: 700;
+            font-size: 15px;
             color: white;
             display: inline-flex;
             align-items: center;
@@ -231,17 +237,47 @@
             transition: all 0.2s;
             box-shadow: 0 8px 20px rgba(229,9,20,0.3);
         }
-        .trailer-btn:hover {
+        .btn-primary:hover {
             background: var(--accent-hover);
             transform: scale(1.02);
         }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 15px;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.02);
+        }
 
-        /* PLAYER SECTION */
+        /* PLAYER SECTION (hidden initially) */
+        .player-section {
+            display: none;
+            margin: 20px 48px 0;
+            animation: fadeSlideUp 0.4s ease;
+        }
+        .player-section.visible {
+            display: block;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .player-wrapper {
             background: #000;
             border-radius: 20px;
             overflow: hidden;
-            margin: 0 48px 20px;
             aspect-ratio: 16 / 9;
             box-shadow: var(--shadow-lg);
             border: 1px solid rgba(255,255,255,0.05);
@@ -256,7 +292,7 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            margin: 10px 48px 20px;
+            margin-top: 16px;
             gap: 15px;
             background: var(--bg-secondary);
             padding: 12px 20px;
@@ -352,7 +388,82 @@
             text-overflow: ellipsis;
         }
 
-        /* TOAST & LOADER */
+        /* TRAILER MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-content {
+            background: #000;
+            width: 85%;
+            max-width: 1000px;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16 / 9;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        }
+        .modal-content iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 1001;
+            transition: 0.2s;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-modal:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* LOADER */
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            min-height: 200px;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #2a2a3a;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -371,29 +482,15 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px);}
             to { opacity: 1; transform: translateX(-50%) translateY(0);}
         }
-        .loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-        }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #2a2a3a;
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) {
             .navbar, .hero-banner { padding: 12px 20px; }
-            .player-wrapper { margin: 0 16px 16px; }
-            .server-bar { margin: 10px 16px 20px; flex-direction: column; align-items: stretch; }
-            .recommendations { margin: 30px 16px; }
-            .hero-poster { width: 120px; }
+            .hero-poster { width: 130px; }
             .hero-info h1 { font-size: 28px; }
+            .player-section { margin: 16px 16px 0; }
+            .recommendations { margin: 30px 16px; }
+            .action-buttons .btn-primary, .action-buttons .btn-secondary { padding: 8px 20px; font-size: 13px; }
+            .modal-content { width: 95%; }
         }
     </style>
 </head>
@@ -421,13 +518,15 @@
     </div>
 </div>
 
-<div class="player-wrapper" id="playerContainer">
-    <div class="loader"><div class="spinner"></div></div>
-</div>
-
-<div class="server-bar" id="serverBar">
-    <div class="server-selector" id="serverList"></div>
-    <div class="info-note" id="streamInfo">⚡ Select a server</div>
+<!-- Hidden until Watch Movie clicked -->
+<div id="playerSection" class="player-section">
+    <div class="player-wrapper" id="playerContainer">
+        <div class="loader"><div class="spinner"></div></div>
+    </div>
+    <div class="server-bar" id="serverBar">
+        <div class="server-selector" id="serverList"></div>
+        <div class="info-note" id="streamInfo">✨ Select a server to start streaming</div>
+    </div>
 </div>
 
 <div class="recommendations" id="recommendSection" style="display: none;">
@@ -438,6 +537,12 @@
     <div class="rec-row" id="recRow"></div>
 </div>
 
+<!-- Trailer Modal -->
+<div id="trailerModal" class="modal">
+    <div class="close-modal" id="closeModalBtn"><i class="fa-solid fa-times"></i></div>
+    <div class="modal-content" id="trailerFrameContainer"></div>
+</div>
+
 <script>
     // ---------- TMDB API ----------
     const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
@@ -445,8 +550,9 @@
     let mediaDetails = null;
     let currentServerId = "vidsrcto";
     let isLoadingPlayer = false;
+    let trailerKey = null;
 
-    // ---------- SERVER LIST (embedded sources with ad-light approach) ----------
+    // ---------- SERVER LIST (ad-light sources) ----------
     const SERVER_LIST = [
         { id: "vidsrcto", label: "VidSrc", getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
         { id: "vidzee", label: "VidZee", getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
@@ -457,48 +563,33 @@
         { id: "2embed", label: "2Embed", getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` }
     ];
 
-    // ---------- AD BLOCKER (remove common ad elements, popups, overlays) ----------
+    // ---------- AD BLOCKER (remove popups/ads) ----------
     function initAdBlocker() {
-        // CSS to hide typical ad containers
         const style = document.createElement('style');
         style.textContent = `
-            iframe[src*="adserver"], iframe[src*="doubleclick"], .ads, .ad, .advertisement, [class*="ad-"], [id*="ad_"], .google-ads, .banner-ad, .popup-ad, .overlay-ad, .video-ads {
+            iframe[src*="adserver"], iframe[src*="doubleclick"], .ads, .ad, .advertisement, [class*="ad-"], [id*="ad_"], .google-ads, .banner-ad, .popup-ad {
                 display: none !important;
                 visibility: hidden !important;
                 height: 0 !important;
-                width: 0 !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
             }
-            body > div[style*="position: fixed"][style*="z-index"]:not(#toast):not(#playerContainer) {
+            body > div[style*="position: fixed"][style*="z-index"]:not(#trailerModal):not(.toast) {
                 display: none !important;
             }
         `;
         document.head.appendChild(style);
-
-        // MutationObserver to nuke suspicious iframes/elements that appear later
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach(() => {
-                document.querySelectorAll('iframe, div').forEach(el => {
-                    const src = el.src || '';
-                    if (src.includes('adserver') || src.includes('doubleclick') || src.includes('googlesyndication') ||
-                        (el.className && (el.className.includes('ad') || el.className.includes('ads'))) ||
-                        (el.id && (el.id.includes('ad') || el.id.includes('google')))) {
-                        el.remove();
-                    }
-                });
-                // Remove any fixed overlays that look like popups
-                document.querySelectorAll('div[style*="position: fixed"], div[style*="z-index: 9999"]').forEach(div => {
-                    if (div.innerText && (div.innerText.includes('ad') || div.innerText.includes('Ad') || div.innerText.includes('Close'))) {
-                        if (!div.closest('.toast') && !div.closest('#serverBar')) div.remove();
-                    }
-                });
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('iframe, div').forEach(el => {
+                const src = el.src || '';
+                if (src.includes('adserver') || src.includes('doubleclick') || src.includes('googlesyndication') ||
+                    (el.className && (el.className.includes('ad') || el.className.includes('ads')))) {
+                    el.remove();
+                }
             });
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
 
-    // ---------- URL PARSING (fixes the hardcoded ID issue) ----------
+    // ---------- URL PARSING (fixes hardcoded ID) ----------
     function parseURL() {
         const params = new URLSearchParams(window.location.search);
         let type = params.get('type');
@@ -520,20 +611,16 @@
                 season = parts[3];
                 episode = parts[4];
             }
-            if (hashParams.get('server')) currentServerId = hashParams.get('server');
         }
-        if (params.get('server')) currentServerId = params.get('server');
-
         if (!id) {
-            // fallback demo but show error toast
             id = '550'; // Fight Club demo
             type = 'movie';
-            console.warn('No ID provided, using demo movie');
+            showToast('No ID specified, showing demo movie');
         }
         currentMedia = { type: type === 'tv' ? 'tv' : 'movie', id: id, season: season ? parseInt(season) : 1, episode: episode ? parseInt(episode) : 1 };
     }
 
-    // ---------- FETCH MEDIA DETAILS FROM TMDB ----------
+    // ---------- FETCH DETAILS ----------
     async function fetchMediaDetails() {
         const { type, id } = currentMedia;
         let url = type === 'movie' 
@@ -552,7 +639,7 @@
         }
     }
 
-    // ---------- RENDER BANNER (poster, backdrop, trailer button) ----------
+    // ---------- RENDER HERO BANNER (with two buttons) ----------
     function renderHeroBanner(details) {
         const isMovie = currentMedia.type === 'movie';
         const title = isMovie ? details.title : details.name;
@@ -562,11 +649,14 @@
         const year = isMovie ? (details.release_date?.substring(0,4) || '—') : (details.first_air_date?.substring(0,4) || '—');
         const genres = details.genres?.map(g => g.name).slice(0,3) || [];
         const overview = details.overview || 'No description available.';
-        const trailerKey = details.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube')?.key || null;
+        
+        // Extract trailer key
+        const trailerObj = details.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+        trailerKey = trailerObj ? trailerObj.key : null;
 
         const bannerDiv = document.getElementById('heroBanner');
         if (backdrop) bannerDiv.style.backgroundImage = `url(${backdrop})`;
-        bannerDiv.style.backgroundColor = '#0a0a0f';
+        else bannerDiv.style.backgroundColor = '#0a0a0f';
         
         const heroHtml = `
             <img class="hero-poster" src="${poster}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
@@ -575,24 +665,42 @@
                 <div class="hero-meta">
                     <span class="hero-rating"><i class="fa-solid fa-star"></i> ${rating}</span>
                     <span class="hero-year">${year}</span>
-                    ${isMovie ? '' : `<span>Season ${currentMedia.season || 1}</span>`}
+                    ${!isMovie ? `<span>S${currentMedia.season || 1}</span>` : ''}
                 </div>
                 <div class="hero-genres">
                     ${genres.map(g => `<span class="genre-badge">${escapeHtml(g)}</span>`).join('')}
                 </div>
                 <p class="hero-overview">${escapeHtml(overview)}</p>
-                ${trailerKey ? `<button class="trailer-btn" id="playTrailerBtn"><i class="fa-brands fa-youtube"></i> Watch Trailer</button>` : '<button class="trailer-btn" disabled style="opacity:0.5;"><i class="fa-solid fa-video"></i> Trailer unavailable</button>'}
+                <div class="action-buttons">
+                    <button class="btn-primary" id="watchMovieBtn"><i class="fa-solid fa-play"></i> Watch Movie</button>
+                    <button class="btn-secondary" id="watchTrailerBtn" ${!trailerKey ? 'disabled style="opacity:0.5;"' : ''}><i class="fa-brands fa-youtube"></i> Watch Trailer</button>
+                </div>
             </div>
         `;
         document.getElementById('heroDetails').innerHTML = heroHtml;
+        
+        // Bind buttons after DOM update
+        document.getElementById('watchMovieBtn').addEventListener('click', revealAndLoadPlayer);
         if (trailerKey) {
-            document.getElementById('playTrailerBtn').addEventListener('click', () => {
-                window.open(`https://www.youtube.com/watch?v=${trailerKey}`, '_blank');
-            });
+            document.getElementById('watchTrailerBtn').addEventListener('click', openTrailerModal);
         }
     }
 
-    // ---------- LOAD PLAYER (server embed) ----------
+    // ---------- REVEAL PLAYER + LOAD VIDEO ----------
+    function revealAndLoadPlayer() {
+        const playerSection = document.getElementById('playerSection');
+        if (!playerSection.classList.contains('visible')) {
+            playerSection.classList.add('visible');
+            // Smooth scroll to player
+            playerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        if (!isLoadingPlayer) {
+            loadPlayer();
+            renderServerButtons();
+        }
+    }
+
+    // ---------- LOAD VIDEO INTO IFRAME ----------
     async function loadPlayer() {
         if (isLoadingPlayer) return;
         isLoadingPlayer = true;
@@ -613,9 +721,8 @@
                 const e = currentMedia.episode || 1;
                 embedUrl = server.getUrl('tv', currentMedia.id, s, e);
             }
-            // Add ad-block referrer and remove sandbox to avoid ad restrictions
-            const finalUrl = embedUrl;
-            container.innerHTML = `<iframe src="${finalUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+            container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+            document.getElementById('streamInfo').innerHTML = `🎥 Streaming: ${mediaDetails?.title || mediaDetails?.name} • Server: ${server.label}`;
         } catch (err) {
             container.innerHTML = `<div style="color:#f87171; text-align:center; padding:40px;">Failed to load video: ${err.message}</div>`;
         }
@@ -625,6 +732,7 @@
     // ---------- RENDER SERVER BUTTONS ----------
     function renderServerButtons() {
         const container = document.getElementById('serverList');
+        if (!container) return;
         container.innerHTML = '';
         SERVER_LIST.forEach(server => {
             const btn = document.createElement('button');
@@ -641,7 +749,24 @@
         });
     }
 
-    // ---------- FETCH RECOMMENDATIONS & RENDER ROW ----------
+    // ---------- TRAILER MODAL ----------
+    function openTrailerModal() {
+        if (!trailerKey) return;
+        const modal = document.getElementById('trailerModal');
+        const frameContainer = document.getElementById('trailerFrameContainer');
+        frameContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${trailerKey}?autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeTrailerModal() {
+        const modal = document.getElementById('trailerModal');
+        const frameContainer = document.getElementById('trailerFrameContainer');
+        modal.classList.remove('active');
+        frameContainer.innerHTML = ''; // stop video
+        document.body.style.overflow = '';
+    }
+
+    // ---------- RECOMMENDATIONS ----------
     async function loadRecommendations() {
         const { type, id } = currentMedia;
         let url = type === 'movie' 
@@ -667,8 +792,7 @@
                 card.innerHTML = `<div class="rec-title">${escapeHtml(title)}</div>`;
                 card.onclick = () => {
                     const newType = item.title ? 'movie' : 'tv';
-                    const newId = item.id;
-                    window.location.href = `watch.html?type=${newType}&id=${newId}`;
+                    window.location.href = `watch.html?type=${newType}&id=${item.id}`;
                 };
                 row.appendChild(card);
             });
@@ -699,7 +823,7 @@
         setTimeout(() => toast?.remove(), 3000);
     }
 
-    // ---------- MAIN INIT ----------
+    // ---------- INIT ----------
     async function init() {
         initAdBlocker();
         parseURL();
@@ -709,10 +833,12 @@
             return;
         }
         renderHeroBanner(details);
-        renderServerButtons();
-        await loadPlayer();
         await loadRecommendations();
-        document.getElementById('streamInfo').innerHTML = `🎥 Now streaming: ${details.title || details.name} • Server: ${SERVER_LIST.find(s=>s.id===currentServerId)?.label}`;
+        // Setup modal close
+        document.getElementById('closeModalBtn').addEventListener('click', closeTrailerModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('trailerModal')) closeTrailerModal();
+        });
     }
     init();
 </script>
