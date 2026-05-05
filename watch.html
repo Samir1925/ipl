@@ -81,7 +81,7 @@
     // ---------- SERVER LIST (API servers first, then direct) ----------
     const SERVER_LIST = [
         { id: "api2", label: "🌐 Multi Language", isAsync: true, apiVersion: 2 },
-        { id: "api4", label: "💎 Premium", isAsync: true, apiVersion: 4 },
+        { id: "api3", label: "💎 Premium", isAsync: true, apiVersion: 3 },
         { id: "vidsrcto", label: "VidSrc", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
         { id: "vidzee", label: "VidZee", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
         { id: "vidrock", label: "VidRock", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidrock.net/movie/${id}` : `https://vidrock.net/tv/${id}/${s}/${e}` },
