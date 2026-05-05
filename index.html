@@ -6,659 +6,7 @@
     <title>StreamHub — Watch Anywhere</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --accent: #e50914;
-            --accent-hover: #ff1a25;
-            --accent-glow: rgba(229, 9, 20, 0.35);
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0bb;
-            --text-muted: #6b6b7b;
-            --card-radius: 12px;
-            --card-radius-sm: 8px;
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --glass-bg: rgba(18, 18, 26, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-            --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
-            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
-            --shadow-glow: 0 0 40px var(--accent-glow);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg-primary);
-            font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-            color: var(--text-primary);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            line-height: 1.5;
-        }
-
-        ::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 16px 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
-            transition: all var(--transition-smooth);
-            background: linear-gradient(to bottom,
-                    rgba(10, 10, 15, 0.95) 0%,
-                    rgba(10, 10, 15, 0.7) 60%,
-                    transparent 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .navbar.scrolled {
-            background: rgba(10, 10, 15, 0.92);
-            backdrop-filter: blur(28px);
-            padding: 12px 48px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 36px;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: transform var(--transition-fast);
-        }
-
-        .logo:hover {
-            transform: scale(1.03);
-        }
-
-        .logo-icon {
-            font-size: 32px;
-            color: var(--accent);
-            filter: drop-shadow(0 0 12px var(--accent-glow));
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { filter: drop-shadow(0 0 8px var(--accent-glow)); }
-            50% { filter: drop-shadow(0 0 20px rgba(229, 9, 20, 0.6)); }
-        }
-
-        .logo-text {
-            background: linear-gradient(135deg, #e50914, #ff4d4d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 24px;
-            list-style: none;
-        }
-
-        .nav-links li {
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            transition: all var(--transition-fast);
-            position: relative;
-            padding: 6px 0;
-        }
-
-        .nav-links li:hover,
-        .nav-links li.active {
-            color: var(--text-primary);
-        }
-
-        .nav-links li::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            border-radius: 2px;
-            transition: width var(--transition-smooth);
-        }
-
-        .nav-links li:hover::after,
-        .nav-links li.active::after {
-            width: 100%;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .nav-icon {
-            font-size: 18px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-            padding: 8px;
-            border-radius: 50%;
-            background: none;
-            border: none;
-        }
-
-        .nav-icon:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.06);
-        }
-
-        .search-container {
-            position: relative;
-        }
-        .search-input-wrap {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            overflow: hidden;
-            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(20, 20, 30, 0.95);
-            backdrop-filter: blur(16px);
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-        }
-        .search-input-wrap.active {
-            width: 260px;
-            padding: 0 14px;
-        }
-        .search-input-wrap input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 14px;
-            font-weight: 500;
-            padding: 10px 0;
-        }
-        .search-input-wrap input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        .search-input-wrap .close-search {
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
-            margin-left: 8px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        .search-input-wrap .close-search:hover {
-            opacity: 1;
-        }
-
-        .hero {
-            height: 95vh;
-            min-height: 600px;
-            max-height: 900px;
-            background-size: cover;
-            background-position: center top;
-            display: flex;
-            align-items: flex-end;
-            padding: 80px 60px 100px;
-            position: relative;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-        }
-        .hero.hidden-hero {
-            opacity: 0;
-            visibility: hidden;
-            position: absolute;
-            pointer-events: none;
-            height: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-        .hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top,
-                    var(--bg-primary) 0%,
-                    rgba(10, 10, 15, 0.85) 15%,
-                    rgba(10, 10, 15, 0.4) 45%,
-                    rgba(10, 10, 15, 0.15) 70%,
-                    transparent 100%);
-            z-index: 1;
-            pointer-events: none;
-        }
-        .hero::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 120px;
-            background: linear-gradient(to top, var(--bg-primary), transparent);
-            z-index: 2;
-            pointer-events: none;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            max-width: 620px;
-            animation: fadeInUp 0.8s ease;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--accent);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-        }
-        .hero h1 {
-            font-size: clamp(36px, 5vw, 60px);
-            font-weight: 900;
-            letter-spacing: -1px;
-            line-height: 1.1;
-            margin-bottom: 12px;
-        }
-        .hero-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 14px;
-        }
-        .hero-rating {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: #ffc107;
-        }
-        .hero-year, .hero-duration {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-        .hero-quality {
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
-        }
-        .hero p {
-            color: #c8c8d4;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 22px;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .hero-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 50px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition-bounce);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-play {
-            background: var(--accent);
-            color: white;
-            box-shadow: 0 8px 30px rgba(229, 9, 20, 0.4);
-        }
-        .btn-play:hover {
-            background: var(--accent-hover);
-            transform: translateY(-3px);
-        }
-        .btn-info {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .btn-info:hover {
-            background: rgba(255, 255, 255, 0.18);
-            transform: translateY(-3px);
-        }
-
-        .main-content {
-            position: relative;
-            z-index: 4;
-            margin-top: -60px;
-            padding: 0 0 40px;
-            transition: margin-top 0.3s ease;
-        }
-        .hero.hidden-hero + .main-content {
-            margin-top: 20px;
-        }
-        .row {
-            margin: 8px 0 28px;
-            padding: 0 48px;
-        }
-        .row-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-        }
-        .row h2 {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .row h2::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 22px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-        .row-explore {
-            font-size: 13px;
-            color: var(--accent);
-            cursor: pointer;
-            font-weight: 600;
-            transition: all var(--transition-fast);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-        .row-explore:hover {
-            color: white;
-            background: rgba(229, 9, 20, 0.2);
-        }
-        .row-container-wrapper {
-            position: relative;
-        }
-        .row-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 14px;
-            padding: 8px 4px 16px;
-            scroll-behavior: smooth;
-            scroll-snap-type: x proximity;
-        }
-        .row-container::-webkit-scrollbar {
-            height: 4px;
-        }
-        .scroll-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 42px;
-            height: 42px;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-            transition: all var(--transition-smooth);
-            opacity: 0;
-            pointer-events: none;
-        }
-        .row-container-wrapper:hover .scroll-arrow {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .scroll-arrow.left { left: 0; }
-        .scroll-arrow.right { right: 0; }
-
-        .search-grid-container {
-            padding: 0 48px;
-            margin-top: 20px;
-        }
-        .search-grid-header {
-            margin-bottom: 24px;
-        }
-        .search-grid-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .search-grid-header h2::before {
-            content: '';
-            display: inline-block;
-            width: 5px;
-            height: 26px;
-            background: var(--accent);
-            border-radius: 3px;
-        }
-        .search-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 20px 16px;
-            margin-bottom: 40px;
-        }
-        .search-grid .card {
-            min-width: auto;
-            width: 100%;
-            height: auto;
-            aspect-ratio: 2 / 3;
-            transition: transform 0.3s ease, box-shadow 0.2s;
-        }
-        .search-grid .card:hover {
-            transform: scale(1.05);
-            z-index: 10;
-        }
-        .skeleton-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 20px 16px;
-            padding: 0 48px;
-            margin-top: 20px;
-        }
-        .skeleton-grid-item {
-            aspect-ratio: 2 / 3;
-            border-radius: var(--card-radius);
-            background: linear-gradient(135deg, #1a1a25 25%, #222230 50%, #1a1a25 75%);
-            background-size: 200% 200%;
-            animation: shimmer 1.5s ease infinite;
-        }
-
-        .card {
-            min-width: 170px;
-            height: 255px;
-            background-size: cover;
-            background-position: center;
-            border-radius: var(--card-radius);
-            cursor: pointer;
-            transition: all var(--transition-bounce);
-            position: relative;
-            flex-shrink: 0;
-            scroll-snap-align: start;
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 65%);
-            z-index: 1;
-        }
-        .card:hover {
-            transform: scale(1.12);
-            z-index: 10;
-            box-shadow: var(--shadow-lg), 0 0 0 3px rgba(229, 9, 20, 0.25);
-        }
-        .card-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 2;
-            padding: 16px 14px;
-            transform: translateY(8px);
-            transition: all var(--transition-smooth);
-        }
-        .card:hover .card-info {
-            transform: translateY(0);
-        }
-        .card-title {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .card-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: #c8c8d4;
-            opacity: 0;
-            transform: translateY(6px);
-            transition: all var(--transition-smooth);
-        }
-        .card:hover .card-meta {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .card-rating {
-            display: flex;
-            align-items: center;
-            gap: 3px;
-            color: #ffc107;
-        }
-        .card-play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.5);
-            width: 48px;
-            height: 48px;
-            background: var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: all var(--transition-bounce);
-            box-shadow: 0 8px 28px rgba(229,9,20,0.5);
-            z-index: 3;
-            pointer-events: none;
-        }
-        .card:hover .card-play-overlay {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(20,20,30,0.95);
-            backdrop-filter: blur(20px);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: 600;
-            z-index: 9999;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.15);
-            animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1), toastOut 0.3s ease 2.5s forwards;
-            pointer-events: none;
-        }
-        @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
-        @keyframes toastOut { from { opacity:1; transform:translateX(-50%) translateY(0); } to { opacity:0; transform:translateX(-50%) translateY(-10px); } }
-        
-        @media (max-width: 768px) {
-            .navbar, .navbar.scrolled { padding: 12px 16px; }
-            .nav-links { display: none; }
-            .hero { padding: 40px 20px 60px; min-height: 450px; }
-            .card { min-width: 125px; height: 190px; }
-            .row { padding: 0 20px; }
-            .search-grid-container { padding: 0 20px; }
-            .search-grid { grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 16px; }
-            .skeleton-grid { padding: 0 20px; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); }
-            .search-input-wrap.active { width: 200px; }
-        }
-        @media (max-width: 480px) {
-            .card { min-width: 105px; height: 160px; }
-            .search-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); }
-            .skeleton-grid { grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); }
-            .search-input-wrap.active { width: 170px; }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -666,7 +14,7 @@
         <div class="nav-left">
             <div class="logo" onclick="resetToHome()">
                 <span class="logo-icon"><i class="fa-solid fa-play"></i></span>
-                <span class="logo-text">SAMFLIX</span>
+                <span class="logo-text">STREAMHUB</span>
             </div>
             <ul class="nav-links">
                 <li data-nav="home">Home</li>
@@ -677,6 +25,7 @@
             </ul>
         </div>
         <div class="nav-right">
+            <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
             <div class="search-container">
                 <button class="nav-icon" id="searchToggle" aria-label="Search">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -688,6 +37,17 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="close-menu" id="closeMenuBtn"><i class="fa-solid fa-times"></i></button>
+        <div class="nav-item" data-nav="home">Home</div>
+        <div class="nav-item" data-nav="movies">Movies</div>
+        <div class="nav-item" data-nav="series">Series</div>
+        <div class="nav-item" data-nav="popular">New & Popular</div>
+        <div class="nav-item" data-nav="mylist">My List</div>
+    </div>
+    <div class="overlay" id="overlay"></div>
 
     <div id="hero" class="hero skeleton-hero">
         <div class="hero-content" id="heroContent" style="opacity:0;">
@@ -711,12 +71,14 @@
     </div>
 
     <script>
+        // (Same JavaScript as before – no changes needed)
         const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
         let heroMovie = null;
         let cachedTrending = [];
         let cachedPopular = [];
         let cachedTopRated = [];
         let searchActive = false;
+        let exploreMode = false;
         let searchDebounceTimer = null;
         let abortController = null;
 
@@ -732,6 +94,18 @@
             }
         }
 
+        async function fetchAllPages(baseUrl, pages = 3) {
+            let allItems = [];
+            for (let page = 1; page <= pages; page++) {
+                const url = `${baseUrl}&page=${page}`;
+                const items = await fetchMovies(url);
+                if (items.length === 0) break;
+                allItems.push(...items);
+                if (items.length < 20) break;
+            }
+            return allItems;
+        }
+
         function getImageUrl(path, size = "w500") {
             if (!path) return "";
             return `https://image.tmdb.org/t/p/${size}${path}`;
@@ -745,21 +119,6 @@
         function formatYear(dateStr) {
             if (!dateStr) return "—";
             return dateStr.substring(0, 4);
-        }
-
-        function escapeHtml(str) {
-            if (!str) return "";
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-
-        // FIX: navigate using query parameters (works with static watch.html)
-        function navigateToWatch(movieId) {
-            window.location.href = `watch.html?type=movie&id=${movieId}`;
         }
 
         function createCard(item) {
@@ -781,9 +140,19 @@
             const mediaId = item.id;
             card.addEventListener("click", (e) => {
                 e.stopPropagation();
-                navigateToWatch(mediaId);
+                window.location.href = `watch.html?type=movie&id=${mediaId}`;
             });
             return card;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
 
         function createCarouselRow(title, items, rowId = null) {
@@ -794,7 +163,7 @@
             rowDiv.innerHTML = `
                 <div class="row-header">
                     <h2>${escapeHtml(title)}</h2>
-                    <span class="row-explore" onclick="showToast('🔍 Exploring ${escapeHtml(title)}')">Explore All <i class="fa-solid fa-chevron-right"></i></span>
+                    <span class="row-explore" data-category="${rowId || title}">Explore All <i class="fa-solid fa-chevron-right"></i></span>
                 </div>
                 <div class="row-container-wrapper">
                     <div class="scroll-arrow left"><i class="fa-solid fa-chevron-left"></i></div>
@@ -810,6 +179,16 @@
             const rightArrow = rowDiv.querySelector(".scroll-arrow.right");
             leftArrow.addEventListener("click", () => { container.scrollBy({ left: -400, behavior: "smooth" }); });
             rightArrow.addEventListener("click", () => { container.scrollBy({ left: 400, behavior: "smooth" }); });
+            
+            const exploreBtn = rowDiv.querySelector(".row-explore");
+            const category = rowId || title;
+            exploreBtn.addEventListener("click", () => {
+                if (category === "row-trending") showExploreGrid("Trending Now", "trending");
+                else if (category === "row-popular") showExploreGrid("Popular Movies", "popular");
+                else if (category === "row-top-rated") showExploreGrid("Top Rated Movies", "top_rated");
+                else showToast(`🔍 Exploring ${title}`);
+            });
+            
             document.getElementById("rows").appendChild(rowDiv);
         }
 
@@ -822,12 +201,76 @@
             }
         }
 
+        function renderGrid(title, items, showBackButton = true) {
+            const rowsContainer = document.getElementById("rows");
+            rowsContainer.innerHTML = "";
+            const containerDiv = document.createElement("div");
+            containerDiv.className = "grid-container";
+            let backButtonHtml = "";
+            if (showBackButton) {
+                backButtonHtml = `<button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>`;
+            }
+            containerDiv.innerHTML = `
+                <div class="grid-header">
+                    <h2>${escapeHtml(title)} (${items.length})</h2>
+                    ${backButtonHtml}
+                </div>
+                <div class="search-grid" id="searchGrid"></div>
+            `;
+            const grid = containerDiv.querySelector("#searchGrid");
+            items.forEach(item => {
+                if (item.poster_path) grid.appendChild(createCard(item));
+            });
+            rowsContainer.appendChild(containerDiv);
+            if (showBackButton) {
+                document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+            }
+            exploreMode = true;
+            searchActive = false;
+            setHeroVisibility(false);
+        }
+
+        async function showExploreGrid(title, category) {
+            const rowsContainer = document.getElementById("rows");
+            rowsContainer.innerHTML = `
+                <div class="grid-container">
+                    <div class="grid-header">
+                        <h2>${escapeHtml(title)}</h2>
+                        <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                    </div>
+                    <div class="skeleton-grid" id="skeletonGrid">
+                        ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
+                    </div>
+                </div>
+            `;
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+            setHeroVisibility(false);
+            
+            let items = [];
+            try {
+                if (category === "trending") {
+                    items = await fetchAllPages(`https://api.themoviedb.org/3/trending/movie/week?api_key=${API_KEY}`, 3);
+                } else if (category === "popular") {
+                    items = await fetchAllPages(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`, 3);
+                } else if (category === "top_rated") {
+                    items = await fetchAllPages(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`, 3);
+                }
+                if (items.length === 0) throw new Error("No items found");
+                renderGrid(title, items, true);
+            } catch (err) {
+                console.error(err);
+                rowsContainer.innerHTML = `<div class="grid-container"><div class="grid-header"><h2>⚠️ Failed to load "${title}"</h2><button class="back-home-btn" id="backToHomeBtn">Back to Home</button></div></div>`;
+                document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+            }
+        }
+
         function buildDefaultRows() {
             const rowsContainer = document.getElementById("rows");
             rowsContainer.innerHTML = "";
             if (cachedTrending.length) createCarouselRow("🔥 Trending Now", cachedTrending, "row-trending");
             if (cachedPopular.length) createCarouselRow("🎬 Popular", cachedPopular, "row-popular");
             if (cachedTopRated.length) createCarouselRow("⭐ Top Rated", cachedTopRated, "row-top-rated");
+            exploreMode = false;
             searchActive = false;
             setHeroVisibility(true);
         }
@@ -836,10 +279,11 @@
             const rowsContainer = document.getElementById("rows");
             rowsContainer.innerHTML = "";
             const containerDiv = document.createElement("div");
-            containerDiv.className = "search-grid-container";
+            containerDiv.className = "grid-container";
             containerDiv.innerHTML = `
-                <div class="search-grid-header">
+                <div class="grid-header">
                     <h2>🔍 Search results for "${escapeHtml(query)}" (${results.length})</h2>
+                    <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
                 </div>
                 <div class="search-grid" id="searchGrid"></div>
             `;
@@ -848,28 +292,32 @@
                 if (item.poster_path) grid.appendChild(createCard(item));
             });
             rowsContainer.appendChild(containerDiv);
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
             searchActive = true;
+            exploreMode = false;
             setHeroVisibility(false);
         }
 
         function showSearchSkeleton(query) {
             const rowsContainer = document.getElementById("rows");
             rowsContainer.innerHTML = `
-                <div class="search-grid-container">
-                    <div class="search-grid-header">
+                <div class="grid-container">
+                    <div class="grid-header">
                         <h2>🔎 Searching "${escapeHtml(query)}"</h2>
+                        <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
                     </div>
                     <div class="skeleton-grid" id="skeletonGrid">
                         ${'<div class="skeleton-grid-item"></div>'.repeat(12)}
                     </div>
                 </div>
             `;
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
             setHeroVisibility(false);
         }
 
         async function searchTMDB(query) {
             if (!query.trim()) {
-                if (searchActive) buildDefaultRows();
+                if (searchActive || exploreMode) resetToHome();
                 return;
             }
             if (abortController) abortController.abort();
@@ -884,12 +332,14 @@
                 results = results.slice(0, 30);
                 if (results.length === 0) {
                     document.getElementById("rows").innerHTML = `
-                        <div class="search-grid-container">
-                            <div class="search-grid-header">
+                        <div class="grid-container">
+                            <div class="grid-header">
                                 <h2>😔 No results for "${escapeHtml(query)}"</h2>
+                                <button class="back-home-btn" id="backToHomeBtn">Back to Home</button>
                             </div>
                         </div>
                     `;
+                    document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
                     searchActive = true;
                     setHeroVisibility(false);
                 } else {
@@ -899,12 +349,14 @@
                 if (err.name === 'AbortError') return;
                 console.error(err);
                 document.getElementById("rows").innerHTML = `
-                    <div class="search-grid-container">
-                        <div class="search-grid-header">
+                    <div class="grid-container">
+                        <div class="grid-header">
                             <h2>⚠️ Search error. Please try again.</h2>
+                            <button class="back-home-btn" id="backToHomeBtn">Back to Home</button>
                         </div>
                     </div>
                 `;
+                document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
                 setHeroVisibility(true);
             }
             abortController = null;
@@ -920,7 +372,7 @@
         function handleSearchInput() {
             const query = document.getElementById("searchInput").value;
             if (query.length === 0) {
-                if (searchActive) buildDefaultRows();
+                if (searchActive || exploreMode) resetToHome();
                 return;
             }
             debouncedSearch(query);
@@ -933,15 +385,14 @@
             if (wrap.classList.contains("active")) {
                 wrap.classList.remove("active");
                 input.value = "";
-                if (searchActive) buildDefaultRows();
+                if (searchActive || exploreMode) resetToHome();
                 toggleBtn.style.display = "flex";
                 toggleBtn.style.opacity = "1";
                 if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
                 if (abortController) abortController.abort();
-                searchActive = false;
-                setHeroVisibility(true);
             } else {
-                if (!searchActive) setHeroVisibility(true);
+                if (searchActive || exploreMode) resetToHome();
+                else setHeroVisibility(true);
             }
         }
 
@@ -959,11 +410,17 @@
 
         function resetToHome() {
             window.scrollTo({ top: 0, behavior: "smooth" });
-            if (searchActive) {
-                closeSearchAndReset();
-            } else {
-                setHeroVisibility(true);
+            buildDefaultRows();
+            const wrap = document.getElementById("searchWrap");
+            if (wrap.classList.contains("active")) {
+                document.getElementById("searchInput").value = "";
+                wrap.classList.remove("active");
+                document.getElementById("searchToggle").style.display = "flex";
+                document.getElementById("searchToggle").style.opacity = "1";
             }
+            searchActive = false;
+            exploreMode = false;
+            setHeroVisibility(true);
         }
 
         function setHero(movie) {
@@ -1002,8 +459,8 @@
             buildDefaultRows();
         }
 
-        function goToMovie() { if (heroMovie) navigateToWatch(heroMovie.id); }
-        function playHero() { if (heroMovie) { showToast(`🎬 Opening player for "${heroMovie.title}"`); setTimeout(() => { navigateToWatch(heroMovie.id); }, 600); } }
+        function goToMovie() { if (heroMovie) window.location.href = `watch.html?type=movie&id=${heroMovie.id}`; }
+        function playHero() { if (heroMovie) { showToast(`🎬 Opening player for "${heroMovie.title}"`); setTimeout(() => { window.location.href = `watch.html?type=movie&id=${heroMovie.id}`; }, 600); } }
         function showToast(msg) {
             let toast = document.querySelector('.toast');
             if (toast) toast.remove();
@@ -1013,6 +470,32 @@
             document.body.appendChild(toast);
             setTimeout(() => toast?.remove(), 3000);
         }
+
+        // Mobile menu logic
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('overlay');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        function openMenu() {
+            mobileMenu.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMenu() {
+            mobileMenu.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        menuToggle.addEventListener('click', openMenu);
+        closeMenuBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+        document.querySelectorAll('.mobile-menu .nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                closeMenu();
+                if (searchActive || exploreMode) resetToHome();
+                else document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
+            });
+        });
 
         window.addEventListener("scroll", () => {
             const navbar = document.getElementById("navbar");
@@ -1040,7 +523,7 @@
 
         document.querySelectorAll("[data-nav]").forEach(li => {
             li.addEventListener("click", () => {
-                if (searchActive) closeSearchAndReset();
+                if (searchActive || exploreMode) resetToHome();
                 else document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
             });
         });
