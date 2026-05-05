@@ -6,16 +6,15 @@
     <title>StreamHub — Watch Now</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-       <link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<nav class="navbar">
+<nav class="navbar" id="navbar">
     <div class="nav-left">
         <a href="index.html" class="logo">
             <span class="logo-icon"><i class="fa-solid fa-play"></i></span>
-            <span class="logo-text">SAMFLIX</span>
+            <span class="logo-text">STREAMHUB</span>
         </a>
         <ul class="nav-links">
             <li onclick="location.href='index.html'">Home</li>
@@ -24,13 +23,28 @@
             <li onclick="location.href='index.html#popular'">New & Popular</li>
         </ul>
     </div>
-    <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Browse</a>
+    <div class="nav-right">
+        <button class="menu-btn" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Browse</a>
+    </div>
 </nav>
 
+<!-- Mobile Menu (same as index) -->
+<div class="mobile-menu" id="mobileMenu">
+    <button class="close-menu" id="closeMenuBtn"><i class="fa-solid fa-times"></i></button>
+    <div class="nav-item" onclick="location.href='index.html'">Home</div>
+    <div class="nav-item" onclick="location.href='index.html#movies'">Movies</div>
+    <div class="nav-item" onclick="location.href='index.html#series'">Series</div>
+    <div class="nav-item" onclick="location.href='index.html#popular'">New & Popular</div>
+</div>
+<div class="overlay" id="overlay"></div>
+
+<!-- Hero Banner with movie details (same as before) -->
 <div id="heroBanner" class="hero-banner" style="background-image: none;">
     <div class="hero-details" id="heroDetails"></div>
 </div>
 
+<!-- Player Section (hidden until "Watch Movie" is clicked) -->
 <div id="playerSection" class="player-section">
     <div class="player-wrapper" id="playerContainer">
         <div class="loader"><div class="spinner"></div></div>
@@ -41,6 +55,7 @@
     </div>
 </div>
 
+<!-- Recommendations -->
 <div class="recommendations" id="recommendSection" style="display: none;">
     <div class="rec-header">
         <h3><i class="fa-solid fa-film"></i> More Like This</h3>
@@ -49,24 +64,24 @@
     <div class="rec-row" id="recRow"></div>
 </div>
 
+<!-- Trailer Modal -->
 <div id="trailerModal" class="modal">
     <div class="close-modal" id="closeModalBtn"><i class="fa-solid fa-times"></i></div>
     <div class="modal-content" id="trailerFrameContainer"></div>
 </div>
 
 <script>
+    // ---------- TMDB API ----------
     const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
     let currentMedia = { type: "movie", id: null, season: null, episode: null };
     let mediaDetails = null;
     let currentServerId = "api2"; // default to Multi Language (first in list)
     let trailerKey = null;
 
-    // ---------- SERVER LIST (API servers first, then all direct) ----------
+    // ---------- SERVER LIST (API servers first, then direct) ----------
     const SERVER_LIST = [
-        // vidsrc.wtf API servers (async, use player.html)
         { id: "api2", label: "🌐 Multi Language", isAsync: true, apiVersion: 2 },
-        { id: "api1", label: "💎 Premium", isAsync: true, apiVersion: 1 },
-        // Direct embed servers
+        { id: "api4", label: "💎 Premium", isAsync: true, apiVersion: 4 },
         { id: "vidsrcto", label: "VidSrc", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
         { id: "vidzee", label: "VidZee", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
         { id: "vidrock", label: "VidRock", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidrock.net/movie/${id}` : `https://vidrock.net/tv/${id}/${s}/${e}` },
@@ -76,7 +91,7 @@
         { id: "2embed", label: "2Embed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` }
     ];
 
-    // Ad blocker & cleanup
+    // ---------- Ad blocker ----------
     function initAdBlocker() {
         const style = document.createElement('style');
         style.textContent = `
@@ -86,13 +101,23 @@
         document.head.appendChild(style);
         new MutationObserver(() => {
             document.querySelectorAll('iframe, div').forEach(el => {
-                if ((el.src && el.src.includes('adserver')) || 
-                    (el.className && el.className.includes('ad'))) el.remove();
+                if ((el.src && el.src.includes('adserver')) || (el.className && el.className.includes('ad'))) el.remove();
             });
         }).observe(document.body, { childList: true, subtree: true });
     }
 
-    // Parse URL parameters
+    // ---------- Watch progress listener ----------
+    function initWatchProgressListener() {
+        window.addEventListener("message", (event) => {
+            if (event.origin !== "https://www.vidsrc.wtf") return;
+            if (event.data?.type === "MEDIA_DATA") {
+                localStorage.setItem("vidsrcwtf-Progress", JSON.stringify(event.data.data));
+                console.log("Progress saved", event.data.data);
+            }
+        });
+    }
+
+    // ---------- Parse URL ----------
     function parseURL() {
         const params = new URLSearchParams(window.location.search);
         let type = params.get('type');
@@ -107,7 +132,7 @@
         currentMedia = { type: type === 'tv' ? 'tv' : 'movie', id: id, season: season ? parseInt(season) : 1, episode: episode ? parseInt(episode) : 1 };
     }
 
-    // Fetch TMDB details
+    // ---------- Fetch TMDB details ----------
     async function fetchMediaDetails() {
         const { type, id } = currentMedia;
         const url = type === 'movie' 
@@ -125,7 +150,7 @@
         }
     }
 
-    // Render hero banner with movie info and buttons
+    // ---------- Render hero banner ----------
     function renderHeroBanner(details) {
         const isMovie = currentMedia.type === 'movie';
         const title = isMovie ? details.title : details.name;
@@ -138,8 +163,9 @@
         const trailerObj = details.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
         trailerKey = trailerObj ? trailerObj.key : null;
 
-        document.getElementById('heroBanner').style.backgroundImage = backdrop ? `url(${backdrop})` : '';
-        document.getElementById('heroBanner').style.backgroundColor = '#0a0a0f';
+        const bannerDiv = document.getElementById('heroBanner');
+        if (backdrop) bannerDiv.style.backgroundImage = `url(${backdrop})`;
+        else bannerDiv.style.backgroundColor = '#0a0a0f';
         
         const heroHtml = `
             <img class="hero-poster" src="${poster}" alt="${title}" onerror="this.src='https://via.placeholder.com/300x450?text=No+Poster'">
@@ -150,7 +176,9 @@
                     <span class="hero-year">${year}</span>
                     ${!isMovie ? `<span>S${currentMedia.season || 1}</span>` : ''}
                 </div>
-                <div class="hero-genres">${genres.map(g => `<span class="genre-badge">${escapeHtml(g)}</span>`).join('')}</div>
+                <div class="hero-genres">
+                    ${genres.map(g => `<span class="genre-badge">${escapeHtml(g)}</span>`).join('')}
+                </div>
                 <p class="hero-overview">${escapeHtml(overview)}</p>
                 <div class="action-buttons">
                     <button class="btn-primary" id="watchMovieBtn"><i class="fa-solid fa-play"></i> Watch Movie</button>
@@ -163,7 +191,7 @@
         if (trailerKey) document.getElementById('watchTrailerBtn').addEventListener('click', openTrailerModal);
     }
 
-    // Reveal player section and load video
+    // ---------- Reveal player section ----------
     function revealAndLoadPlayer() {
         const playerSection = document.getElementById('playerSection');
         if (!playerSection.classList.contains('visible')) {
@@ -173,7 +201,7 @@
         loadPlayer();
     }
 
-    // Unified player loader: for async servers -> player.html, for direct -> embed URL
+    // ---------- Load video (handles API servers and direct embeds) ----------
     async function loadPlayer() {
         const container = document.getElementById('playerContainer');
         container.innerHTML = `<div class="loader"><div class="spinner"></div></div>`;
@@ -185,15 +213,13 @@
 
         try {
             if (server.isAsync) {
-                // Use player.html to handle vidsrc.wtf API
+                // Use player.html for vidsrc.wtf API
                 const { type, id, season, episode } = currentMedia;
                 let playerUrl = `player.html?type=${type}&id=${id}&api=${server.apiVersion}`;
                 if (type === 'tv') {
                     playerUrl += `&season=${season || 1}&episode=${episode || 1}`;
                 }
-                container.innerHTML = `<iframe src="${playerUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0 allowfullscreen 
-        webkitallowfullscreen 
-        mozallowfullscreen"></iframe>`;
+                container.innerHTML = `<iframe src="${playerUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen frameborder="0"></iframe>`;
                 document.getElementById('streamInfo').innerHTML = `🎥 Streaming via ${server.label} (vidsrc.wtf API)`;
             } else {
                 // Direct embed
@@ -213,7 +239,7 @@
         }
     }
 
-    // Render server buttons (API servers first as per array order)
+    // ---------- Render server buttons (API servers first) ----------
     function renderServerButtons() {
         const container = document.getElementById('serverList');
         container.innerHTML = '';
@@ -234,7 +260,7 @@
         });
     }
 
-    // Trailer modal functions
+    // ---------- Trailer modal ----------
     function openTrailerModal() {
         if (!trailerKey) return;
         const modal = document.getElementById('trailerModal');
@@ -251,7 +277,7 @@
         document.body.style.overflow = '';
     }
 
-    // Load recommendations from TMDB
+    // ---------- Load recommendations ----------
     async function loadRecommendations() {
         const { type, id } = currentMedia;
         const url = type === 'movie'
@@ -286,6 +312,7 @@
         }
     }
 
+    // ---------- Helpers ----------
     function escapeHtml(str) {
         if (!str) return '';
         return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
@@ -300,8 +327,31 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
+    // ---------- Mobile menu logic ----------
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    function openMenu() {
+        mobileMenu.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+        mobileMenu.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    if (menuToggle) {
+        menuToggle.addEventListener('click', openMenu);
+        closeMenuBtn.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+    }
+
+    // ---------- Initialize ----------
     async function init() {
         initAdBlocker();
+        initWatchProgressListener();
         parseURL();
         const details = await fetchMediaDetails();
         if (!details) {
@@ -314,6 +364,12 @@
         document.getElementById('closeModalBtn').addEventListener('click', closeTrailerModal);
         window.addEventListener('click', (e) => {
             if (e.target === document.getElementById('trailerModal')) closeTrailerModal();
+        });
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
         });
     }
     init();
