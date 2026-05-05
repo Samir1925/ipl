@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>vidsrc player</title>
+    <title>vidsrc · stream player</title>
     <style>
         * {
             margin: 0;
@@ -18,15 +18,15 @@
             width: 100vw;
         }
 
-        /* Full bleed player — covers everything */
-        .player {
+        /* full experience – no distractions */
+        .player-frame {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: #000;
-            z-index: 0;
+            z-index: 1;
         }
 
         iframe {
@@ -37,185 +37,221 @@
             background: #000;
         }
 
-        /* No extra UI — not even a status indicator */
+        /* minimal fallback style (only shown if something goes wrong) */
+        .error-overlay {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-<div class="player">
-    <iframe id="streamIframe" 
+<div class="player-frame">
+    <iframe id="vidsrcIframe" 
             title="vidsrc stream"
             allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen 
-        webkitallowfullscreen 
-        mozallowfullscreen
-></iframe>    </iframe>
+            allowfullscreen
+            webkitallowfullscreen
+            mozallowfullscreen>
+    </iframe>
 </div>
 
 <script>
     (function() {
-        // ---------- get URL parameters ----------
+        // ---------- 1. get URL parameters (simple & clean) ----------
         function getQueryParams() {
             const params = new URLSearchParams(window.location.search);
             return {
                 id: params.get('id') ? params.get('id').trim() : null,
-                type: params.get('type') ? params.get('type').toLowerCase() : null,
-                season: params.get('s') || params.get('season'),
-                episode: params.get('e') || params.get('episode'),
-                api: params.get('api') || '1',
+                type: params.get('type') ? params.get('type').toLowerCase().trim() : null,
+                season: params.get('s') ?? params.get('season'),
+                episode: params.get('e') ?? params.get('episode'),
+                api: params.get('api') ?? '1',
                 color: params.get('color') ? params.get('color').trim().replace(/^#/, '') : null
             };
         }
 
-        // validate hex color (3 or 6 hex digits, no #)
-        function isValidHex(color) {
+        // validate hex color (3 or 6 digits, no #)
+        function isValidHexColor(color) {
             return color && /^[0-9A-Fa-f]{3}$|^[0-9A-Fa-f]{6}$/.test(color);
         }
 
-        // build vidsrc.wtf API url
-        function buildStreamUrl(params) {
+        // ---------- 2. build vidsrc.wtf API url (exactly like the simple iframe pattern) ----------
+        function buildVidsrcUrl(params) {
             const { id, type, season, episode, api, color } = params;
-            
+
+            // Missing ID? We'll handle error display later
             if (!id) {
-                throw new Error('Missing required parameter: "id" (TMDB or IMDB ID)');
+                return null;
             }
-            
-            const mediaType = type === 'tv' ? 'tv' : 'movie';
+
+            const mediaType = (type === 'tv') ? 'tv' : 'movie';
             const encodedId = encodeURIComponent(id);
-            const colorParam = (color && isValidHex(color)) ? `&color=${color}` : '';
-            const baseApi = `https://vidsrc.wtf/api/${api}`;
+            const colorParam = (color && isValidHexColor(color)) ? `&color=${color}` : '';
             
+            // Base API endpoint (supports api version: 1,2,3,4)
+            const baseApi = `https://www.vidsrc.wtf/api/${api}`;
+
+            // MOVIE route (clean and simple)
             if (mediaType === 'movie') {
                 return `${baseApi}/movie/?id=${encodedId}${colorParam}`;
-            } else {
-                let sNum = season ? parseInt(season, 10) : 1;
-                let eNum = episode ? parseInt(episode, 10) : 1;
-                if (isNaN(sNum)) sNum = 1;
-                if (isNaN(eNum)) eNum = 1;
-                return `${baseApi}/tv/?id=${encodedId}&s=${sNum}&e=${eNum}${colorParam}`;
-            }
+            } 
+            
+            // TV route – handle season & episode (default: S01E01)
+            let seasonNumber = (season !== null && season !== undefined) ? parseInt(season, 10) : 1;
+            let episodeNumber = (episode !== null && episode !== undefined) ? parseInt(episode, 10) : 1;
+            
+            if (isNaN(seasonNumber)) seasonNumber = 1;
+            if (isNaN(episodeNumber)) episodeNumber = 1;
+            
+            return `${baseApi}/tv/?id=${encodedId}&s=${seasonNumber}&e=${episodeNumber}${colorParam}`;
         }
 
-        const iframe = document.getElementById('streamIframe');
-        
-        // load stream into iframe
-        function loadStream() {
-            try {
-                const params = getQueryParams();
-                const url = buildStreamUrl(params);
-                iframe.src = url;
-                // optional: silent console log for debugging (no UI)
-                console.log(`[vidsrc] ${url}`);
-            } catch (err) {
-                console.error(err);
-                // Show user-friendly error inside iframe so the player remains fullscreen
-                const errorMessage = `
-                    <div style="display:flex; align-items:center; justify-content:center; height:100%; background:#0a0c10; color:#e2e8f0; font-family:system-ui, -apple-system, sans-serif; text-align:center; padding:1rem;">
-                        <div>
-                            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto; color:#ef4444;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            <h2 style="margin-top:1rem; font-weight:500;">Missing media ID</h2>
-                            <p style="margin-top:0.5rem; font-size:0.9rem; opacity:0.7;">Use <code style="background:#1e1f28; padding:0.2rem 0.5rem; border-radius:8px;">?id=597&type=movie</code><br/>
-                            or <code style="background:#1e1f28; padding:0.2rem 0.5rem; border-radius:8px;">?id=1399&type=tv&s=1&e=1</code></p>
-                            <p style="margin-top:1rem; font-size:0.75rem;">✅ Supports TMDB / IMDB IDs, API (1-4) & color</p>
-                        </div>
-                    </div>
-                `;
-                iframe.srcdoc = errorMessage;
-            }
-        }
-
-        // ----- WATCH PROGRESS TRACKING (silent, localStorage) -----
-        // Stores data exactly as vidsrc.wtf sends it (for "Continue Watching")
-        const STORAGE_KEY = "vidsrcwtf-Progress";
-        
-        function mergeMediaData(mediaData) {
-            if (!mediaData || !mediaData.id) return;
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                let stored = raw ? JSON.parse(raw) : {};
-                const id = String(mediaData.id);
-                const now = Date.now();
-                let entry = stored[id] || {};
-                entry.id = id;
-                entry.type = mediaData.type || entry.type || 'movie';
-                if (mediaData.title) entry.title = mediaData.title;
-                if (mediaData.poster_path) entry.poster_path = mediaData.poster_path;
-                if (mediaData.backdrop_path) entry.backdrop_path = mediaData.backdrop_path;
-                
-                if (mediaData.progress && typeof mediaData.progress.watched === 'number') {
-                    entry.progress = {
-                        watched: mediaData.progress.watched,
-                        duration: mediaData.progress.duration || entry.progress?.duration || 0
-                    };
-                } else if (mediaData.progress) {
-                    entry.progress = { ...(entry.progress || {}), ...mediaData.progress };
-                }
-                entry.last_updated = now;
-                
-                // TV show specific metadata
-                if (entry.type === 'tv') {
-                    if (mediaData.number_of_seasons) entry.number_of_seasons = mediaData.number_of_seasons;
-                    if (mediaData.number_of_episodes) entry.number_of_episodes = mediaData.number_of_episodes;
-                    if (mediaData.season) entry.last_season_watched = String(mediaData.season);
-                    if (mediaData.episode) entry.last_episode_watched = String(mediaData.episode);
-                    
-                    if (mediaData.season && mediaData.episode && mediaData.progress) {
-                        if (!entry.show_progress) entry.show_progress = {};
-                        const epKey = `s${mediaData.season}e${mediaData.episode}`;
-                        entry.show_progress[epKey] = {
-                            season: String(mediaData.season),
-                            episode: String(mediaData.episode),
-                            progress: {
-                                watched: mediaData.progress.watched || 0,
-                                duration: mediaData.progress.duration || 0
-                            },
-                            last_updated: now
-                        };
+        // ---------- 3. show friendly error inside iframe (keeps fullscreen experience) ----------
+        function showError(message, hint = '') {
+            const iframe = document.getElementById('vidsrcIframe');
+            const errorHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>stream error</title>
+                <style>
+                    * { margin:0; padding:0; box-sizing:border-box; }
+                    body {
+                        background: #0a0c10;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 100vh;
+                        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+                        padding: 1.5rem;
                     }
-                } else {
-                    delete entry.last_season_watched;
-                    delete entry.last_episode_watched;
-                    delete entry.show_progress;
-                    delete entry.number_of_episodes;
-                    delete entry.number_of_seasons;
-                }
-                
-                stored[id] = entry;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
-                // silent debug (optional, can be removed)
-                // console.debug(`[progress] saved ${mediaData.title || id}`);
-            } catch(e) {
-                // ignore storage errors (privacy mode, etc.)
+                    .error-card {
+                        max-width: 480px;
+                        background: #111216;
+                        border-radius: 32px;
+                        padding: 2rem 1.8rem;
+                        text-align: center;
+                        box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+                        border: 1px solid rgba(255,255,255,0.08);
+                        backdrop-filter: blur(2px);
+                    }
+                    .error-icon {
+                        font-size: 56px;
+                        margin-bottom: 1rem;
+                    }
+                    h2 {
+                        color: #f1f3f7;
+                        font-weight: 500;
+                        font-size: 1.6rem;
+                        letter-spacing: -0.2px;
+                        margin-bottom: 0.5rem;
+                    }
+                    p {
+                        color: #9ca3af;
+                        margin: 0.75rem 0;
+                        line-height: 1.5;
+                        font-size: 0.95rem;
+                    }
+                    code {
+                        background: #1e1f2c;
+                        padding: 0.25rem 0.6rem;
+                        border-radius: 12px;
+                        font-family: 'SF Mono', 'Fira Code', monospace;
+                        font-size: 0.85rem;
+                        color: #cbd5e6;
+                        display: inline-block;
+                        margin: 0.2rem 0;
+                    }
+                    .examples {
+                        background: #0b0c12;
+                        border-radius: 20px;
+                        padding: 1rem;
+                        margin-top: 1.2rem;
+                        text-align: left;
+                        font-size: 0.8rem;
+                    }
+                    .examples p {
+                        margin: 0.4rem 0;
+                        font-family: monospace;
+                        color: #b9c3d4;
+                    }
+                    hr {
+                        border: 0.5px solid #252a36;
+                        margin: 1rem 0;
+                    }
+                </style>
+                </head>
+                <body>
+                    <div class="error-card">
+                        <div class="error-icon">🎬</div>
+                        <h2>${message}</h2>
+                        <p>${hint || 'Add required parameters to start streaming.'}</p>
+                        <hr />
+                        <div class="examples">
+                            <p>📽️ <strong>Movie example:</strong><br/>
+                            <code>?id=770906&type=movie</code> <span style="color:#6b7280;">(The Bad Guys)</span></p>
+                            <p>📺 <strong>TV series example:</strong><br/>
+                            <code>?id=1399&type=tv&s=1&e=1</code> <span style="color:#6b7280;">(Game of Thrones S01E01)</span></p>
+                            <p>🎨 <strong>Custom accent color:</strong><br/>
+                            <code>&color=ff4500</code> or <code>&color=3b82f6</code></p>
+                            <p>⚙️ <strong>API version (1-4):</strong><br/>
+                            <code>&api=2</code> (optional, default=1)</p>
+                        </div>
+                        <p style="margin-top:1rem; font-size:0.7rem;">🔒 Works with TMDB ID / IMDB ID · vidsrc.wtf</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            iframe.srcdoc = errorHtml;
+        }
+
+        // ---------- 4. load stream with pure simplicity ----------
+        function loadStream() {
+            const iframe = document.getElementById('vidsrcIframe');
+            const params = getQueryParams();
+            
+            // Validate required ID
+            if (!params.id) {
+                showError('Missing media ID', 'Please provide a valid movie or TV show ID');
+                return;
             }
+            
+            const streamUrl = buildVidsrcUrl(params);
+            if (!streamUrl) {
+                showError('Invalid request', 'Check your parameters (id, type, season/episode)');
+                return;
+            }
+            
+            // simple: assign iframe source — exactly like the classic embed pattern
+            iframe.src = streamUrl;
+            // optional debug (silent, no UI impact)
+            console.log(`[vidsrc] streaming → ${streamUrl}`);
         }
         
-        // listen for MEDIA_DATA messages from vidsrc.wtf iframe
-        window.addEventListener("message", (event) => {
-            if (event.origin !== "https://www.vidsrc.wtf") return;
-            if (event.data?.type === "MEDIA_DATA") {
-                const mediaData = event.data.data;
-                if (mediaData && mediaData.id) {
-                    mergeMediaData(mediaData);
-                }
-            }
-        });
-        
-        // initial load
+        // simple initial load
         loadStream();
         
-        // listen for URL changes (history push/replace) to reload player dynamically
+        // (optional but nice) if URL changes via pushState/popstate – reload stream (minimal, no heavy overrides)
+        // we listen to popstate only to keep it responsive for back/forward navigation.
+        window.addEventListener('popstate', function() {
+            loadStream();
+        });
+        
+        // tiny additional helper: if someone uses history.pushState (SPA style) we can attempt to reload,
+        // but we keep it safe and non-intrusive.
         const originalPushState = history.pushState;
-        const originalReplaceState = history.replaceState;
         history.pushState = function() {
             originalPushState.apply(this, arguments);
             loadStream();
         };
+        
+        const originalReplaceState = history.replaceState;
         history.replaceState = function() {
             originalReplaceState.apply(this, arguments);
             loadStream();
         };
         
-        window.addEventListener('popstate', () => loadStream());
+        // fully responsive, no extra tracking, no localStorage, no complex listeners.
+        // just clean embed behavior as requested: "simple using code like <iframe src='...'>"
     })();
 </script>
 </body>
