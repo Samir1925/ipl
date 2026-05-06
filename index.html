@@ -18,8 +18,8 @@
             --text-secondary: #b0b0bb;
             --text-muted: #6b6b7b;
             --card-radius: 12px;
-            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-smooth: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: 0.2s;
+            --transition-smooth: 0.35s;
             --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
             --bottom-nav-bg: rgba(10, 10, 15, 0.95);
         }
@@ -30,9 +30,7 @@
             color: var(--text-primary);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
-            padding-bottom: 0;
         }
-        /* Remove all blue link styles */
         a, a:hover, a:focus, button, .clickable {
             text-decoration: none;
             color: inherit;
@@ -42,7 +40,7 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
 
-        /* ---------- TOP NAVBAR (desktop + mobile) ---------- */
+        /* ---------- TOP NAVBAR ---------- */
         .navbar {
             position: fixed;
             top: 0;
@@ -124,7 +122,7 @@
         }
         .close-search { color: white; cursor: pointer; margin-left: 8px; }
 
-        /* ---------- BOTTOM NAVIGATION BAR (mobile only) ---------- */
+        /* ---------- BOTTOM NAVIGATION (mobile only) ---------- */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -138,17 +136,8 @@
             align-items: center;
             padding: 8px 12px 12px;
             z-index: 1000;
-            transform: translateY(0);
-            transition: transform 0.3s ease;
         }
-        @media (min-width: 768px) {
-            .bottom-nav {
-                display: none;
-            }
-            body {
-                padding-bottom: 0;
-            }
-        }
+        @media (min-width: 768px) { .bottom-nav { display: none; } }
         .bottom-nav-item {
             display: flex;
             flex-direction: column;
@@ -161,13 +150,8 @@
             border-radius: 30px;
             background: transparent;
         }
-        .bottom-nav-item i {
-            font-size: 22px;
-        }
-        .bottom-nav-item span {
-            font-size: 11px;
-            font-weight: 500;
-        }
+        .bottom-nav-item i { font-size: 22px; }
+        .bottom-nav-item span { font-size: 11px; font-weight: 500; }
         .bottom-nav-item.active {
             color: var(--accent);
             background: rgba(229, 9, 20, 0.12);
@@ -282,7 +266,7 @@
         }
         .card:hover .card-play-overlay { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        /* Grid views (explore & search) */
+        /* Grid views (explore, search, categories) */
         .grid-container { padding: 0 16px; margin-top: 16px; }
         @media (min-width: 768px) { .grid-container { padding: 0 48px; } }
         .grid-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
@@ -354,7 +338,7 @@
     </div>
 </nav>
 
-<!-- BOTTOM NAVIGATION BAR (mobile only) -->
+<!-- BOTTOM NAVIGATION (mobile only) -->
 <div class="bottom-nav" id="bottomNav">
     <div class="bottom-nav-item active" data-nav="home">
         <i class="fa-solid fa-house"></i>
@@ -418,11 +402,14 @@
         { id: 550, title: "Fight Club", poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg", vote_average: 8.4, release_date: "1999-10-15", overview: "An insomniac office worker and a devil-may-care soap maker form an underground fight club." },
         { id: 278, title: "The Shawshank Redemption", poster_path: "/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg", vote_average: 8.7, release_date: "1994-09-23" },
         { id: 238, title: "The Godfather", poster_path: "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", vote_average: 8.7, release_date: "1972-03-14" },
-        { id: 240, title: "The Godfather Part II", poster_path: "/hek3koDUyRQk7FIhPXsa6mT2Zc3.jpg", vote_average: 8.6, release_date: "1974-12-20" },
         { id: 155, title: "The Dark Knight", poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg", vote_average: 8.5, release_date: "2008-07-16" },
         { id: 13, title: "Forrest Gump", poster_path: "/arw2vcBveWOVZr6pxd9YnOSGMtV.jpg", vote_average: 8.5, release_date: "1994-06-23" },
-        { id: 122, title: "The Lord of the Rings: The Return of the King", poster_path: "/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", vote_average: 8.6, release_date: "2003-12-01" },
-        { id: 120, title: "The Lord of the Rings: The Fellowship of the Ring", poster_path: "/6oom5QYQ2yQTMJIbnvbkBL9cHo6.jpg", vote_average: 8.4, release_date: "2001-12-19" }
+        { id: 122, title: "The Lord of the Rings: The Return of the King", poster_path: "/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg", vote_average: 8.6, release_date: "2003-12-01" }
+    ];
+
+    const FALLBACK_TV = [
+        { id: 1399, name: "Game of Thrones", poster_path: "/7WUHnWGx5OO145IRxPDUkQSh4C7.jpg", vote_average: 8.4, first_air_date: "2011-04-17" },
+        { id: 1396, name: "Breaking Bad", poster_path: "/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", vote_average: 8.9, first_air_date: "2008-01-20" },
     ];
 
     // Helper functions
@@ -470,7 +457,7 @@
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // Create card element
+    // Create card element (supports both movies and TV)
     function createCard(item) {
         const card = document.createElement("div");
         card.className = "card";
@@ -487,8 +474,11 @@
                 </div>
             </div>
         `;
+        // Determine if it's a movie or TV show
+        const isMovie = !!item.title;
         card.addEventListener("click", () => {
-            window.location.href = `watch.html?type=movie&id=${item.id}`;
+            const type = isMovie ? "movie" : "tv";
+            window.location.href = `watch.html?type=${type}&id=${item.id}`;
         });
         return card;
     }
@@ -644,6 +634,110 @@
         setHeroVisibility(false);
     }
 
+    // ---------- NEW: Category-based loading (Movies, Series, Popular, MyList) ----------
+    async function loadCategory(category) {
+        // Close search if open
+        const wrap = document.getElementById("searchWrap");
+        if (wrap.classList.contains("active")) {
+            document.getElementById("searchInput").value = "";
+            wrap.classList.remove("active");
+            document.getElementById("searchToggle").style.display = "flex";
+            document.getElementById("searchToggle").style.opacity = "1";
+        }
+        
+        if (category === "home") {
+            resetToHome();
+            return;
+        }
+        
+        setHeroVisibility(false);
+        const rowsContainer = document.getElementById("rows");
+        rowsContainer.innerHTML = `
+            <div class="grid-container">
+                <div class="grid-header">
+                    <h2>Loading ${category}...</h2>
+                    <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                </div>
+                <div class="skeleton-grid" id="skeletonGrid">${'<div class="skeleton-grid-item"></div>'.repeat(12)}</div>
+            </div>
+        `;
+        document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        
+        let items = [];
+        let title = "";
+        try {
+            if (category === "movies") {
+                title = "Popular Movies";
+                const data = await fetchJson(`${TMDB_BASE}/movie/popular?api_key=${API_KEY}`);
+                items = data?.results || [];
+                if (!items.length) items = FALLBACK_MOVIES;
+            } 
+            else if (category === "series") {
+                title = "Popular TV Series";
+                const data = await fetchJson(`${TMDB_BASE}/tv/popular?api_key=${API_KEY}`);
+                items = data?.results || [];
+                if (!items.length) items = FALLBACK_TV;
+            }
+            else if (category === "popular") {
+                title = "Trending Now";
+                const data = await fetchJson(`${TMDB_BASE}/trending/movie/week?api_key=${API_KEY}`);
+                items = data?.results || [];
+                if (!items.length) items = FALLBACK_MOVIES;
+            }
+            else if (category === "mylist") {
+                // My List: could be from localStorage; for now show placeholder
+                title = "My Watchlist";
+                const saved = localStorage.getItem("vidsrcwtf-Progress");
+                if (saved) {
+                    // Show a simple message - actual implementation would need stored IDs
+                    items = [];
+                    rowsContainer.innerHTML = `
+                        <div class="grid-container">
+                            <div class="grid-header">
+                                <h2>📋 My List</h2>
+                                <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                            </div>
+                            <div style="text-align:center; padding:60px 20px; color:#b0b0bb;">
+                                <i class="fa-solid fa-clock" style="font-size:48px; margin-bottom:16px;"></i>
+                                <p>Your watchlist is empty. Start watching movies to see them here!</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+                    exploreMode = true;
+                    return;
+                } else {
+                    rowsContainer.innerHTML = `
+                        <div class="grid-container">
+                            <div class="grid-header">
+                                <h2>📋 My List</h2>
+                                <button class="back-home-btn" id="backToHomeBtn"><i class="fa-solid fa-arrow-left"></i> Back to Home</button>
+                            </div>
+                            <div style="text-align:center; padding:60px 20px; color:#b0b0bb;">
+                                <i class="fa-solid fa-star" style="font-size:48px; margin-bottom:16px;"></i>
+                                <p>Your list is empty. Add movies by watching them (progress will be saved).</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+                    exploreMode = true;
+                    return;
+                }
+            }
+            
+            if (items.length) {
+                renderGrid(title, items, true);
+                exploreMode = true;
+            } else {
+                throw new Error("No items found");
+            }
+        } catch (err) {
+            console.error(err);
+            rowsContainer.innerHTML = `<div class="grid-container"><div class="grid-header"><h2>⚠️ Failed to load ${category}</h2><button class="back-home-btn" id="backToHomeBtn">Back to Home</button></div></div>`;
+            document.getElementById("backToHomeBtn").addEventListener("click", resetToHome);
+        }
+    }
+
     // Search
     async function searchTMDB(query) {
         if (!query.trim()) {
@@ -714,7 +808,6 @@
         searchActive = false;
         exploreMode = false;
         setHeroVisibility(true);
-        // Update active nav state
         updateActiveNav("home");
     }
 
@@ -731,11 +824,7 @@
 
     function handleNavClick(navId) {
         updateActiveNav(navId);
-        if (searchActive || exploreMode) {
-            resetToHome();
-        } else {
-            document.getElementById("rows")?.scrollIntoView({ behavior: "smooth" });
-        }
+        loadCategory(navId);
     }
 
     // UI interactions
