@@ -749,7 +749,7 @@
                 document.getElementById('streamInfo').innerHTML = `🎥 Streaming ${server.label} · ad‑free`;
             } else {
                 let embedUrl = currentMedia.type === 'movie' ? server.getUrl('movie', currentMedia.id) : server.getUrl('tv', currentMedia.id, currentMedia.season || 1, currentMedia.episode || 1);
-                container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade" sandbox></iframe>`;
+                container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade" ></iframe>`;
                 document.getElementById('streamInfo').innerHTML = `🎥 ${server.label} · Ad shield active 🛡️`;
             }
         } catch(err) { container.innerHTML = `<div style="color:#f87171;text-align:center;">Error: ${err.message}</div>`; }
