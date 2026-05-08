@@ -20,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* Navbar & existing styles (from original) */
         .navbar {
             position: fixed;
             top: 0;
@@ -87,7 +86,6 @@
         .back-btn:hover { background: #e50914; }
         .menu-btn { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; }
 
-        /* Mobile menu */
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -118,7 +116,6 @@
         }
         .overlay.active { display: block; }
 
-        /* Hero Banner */
         .hero-banner {
             margin-top: 70px;
             min-height: 65vh;
@@ -128,6 +125,10 @@
             display: flex;
             align-items: center;
             padding: 2rem 5%;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .hero-banner.hidden {
+            display: none;
         }
         .hero-banner::before {
             content: '';
@@ -171,7 +172,6 @@
         .btn-secondary { background: rgba(255,255,255,0.15); color: white; backdrop-filter: blur(4px); }
         .btn-secondary:hover { background: rgba(255,255,255,0.3); }
 
-        /* PLAYER SECTION — EDGE-TO-EDGE ON MOBILE/TABLET */
         .player-section {
             background: #000000;
             margin: 0;
@@ -232,8 +232,37 @@
             font-size: 0.8rem;
             color: #aaa;
         }
+        .episode-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #1f1f2a;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+        .episode-controls select {
+            background: #2a2a35;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .show-info-btn {
+            background: rgba(108,92,231,0.2);
+            border: 1px solid #6c5ce7;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .show-info-btn:hover {
+            background: #6c5ce7;
+            color: white;
+        }
 
-        /* Recommendations */
         .recommendations {
             padding: 2rem 5%;
             background: #0a0a0f;
@@ -274,7 +303,6 @@
             border-radius: 0 0 12px 12px;
         }
 
-        /* Trailer Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -304,7 +332,6 @@
             cursor: pointer;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -320,7 +347,6 @@
             border-left: 4px solid #e50914;
         }
 
-        /* ----- MOBILE / TABLET: REMOVE MARGINS & BORDERS completely ----- */
         @media (max-width: 1024px) {
             .player-section, .player-wrapper, .player-wrapper iframe {
                 margin: 0 !important;
@@ -369,19 +395,15 @@
             .hero-poster {
                 width: 110px;
             }
-            .server-selector {
+            .episode-controls {
+                width: 100%;
                 justify-content: center;
-            }
-            .info-note {
-                font-size: 0.7rem;
             }
             .rec-card {
                 min-width: 110px;
                 height: 165px;
             }
         }
-
-        /* No border, zero margin safety */
         .player-wrapper, .player-section, .server-bar, iframe {
             border: none !important;
             outline: none;
@@ -427,8 +449,16 @@
         <div class="loader"><div class="spinner"></div></div>
     </div>
     <div class="server-bar">
+        <div class="episode-controls" id="episodeControls" style="display: none;">
+            <i class="fa-solid fa-list"></i>
+            <select id="seasonSelect"></select>
+            <select id="episodeSelect"></select>
+        </div>
         <div class="server-selector" id="serverList"></div>
-        <div class="info-note" id="streamInfo">✨ Select server to start streaming | Ad-shield active</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="show-info-btn" id="showInfoBtn"><i class="fa-solid fa-info-circle"></i> Show Info</button>
+            <div class="info-note" id="streamInfo">✨ Select server to start streaming | Ad-shield active</div>
+        </div>
     </div>
 </div>
 
@@ -447,16 +477,13 @@
 
 <script>
     (function() {
-        // ---------- ULTRA AD BLOCKER (No sandbox, no iframe restrictions but eliminates ads aggressively) ----------
-        // Blocks popups, removes injected ad elements, kills ad scripts, prevents ad iFrames.
+        // AD BLOCKER (same robust shield)
         const AD_DOMAINS = [
             'doubleclick', 'googlesyndication', 'googleadservices', 'adservice', 'adserver', 'exoior', 'popads', 'adnxs',
             'adroll', 'outbrain', 'taboola', 'mgid', 'revcontent', 'criteo', 'mediatraffic', 'adfox', 'adblade',
             'popunder', 'clickaine', 'chaturbate', 'adult', 'porn', 'trafficjunky', 'adsterra', 'propellerads',
             'plugrush', 'exoclick', 'clickadu', 'adcash', 'adskeeper', 'adreactor', '1xbet', 'banners'
         ];
-        
-        // 1. Block window.open for suspicious urls
         const originalWindowOpen = window.open;
         window.open = function(url, target, features) {
             if (url && typeof url === 'string') {
@@ -468,8 +495,6 @@
             }
             return originalWindowOpen ? originalWindowOpen.call(window, url, target, features) : null;
         };
-        
-        // 2. MutationObserver to wipe any ad-related injected elements (including iframes)
         function destroyAdElements() {
             const allElements = document.querySelectorAll('iframe, div, ins, object, embed, script');
             allElements.forEach(el => {
@@ -486,22 +511,14 @@
                 }
                 if (el.getAttribute('class') && el.getAttribute('class').includes('ad')) shouldRemove = true;
                 if (el.style && (el.style.position === 'fixed' && (el.style.zIndex === '999999' || (el.style.bottom === '0px' && el.style.height === 'auto')))) {
-                    // floating fixed elements likely ads
                     shouldRemove = true;
                 }
-                if (shouldRemove && el.parentNode) {
-                    el.remove();
-                }
+                if (shouldRemove && el.parentNode) el.remove();
             });
         }
-        
-        const observer = new MutationObserver(() => {
-            destroyAdElements();
-        });
+        const observer = new MutationObserver(() => destroyAdElements());
         observer.observe(document.body, { childList: true, subtree: true });
         setInterval(destroyAdElements, 800);
-        
-        // 3. Block script fetches that load ad libraries
         const originalFetch = window.fetch;
         window.fetch = function(input, init) {
             let url = typeof input === 'string' ? input : input.url;
@@ -511,8 +528,6 @@
             }
             return originalFetch.call(this, input, init);
         };
-        
-        // 4. prevent scripts from adding ad iframes dynamically
         const originalAppendChild = Node.prototype.appendChild;
         Node.prototype.appendChild = function(child) {
             if (child && child.tagName === 'IFRAME') {
@@ -524,42 +539,52 @@
             }
             return originalAppendChild.call(this, child);
         };
-        
-        // 5. Block common ad class names via CSS globally
         const style = document.createElement('style');
         style.textContent = `
             iframe[src*="doubleclick"], iframe[src*="googlesyndication"], iframe[src*="adservice"], .adsbygoogle, [id*="google_ads"], .ad-container, .ad-banner, .advertisement, [class*="ad_"], [class*="-ad"], [data-ad], #adcontent, .popup_ads, .sticky-ad { display: none !important; visibility: hidden !important; height:0 !important; width:0 !important; pointer-events:none !important; }
             body > div[style*="z-index: 9999"], body > div[style*="position: fixed"][style*="bottom"] { display: none !important; }
         `;
         document.head.appendChild(style);
-        
-        // 6. Intercept possible ad injection through innerHTML
         const originalInsertAdjacentHTML = Element.prototype.insertAdjacentHTML;
         Element.prototype.insertAdjacentHTML = function(position, text) {
-            if (text && (text.includes('adservice') || text.includes('googleadservices'))) {
-                return;
-            }
+            if (text && (text.includes('adservice') || text.includes('googleadservices'))) return;
             return originalInsertAdjacentHTML.call(this, position, text);
         };
     })();
 
-    // TMDB Config
     const API_KEY = "e7f6bfe957eaa0d78540e0f5cecbb90b";
     let currentMedia = { type: "movie", id: null, season: null, episode: null };
     let mediaDetails = null;
-    let currentServerId = "api2";
+    let currentServerId = "vidsrcto";
     let trailerKey = null;
+    let seasonList = []; // array of {season_number, episode_count}
 
     const SERVER_LIST = [
         { id: "api2", label: "🌐 Multi Language (No Ads)", isAsync: true, apiVersion: 2 },
         { id: "api3", label: "💎 Premium (Fast & Clean)", isAsync: true, apiVersion: 3 },
-        { id: "vidsrcto", label: "VidSrc", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
+        { id: "vidsrcto", label: "VidSrc.mov ⭐", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.mov/embed/movie/${id}` : `https://vidsrc.mov/embed/tv/${id}/${s}/${e}` },
         { id: "vidzee", label: "VidZee", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://player.vidzee.wtf/embed/movie/${id}` : `https://player.vidzee.wtf/embed/tv/${id}/${s}/${e}` },
         { id: "vidrock", label: "VidRock", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidrock.net/movie/${id}` : `https://vidrock.net/tv/${id}/${s}/${e}` },
+        { id: "vidsrc-wtf-1", label: "VidSrc.wtf (API 1)", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.wtf/embed/movie/${id}` : `https://vidsrc.wtf/embed/tv/${id}/${s}/${e}` },
+        { id: "vidsrc-wtf-2", label: "VidSrc.wtf (API 2)", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.su/embed/movie/${id}` : `https://vidsrc.su/embed/tv/${id}/${s}/${e}` },
+        { id: "vidsrc-wtf-3", label: "VidSrc.wtf (API 3)", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.pm/embed/movie/${id}` : `https://vidsrc.pm/embed/tv/${id}/${s}/${e}` },
+        { id: "vidnest", label: "Vidnest", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidnest.net/embed/movie/${id}` : `https://vidnest.net/embed/tv/${id}/${s}/${e}` },
         { id: "riveembed", label: "RiveEmbed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://riveembed.com/embed/movie/${id}` : `https://riveembed.com/embed/tv/${id}/${s}/${e}` },
+        { id: "smashystream", label: "SmashyStream", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://embed.smashystream.com/movie/${id}` : `https://embed.smashystream.com/tv/${id}/${s}/${e}` },
+        { id: "111movies", label: "111Movies", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://111movies.com/embed/movie/${id}` : `https://111movies.com/embed/tv/${id}/${s}/${e}` },
+        { id: "videasy", label: "Videasy", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://videasy.cc/embed/movie/${id}` : `https://videasy.cc/embed/tv/${id}/${s}/${e}` },
         { id: "vidlink", label: "VidLink", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidlink.pro/movie/${id}` : `https://vidlink.pro/tv/${id}/${s}/${e}` },
+        { id: "vidfast", label: "VidFast", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidfast.pro/embed/movie/${id}` : `https://vidfast.pro/embed/tv/${id}/${s}/${e}` },
         { id: "embedsu", label: "Embed.su", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://embed.su/embed/movie/${id}` : `https://embed.su/embed/tv/${id}/${s}/${e}` },
-        { id: "2embed", label: "2Embed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` }
+        { id: "2embed", label: "2Embed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://2embed.cc/embed/movie/${id}` : `https://2embed.cc/embed/tv/${id}/${s}/${e}` },
+        { id: "moviesapi", label: "MoviesAPI", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://moviesapi.club/movie/${id}` : `https://moviesapi.club/tv/${id}/${s}/${e}` },
+        { id: "autoembed", label: "AutoEmbed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://autoembed.cc/embed/movie/${id}` : `https://autoembed.cc/embed/tv/${id}/${s}/${e}` },
+        { id: "multiembed", label: "MultiEmbed", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://multiembed.cc/movie/${id}` : `https://multiembed.cc/tv/${id}/${s}/${e}` },
+        { id: "vidsrc-xyz", label: "VidSrc.xyz", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidsrc.xyz/embed/movie/${id}` : `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}` },
+        { id: "primewire", label: "PrimeWire", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://embed.primewire.tf/movie/${id}` : `https://embed.primewire.tf/tv/${id}/${s}/${e}` },
+        { id: "warezcdn", label: "WarezCDN", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://warezcdn.com/embed/movie/${id}` : `https://warezcdn.com/embed/tv/${id}/${s}/${e}` },
+        { id: "superflix", label: "SuperFlix", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://embed.superflix.to/movie/${id}` : `https://embed.superflix.to/tv/${id}/${s}/${e}` },
+        { id: "vidup", label: "VidUp", isAsync: false, getUrl: (type, id, s, e) => type === "movie" ? `https://vidup.me/embed/${id}` : `https://vidup.me/embed/${id}?season=${s}&episode=${e}` }
     ];
 
     function parseURL() {
@@ -582,6 +607,14 @@
             if (!res.ok) throw new Error();
             const data = await res.json();
             mediaDetails = data;
+            if (currentMedia.type === 'tv' && data.seasons) {
+                seasonList = data.seasons.filter(s => s.season_number > 0).map(s => ({ season_number: s.season_number, episode_count: s.episode_count }));
+                if (seasonList.length) {
+                    if (!currentMedia.season || !seasonList.find(s => s.season_number === currentMedia.season)) 
+                        currentMedia.season = seasonList[0].season_number;
+                    if (!currentMedia.episode) currentMedia.episode = 1;
+                }
+            }
             return data;
         } catch { showToast('⚠️ Failed to load details'); return null; }
     }
@@ -619,12 +652,60 @@
     }
 
     function revealAndLoadPlayer() {
+        const hero = document.getElementById('heroBanner');
+        hero.classList.add('hidden');
         const ps = document.getElementById('playerSection');
         if (!ps.classList.contains('visible')) {
             ps.classList.add('visible');
             ps.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         loadPlayer();
+        // Show episode controls if TV
+        if (currentMedia.type === 'tv') setupEpisodeControls();
+    }
+
+    function setupEpisodeControls() {
+        const controlsDiv = document.getElementById('episodeControls');
+        if (!controlsDiv) return;
+        if (currentMedia.type !== 'tv' || !seasonList.length) {
+            controlsDiv.style.display = 'none';
+            return;
+        }
+        controlsDiv.style.display = 'flex';
+        const seasonSelect = document.getElementById('seasonSelect');
+        const episodeSelect = document.getElementById('episodeSelect');
+        seasonSelect.innerHTML = '';
+        seasonList.forEach(season => {
+            const option = document.createElement('option');
+            option.value = season.season_number;
+            option.textContent = `Season ${season.season_number}`;
+            if (season.season_number === currentMedia.season) option.selected = true;
+            seasonSelect.appendChild(option);
+        });
+        function updateEpisodes() {
+            const selectedSeason = parseInt(seasonSelect.value);
+            const seasonObj = seasonList.find(s => s.season_number === selectedSeason);
+            const maxEp = seasonObj ? seasonObj.episode_count : 10;
+            episodeSelect.innerHTML = '';
+            for (let i = 1; i <= maxEp; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `Episode ${i}`;
+                if (currentMedia.episode === i && selectedSeason === currentMedia.season) opt.selected = true;
+                episodeSelect.appendChild(opt);
+            }
+        }
+        updateEpisodes();
+        seasonSelect.onchange = () => {
+            currentMedia.season = parseInt(seasonSelect.value);
+            currentMedia.episode = 1;
+            updateEpisodes();
+            if (document.getElementById('playerSection').classList.contains('visible')) loadPlayer();
+        };
+        episodeSelect.onchange = () => {
+            currentMedia.episode = parseInt(episodeSelect.value);
+            if (document.getElementById('playerSection').classList.contains('visible')) loadPlayer();
+        };
     }
 
     async function loadPlayer() {
@@ -684,7 +765,7 @@
 
     function showToast(msg) { let t = document.querySelector('.toast'); if(t) t.remove(); t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
 
-    // Mobile Menu
+    // Mobile menu
     const menuToggle = document.getElementById('menuToggle'), mobileMenu = document.getElementById('mobileMenu'), overlay = document.getElementById('overlay'), closeMenuBtn = document.getElementById('closeMenuBtn');
     function openMenu() { mobileMenu.classList.add('open'); overlay.classList.add('active'); document.body.style.overflow = 'hidden'; }
     function closeMenu() { mobileMenu.classList.remove('open'); overlay.classList.remove('active'); document.body.style.overflow = ''; }
@@ -692,8 +773,17 @@
     window.addEventListener('scroll', () => { const navbar = document.getElementById('navbar'); if(window.scrollY > 50) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled'); });
     document.getElementById('closeModalBtn')?.addEventListener('click', closeTrailerModal);
     window.addEventListener('click', (e) => { if(e.target === document.getElementById('trailerModal')) closeTrailerModal(); });
+    document.getElementById('showInfoBtn')?.addEventListener('click', () => {
+        const hero = document.getElementById('heroBanner');
+        if (hero.classList.contains('hidden')) {
+            hero.classList.remove('hidden');
+            hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+            hero.classList.add('hidden');
+        }
+    });
 
-    async function init() { parseURL(); const details = await fetchMediaDetails(); if(details) { renderHeroBanner(details); renderServerButtons(); await loadRecommendations(); } else document.getElementById('heroBanner').innerHTML = '<div style="padding:100px;text-align:center;">Failed to load media</div>'; }
+    async function init() { parseURL(); const details = await fetchMediaDetails(); if(details) { renderHeroBanner(details); renderServerButtons(); await loadRecommendations(); if(currentMedia.type === 'tv') setupEpisodeControls(); } else document.getElementById('heroBanner').innerHTML = '<div style="padding:100px;text-align:center;">Failed to load media</div>'; }
     init();
 </script>
 </body>
