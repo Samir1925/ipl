@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>StreamHub — Fluid Player & AdShield | Responsive</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -754,7 +749,7 @@
                 document.getElementById('streamInfo').innerHTML = `🎥 Streaming ${server.label} · ad‑free`;
             } else {
                 let embedUrl = currentMedia.type === 'movie' ? server.getUrl('movie', currentMedia.id) : server.getUrl('tv', currentMedia.id, currentMedia.season || 1, currentMedia.episode || 1);
-                container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+                container.innerHTML = `<iframe src="${embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="no-referrer-when-downgrade" sandbox></iframe>`;
                 document.getElementById('streamInfo').innerHTML = `🎥 ${server.label} · Ad shield active 🛡️`;
             }
         } catch(err) { container.innerHTML = `<div style="color:#f87171;text-align:center;">Error: ${err.message}</div>`; }
