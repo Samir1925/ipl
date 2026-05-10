@@ -354,16 +354,7 @@
         }
     }, true);
 
-    /* 4. Remove ad DOM elements */
-    const AD_SELECTORS = [
-        'iframe[src*="doubleclick"]','iframe[src*="googlesyndication"]',
-        'iframe[src*="adsterra"]','iframe[src*="propellerads"]',
-        'iframe[src*="exoclick"]','iframe[src*="clickadu"]',
-        '.adsbygoogle','[id*="google_ads"]','[class*="ad-banner"]',
-        '[class*="popunder"]','[id*="popunder"]',
-        'div[id^="ad-"]','div[class^="ad-"]',
-        'ins.adsbygoogle','[data-ad-slot]','[data-ad-unit]'
-    ].join(',');
+ 
 
     const removeAds = () => {
         try { document.querySelectorAll(AD_SELECTORS).forEach(el => el.remove()); } catch {}
